@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Group Bookings Hold - Imam Travel Admin</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="admin_viewgroupbooking.css" />
+    <link rel="stylesheet" href="responsive.css" />
+  </head>
+  <body>
+    <header class="company-header">
+      <a href="admins.html" class="header-link">
+        <img
+          src="imam travel and tours logo.jpeg"
+          alt="Logo"
+          class="company-logo"
+        />
+        <span class="company-name">Imam Travel and Tours</span>
+      </a>
+    </header>
+
+    <nav class="top-nav">
+      <div class="nav-left"></div>
+      <div class="nav-right">
+        <span>Quick links <i class="fas fa-caret-down"></i></span>
+        <span>Configuration</span>
+        <span>Change password</span>
+        <span class="logout" onclick="logoutUser()" style="cursor: pointer">
+          <i class="fas fa-key"></i> Logout
+        </span>
+      </div>
+    </nav>
+
+    <div class="main-container">
+      <aside class="sidebar">
+        <div id="ticketSidebar">
+          <div class="menu-group">
+            <button class="menu-head active" onclick="toggleMenu('trans')">
+              Transactions <i class="fas fa-caret-down"></i>
+            </button>
+
+            <div id="trans" class="menu-content show">
+              <a href="umrah-pack.html">
+                <button class="sub-link">Ummrah booking hold</button>
+              </a>
+              <a href="admin_viewgroupbooking.html">
+                <button class="sub-link">Group Bookings</button>
+              </a>
+              <a href="admin_viewholdgroupbooking.html">
+                <button class="sub-link">Group Bookings Hold</button>
+              </a>
+              <a href="ticket_booking.html">
+                <button class="sub-link">Under working</button>
+              </a>
+              <a href="#"><button class="sub-link">Under working</button></a>
+
+              <a href="#"><button class="sub-link">Under working</button></a>
+
+              <a href="setting.html"
+                ><button class="sub-link">Setting</button></a
+              >
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <section id="group-bookings" class="page-panel active-panel">
+          <div class="panel-header">
+            <h2>Group Bookings Hold</h2>
+            <div style="display: flex; gap: 10px; align-items: center">
+              <button
+                class="btn-admin-action"
+                type="button"
+                onclick="window.location.href = 'admin_viewgroupbooking.html'"
+              >
+                <i class="fa-solid fa-arrow-left"></i> Back to Group Bookings
+              </button>
+            </div>
+          </div>
+
+          <div class="stats-grid compact-grid">
+            <div class="stat-card">
+              <p class="stat-label">Held Groups</p>
+              <h3 id="stat-groups-count">0</h3>
+            </div>
+            <div class="stat-card">
+              <p class="stat-label">Pending Passengers</p>
+              <h3 id="stat-passengers-count">0</h3>
+            </div>
+            <div class="stat-card">
+              <p class="stat-label">Held Status</p>
+              <h3 id="stat-confirmed-count">Pending</h3>
+            </div>
+          </div>
+
+          <div
+            class="data-table-card loading-placeholder"
+            id="group-bookings-table-container"
+          >
+            <span class="loading-spinner" aria-hidden="true"></span>
+            <p>Loading held group bookings…</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Load Firebase SDK first -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <!-- Initialize Firebase config -->
+    <script src="firebase-config.js"></script>
+    <!-- Load main.js after Firebase is ready -->
+    <script src="main.js"></script>
+  </body>
+</html>

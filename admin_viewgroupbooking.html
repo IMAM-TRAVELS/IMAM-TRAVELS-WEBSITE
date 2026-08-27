@@ -1,0 +1,1900 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Group Bookings - Imam Travel Admin</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="admin_viewgroupbooking.css" />
+    <link rel="stylesheet" href="responsive.css" />
+    <style>
+      #save-group-modal-overlay .save-group-form-card > div,
+      #save-group-modal-overlay .save-group-fields-row > div {
+        width: 186px;
+        min-width: 186px;
+        max-width: 186px;
+        height: 56px;
+        min-height: 56px;
+        max-height: 56px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        overflow: hidden;
+      }
+
+      #save-group-modal-overlay .save-group-fields-row {
+        display: inline-grid;
+        width: fit-content;
+        justify-content: start;
+        justify-items: stretch;
+        grid-auto-rows: 56px;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="company-header">
+      <a href="admins.html" class="header-link">
+        <img
+          src="imam travel and tours logo.jpeg"
+          alt="Logo"
+          class="company-logo"
+        />
+        <span class="company-name">Imam Travel and Tours</span>
+      </a>
+    </header>
+
+    <nav class="top-nav">
+      <div class="nav-left"></div>
+      <div class="nav-right">
+        <span>Quick links <i class="fas fa-caret-down"></i></span>
+        <span>Configuration</span>
+        <span>Change password</span>
+        <span class="logout" onclick="logoutUser()" style="cursor: pointer">
+          <i class="fas fa-key"></i> Logout
+        </span>
+      </div>
+    </nav>
+
+    <div class="main-container">
+      <aside class="sidebar">
+        <div id="ticketSidebar">
+          <div class="menu-group">
+            <button class="menu-head active" onclick="toggleMenu('trans')">
+              Transactions <i class="fas fa-caret-down"></i>
+            </button>
+
+            <div id="trans" class="menu-content show">
+              <a href="umrah-pack.html"
+                ><button class="sub-link">Ummrah booking hold</button></a
+              >
+              <a href="admin_viewgroupbooking.html"
+                ><button class="sub-link">Group Bookings</button></a
+              >
+              <a href="admin_viewholdgroupbooking.html"
+                ><button class="sub-link">Group Bookings Hold</button></a
+              >
+              <a href="ticket_booking.html"
+                ><button class="sub-link">Under working</button></a
+              >
+              <a href="#"><button class="sub-link">Under working</button></a>
+
+              <a href="#"><button class="sub-link">Under working</button></a>
+
+              <a href="setting.html"
+                ><button class="sub-link">Setting</button></a
+              >
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <section id="group-bookings" class="page-panel active-panel">
+          <div class="panel-header">
+            <h2>Group Bookings</h2>
+            <div style="display: flex; gap: 10px; align-items: center">
+              <button
+                class="btn-admin-action"
+                onclick="openSaveGroupModal()"
+                type="button"
+              >
+                <i class="fa-solid fa-plus"></i> Save New Group
+              </button>
+            </div>
+          </div>
+
+          <div class="stats-grid compact-grid">
+            <div class="stat-card">
+              <p class="stat-label">Total Groups</p>
+              <h3 id="stat-groups-count">0</h3>
+            </div>
+            <div class="stat-card">
+              <p class="stat-label">Total Passengers</p>
+              <h3 id="stat-passengers-count">0</h3>
+            </div>
+            <div class="stat-card">
+              <p class="stat-label">Confirmed Bookings</p>
+              <h3 id="stat-confirmed-count">0</h3>
+            </div>
+          </div>
+
+          <div
+            class="data-table-card loading-placeholder"
+            id="group-bookings-table-container"
+          >
+            <span class="loading-spinner" aria-hidden="true"></span>
+            <p>Loading group bookings…</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <!-- Export Modal -->
+    <div
+      class="modal-overlay"
+      id="export-modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Export group bookings"
+    >
+      <div class="modal-window-box" style="width: min(700px, 92vw)">
+        <div class="modal-header-nav">
+          <h3>Export Group Bookings & Ticket Information</h3>
+          <button
+            class="btn-close-circle"
+            id="btn-close-export-modal"
+            type="button"
+          >
+            &times;
+          </button>
+        </div>
+
+        <div
+          style="
+            padding: 20px 24px;
+            overflow-y: auto;
+            max-height: calc(80vh - 120px);
+          "
+        >
+          <!-- Search & Filter Section -->
+          <div
+            style="
+              margin-bottom: 20px;
+              padding: 16px;
+              background: #f8fafc;
+              border-radius: 10px;
+              border: 1px solid #e5e7eb;
+            "
+          >
+            <h4
+              style="
+                margin: 0 0 12px;
+                font-size: 14px;
+                font-weight: 600;
+                color: #111827;
+              "
+            >
+              <i class="fas fa-filter" style="margin-right: 8px"></i> Filter
+              Bookings
+            </h4>
+
+            <div
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px"
+            >
+              <div>
+                <label
+                  style="
+                    display: block;
+                    font-size: 12px;
+                    font-weight: 600;
+                    margin-bottom: 6px;
+                    color: #334155;
+                  "
+                >
+                  From Date
+                </label>
+                <input
+                  type="date"
+                  id="export-from-date"
+                  style="
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 8px;
+                    font-size: 13px;
+                  "
+                />
+              </div>
+              <div>
+                <label
+                  style="
+                    display: block;
+                    font-size: 12px;
+                    font-weight: 600;
+                    margin-bottom: 6px;
+                    color: #334155;
+                  "
+                >
+                  To Date
+                </label>
+                <input
+                  type="date"
+                  id="export-to-date"
+                  style="
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 8px;
+                    font-size: 13px;
+                  "
+                />
+              </div>
+            </div>
+
+            <div style="margin-top: 12px">
+              <label
+                style="
+                  display: block;
+                  font-size: 12px;
+                  font-weight: 600;
+                  margin-bottom: 6px;
+                  color: #334155;
+                "
+              >
+                Group Name / Search
+              </label>
+              <input
+                type="text"
+                id="export-search-group"
+                placeholder="Search group name or booking ID..."
+                style="
+                  width: 100%;
+                  padding: 8px;
+                  border: 1px solid #cbd5e1;
+                  border-radius: 8px;
+                  font-size: 13px;
+                "
+              />
+            </div>
+          </div>
+
+          <!-- Ticket Information Section -->
+          <div
+            style="
+              margin-bottom: 20px;
+              padding: 16px;
+              background: #f0f8ff;
+              border-radius: 10px;
+              border: 1px solid #b3d9ff;
+            "
+          >
+            <h4
+              style="
+                margin: 0 0 12px;
+                font-size: 14px;
+                font-weight: 600;
+                color: #111827;
+              "
+            >
+              <i class="fas fa-ticket" style="margin-right: 8px"></i> Ticket
+              Information
+            </h4>
+
+            <div
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px"
+            >
+              <div>
+                <label
+                  style="
+                    display: block;
+                    font-size: 12px;
+                    font-weight: 600;
+                    margin-bottom: 6px;
+                    color: #334155;
+                  "
+                >
+                  Ticket Number
+                </label>
+                <input
+                  type="text"
+                  id="ticket-number"
+                  placeholder="e.g. TKT-2026-001"
+                  style="
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 8px;
+                    font-size: 13px;
+                  "
+                />
+              </div>
+              <div>
+                <label
+                  style="
+                    display: block;
+                    font-size: 12px;
+                    font-weight: 600;
+                    margin-bottom: 6px;
+                    color: #334155;
+                  "
+                >
+                  Booking Reference
+                </label>
+                <input
+                  type="text"
+                  id="booking-reference"
+                  placeholder="e.g. BK-12345"
+                  style="
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 8px;
+                    font-size: 13px;
+                  "
+                />
+              </div>
+            </div>
+
+            <div style="margin-top: 12px">
+              <label
+                style="
+                  display: block;
+                  font-size: 12px;
+                  font-weight: 600;
+                  margin-bottom: 6px;
+                  color: #334155;
+                "
+              >
+                Ticket Status
+              </label>
+              <select
+                id="ticket-status"
+                style="
+                  width: 100%;
+                  padding: 8px;
+                  border: 1px solid #cbd5e1;
+                  border-radius: 8px;
+                  font-size: 13px;
+                "
+              >
+                <option value="">-- Select Status --</option>
+                <option value="pending">Pending</option>
+                <option value="issued">Issued</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Umrah Package Section -->
+          <div
+            style="
+              margin-bottom: 20px;
+              padding: 16px;
+              background: #f0fff4;
+              border-radius: 10px;
+              border: 1px solid #9fdfbf;
+            "
+          >
+            <h4
+              style="
+                margin: 0 0 12px;
+                font-size: 14px;
+                font-weight: 600;
+                color: #111827;
+              "
+            >
+              <i class="fas fa-cube" style="margin-right: 8px"></i> Umrah
+              Package Details
+            </h4>
+
+            <div
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px"
+            >
+              <div>
+                <label
+                  style="
+                    display: block;
+                    font-size: 12px;
+                    font-weight: 600;
+                    margin-bottom: 6px;
+                    color: #334155;
+                  "
+                >
+                  Package Type
+                </label>
+                <select
+                  id="umrah-package-type"
+                  style="
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 8px;
+                    font-size: 13px;
+                  "
+                >
+                  <option value="">-- Select Package --</option>
+                  <option value="silver">Silver Package</option>
+                  <option value="gold">Gold Package</option>
+                  <option value="platinum">Platinum Package</option>
+                  <option value="vip">VIP Package</option>
+                </select>
+              </div>
+              <div>
+                <label
+                  style="
+                    display: block;
+                    font-size: 12px;
+                    font-weight: 600;
+                    margin-bottom: 6px;
+                    color: #334155;
+                  "
+                >
+                  Duration (Days)
+                </label>
+                <input
+                  type="number"
+                  id="umrah-duration"
+                  min="1"
+                  max="30"
+                  placeholder="e.g. 15"
+                  style="
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 8px;
+                    font-size: 13px;
+                  "
+                />
+              </div>
+            </div>
+
+            <div style="margin-top: 12px">
+              <label
+                style="
+                  display: block;
+                  font-size: 12px;
+                  font-weight: 600;
+                  margin-bottom: 6px;
+                  color: #334155;
+                "
+              >
+                Makkah Hotel
+              </label>
+              <input
+                type="text"
+                id="makkah-hotel"
+                placeholder="e.g. Zamzam Palace Hotel"
+                style="
+                  width: 100%;
+                  padding: 8px;
+                  border: 1px solid #cbd5e1;
+                  border-radius: 8px;
+                  font-size: 13px;
+                "
+              />
+            </div>
+
+            <div style="margin-top: 12px">
+              <label
+                style="
+                  display: block;
+                  font-size: 12px;
+                  font-weight: 600;
+                  margin-bottom: 6px;
+                  color: #334155;
+                "
+              >
+                Madinah Hotel
+              </label>
+              <input
+                type="text"
+                id="madinah-hotel"
+                placeholder="e.g. Al-Noor Hotel"
+                style="
+                  width: 100%;
+                  padding: 8px;
+                  border: 1px solid #cbd5e1;
+                  border-radius: 8px;
+                  font-size: 13px;
+                "
+              />
+            </div>
+          </div>
+
+          <!-- Export Format Section -->
+          <div
+            style="
+              padding: 16px;
+              background: #fff8f0;
+              border-radius: 10px;
+              border: 1px solid #fdbf9f;
+            "
+          >
+            <h4
+              style="
+                margin: 0 0 12px;
+                font-size: 14px;
+                font-weight: 600;
+                color: #111827;
+              "
+            >
+              <i class="fas fa-download" style="margin-right: 8px"></i> Export
+              Format
+            </h4>
+
+            <div
+              style="
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+              "
+            >
+              <label
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  padding: 8px;
+                  background: white;
+                  border-radius: 8px;
+                  cursor: pointer;
+                  border: 1px solid #e5e7eb;
+                "
+              >
+                <input
+                  type="radio"
+                  name="export-format"
+                  value="csv"
+                  checked
+                  style="cursor: pointer"
+                />
+                <span style="font-size: 12px; font-weight: 600">CSV</span>
+              </label>
+              <label
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  padding: 8px;
+                  background: white;
+                  border-radius: 8px;
+                  cursor: pointer;
+                  border: 1px solid #e5e7eb;
+                "
+              >
+                <input
+                  type="radio"
+                  name="export-format"
+                  value="excel"
+                  style="cursor: pointer"
+                />
+                <span style="font-size: 12px; font-weight: 600">Excel</span>
+              </label>
+              <label
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  padding: 8px;
+                  background: white;
+                  border-radius: 8px;
+                  cursor: pointer;
+                  border: 1px solid #e5e7eb;
+                "
+              >
+                <input
+                  type="radio"
+                  name="export-format"
+                  value="pdf"
+                  style="cursor: pointer"
+                />
+                <span style="font-size: 12px; font-weight: 600">PDF</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div
+          style="
+            padding: 16px 24px;
+            background: #f8fafc;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+          "
+        >
+          <button
+            id="btn-cancel-export"
+            class="btn-dismiss"
+            type="button"
+            style="
+              background: #e2e8f0;
+              color: #334155;
+              border: none;
+              padding: 10px 16px;
+              border-radius: 8px;
+              font-weight: 600;
+              cursor: pointer;
+            "
+          >
+            Cancel
+          </button>
+          <button
+            id="btn-confirm-export"
+            class="btn-admin-action"
+            type="button"
+            style="
+              background: #d32f2f;
+              color: white;
+              border: none;
+              padding: 10px 16px;
+              border-radius: 8px;
+              font-weight: 600;
+              cursor: pointer;
+              display: inline-flex;
+              align-items: center;
+              gap: 8px;
+            "
+          >
+            <i class="fas fa-download"></i> Export Now
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Save Group Modal -->
+    <div
+      class="modal-overlay"
+      id="save-group-modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Save new group booking"
+    >
+      <div class="modal-window-box" style="width: min(860px, 92vw)">
+        <div class="modal-header-nav">
+          <h3>Save New Group</h3>
+          <button
+            class="btn-close-circle"
+            id="btn-close-save-group-modal"
+            type="button"
+          >
+            &times;
+          </button>
+        </div>
+
+        <div
+          style="
+            padding: 20px 24px;
+            overflow-y: auto;
+            max-height: calc(80vh - 120px);
+          "
+        >
+          <div
+            style="
+              margin-bottom: 20px;
+              padding: 16px;
+              background: #f8fafc;
+              border-radius: 10px;
+              border: 1px solid #e5e7eb;
+            "
+          >
+            <input type="hidden" id="save-group-id" />
+            <input type="hidden" id="save-group-name" />
+            <div
+              class="save-group-fields-row"
+              style="
+                margin-top: 12px;
+                display: grid;
+                grid-template-columns: repeat(4, 186px);
+                gap: 12px;
+              "
+            >
+              <div>
+                <label
+                  style="
+                    display: block;
+                    font-size: 12px;
+                    font-weight: 600;
+                    margin-bottom: 6px;
+                    color: #334155;
+                  "
+                  >Airline *</label
+                >
+                <select
+                  id="save-group-airline"
+                  required
+                  style="
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 8px;
+                    font-size: 13px;
+                    background: #fff;
+                  "
+                >
+                  <option value="">Select airline</option>
+                </select>
+              </div>
+              <div>
+                <label
+                  style="
+                    display: block;
+                    font-size: 12px;
+                    font-weight: 600;
+                    margin-bottom: 6px;
+                    color: #334155;
+                  "
+                  >Vendor / Company Name *</label
+                >
+                <select
+                  id="save-group-agency"
+                  required
+                  style="
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 8px;
+                    font-size: 13px;
+                    background: #fff;
+                  "
+                >
+                  <option value="">Select vendor</option>
+                </select>
+              </div>
+            </div>
+
+            <div
+              class="save-group-fields-row"
+              style="
+                margin-top: 12px;
+                display: grid;
+                grid-template-columns: repeat(4, 186px);
+                gap: 12px;
+              "
+            >
+              <div>
+                <label
+                  style="
+                    display: block;
+                    font-size: 12px;
+                    font-weight: 600;
+                    margin-bottom: 6px;
+                    color: #334155;
+                  "
+                  >Plane Number</label
+                >
+                <input
+                  type="text"
+                  id="save-plane-number"
+                  placeholder="e.g. PK-202"
+                  style="
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 8px;
+                    font-size: 13px;
+                  "
+                />
+              </div>
+              <div>
+                <label
+                  style="
+                    display: block;
+                    font-size: 12px;
+                    font-weight: 600;
+                    margin-bottom: 6px;
+                    color: #334155;
+                  "
+                  >Baggage</label
+                >
+                <input
+                  type="text"
+                  id="save-baggage"
+                  placeholder="e.g. 30kg included"
+                  style="
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 8px;
+                    font-size: 13px;
+                  "
+                />
+              </div>
+              <div>
+                <label
+                  style="
+                    display: block;
+                    font-size: 12px;
+                    font-weight: 600;
+                    margin-bottom: 6px;
+                    color: #334155;
+                  "
+                  >Departure Date *</label
+                >
+                <input
+                  type="date"
+                  id="save-departure-date"
+                  required
+                  style="
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 8px;
+                    font-size: 13px;
+                  "
+                />
+              </div>
+              <div>
+                <label
+                  style="
+                    display: block;
+                    font-size: 12px;
+                    font-weight: 600;
+                    margin-bottom: 6px;
+                    color: #334155;
+                  "
+                  >Departure Time *</label
+                >
+                <input
+                  type="time"
+                  id="save-departure-time"
+                  required
+                  style="
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 8px;
+                    font-size: 13px;
+                  "
+                />
+              </div>
+            </div>
+
+            <div
+              class="save-group-fields-row"
+              style="
+                margin-top: 12px;
+                display: grid;
+                grid-template-columns: repeat(4, 186px);
+                gap: 12px;
+              "
+            >
+              <div>
+                <label
+                  style="
+                    display: block;
+                    font-size: 12px;
+                    font-weight: 600;
+                    margin-bottom: 6px;
+                    color: #334155;
+                  "
+                  >Refundable?</label
+                >
+                <select
+                  id="save-refund-type"
+                  required
+                  style="
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 8px;
+                    font-size: 13px;
+                    background: #fff;
+                  "
+                >
+                  <option value="">Select option</option>
+                  <option value="refundable">Refundable</option>
+                  <option value="non-refundable">Non-refundable</option>
+                </select>
+              </div>
+              <div>
+                <label
+                  style="
+                    display: block;
+                    font-size: 12px;
+                    font-weight: 600;
+                    margin-bottom: 6px;
+                    color: #334155;
+                  "
+                  >Return Date *</label
+                >
+                <input
+                  type="date"
+                  id="save-return-date"
+                  style="
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 8px;
+                    font-size: 13px;
+                  "
+                />
+              </div>
+              <div>
+                <label
+                  style="
+                    display: block;
+                    font-size: 12px;
+                    font-weight: 600;
+                    margin-bottom: 6px;
+                    color: #334155;
+                  "
+                  >Return Time *</label
+                >
+                <input
+                  type="time"
+                  id="save-return-time"
+                  style="
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 8px;
+                    font-size: 13px;
+                  "
+                />
+              </div>
+              <div>
+                <label
+                  style="
+                    display: block;
+                    font-size: 12px;
+                    font-weight: 600;
+                    margin-bottom: 6px;
+                    color: #334155;
+                  "
+                  >Price per Person *</label
+                >
+                <input
+                  type="number"
+                  id="save-price-per-person"
+                  min="0"
+                  placeholder="e.g. 45000"
+                  required
+                  style="
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 8px;
+                    font-size: 13px;
+                  "
+                />
+              </div>
+            </div>
+
+            <div
+              class="save-group-fields-row"
+              style="
+                margin-top: 12px;
+                display: grid;
+                grid-template-columns: repeat(4, 186px);
+                gap: 12px;
+              "
+            >
+              <div>
+                <label
+                  style="
+                    display: block;
+                    font-size: 12px;
+                    font-weight: 600;
+                    margin-bottom: 6px;
+                    color: #334155;
+                  "
+                  >Sector 1 Airport</label
+                >
+                <input
+                  type="text"
+                  id="save-sector-1"
+                  placeholder="e.g. Islamabad (ISB)"
+                  list="world-airports"
+                  style="
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 8px;
+                    font-size: 13px;
+                  "
+                />
+              </div>
+              <div>
+                <label
+                  style="
+                    display: block;
+                    font-size: 12px;
+                    font-weight: 600;
+                    margin-bottom: 6px;
+                    color: #334155;
+                  "
+                  >Sector 2 Airport</label
+                >
+                <input
+                  type="text"
+                  id="save-sector-2"
+                  placeholder="e.g. Dubai (DXB)"
+                  list="world-airports"
+                  style="
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 8px;
+                    font-size: 13px;
+                  "
+                />
+              </div>
+              <div>
+                <label
+                  style="
+                    display: block;
+                    font-size: 12px;
+                    font-weight: 600;
+                    margin-bottom: 6px;
+                    color: #334155;
+                  "
+                  >Sector 3 Airport</label
+                >
+                <input
+                  type="text"
+                  id="save-sector-3"
+                  placeholder="e.g. London Heathrow (LHR)"
+                  list="world-airports"
+                  style="
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 8px;
+                    font-size: 13px;
+                  "
+                />
+              </div>
+              <div>
+                <label
+                  style="
+                    display: block;
+                    font-size: 12px;
+                    font-weight: 600;
+                    margin-bottom: 6px;
+                    color: #334155;
+                  "
+                  >Sector 4 Airport</label
+                >
+                <input
+                  type="text"
+                  id="save-sector-4"
+                  placeholder="e.g. New York JFK (JFK)"
+                  list="world-airports"
+                  style="
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 8px;
+                    font-size: 13px;
+                  "
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          style="
+            padding: 16px 24px;
+            background: #f8fafc;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+          "
+        >
+          <button
+            id="btn-cancel-save-group"
+            class="btn-dismiss"
+            type="button"
+            style="
+              background: #e2e8f0;
+              color: #334155;
+              border: none;
+              padding: 10px 16px;
+              border-radius: 8px;
+              font-weight: 600;
+              cursor: pointer;
+            "
+          >
+            Cancel
+          </button>
+          <button
+            id="btn-confirm-save-group"
+            class="btn-admin-action"
+            type="button"
+            style="
+              background: #d32f2f;
+              color: white;
+              border: none;
+              padding: 10px 16px;
+              border-radius: 8px;
+              font-weight: 600;
+              cursor: pointer;
+              display: inline-flex;
+              align-items: center;
+              gap: 8px;
+            "
+          >
+            <i class="fas fa-save"></i> Save Group
+          </button>
+        </div>
+      </div>
+    </div>
+    <footer class="footer">
+      <div id="clock">18/04/2026 | 17:01</div>
+      <div class="badge">2.4.3 - Theme: dashboard_blue - 1 user online</div>
+    </footer>
+
+    <script>
+      function logoutUser() {
+        window.location.href = "ticketing.html";
+      }
+
+      function toggleMenu(id) {
+        const menuContent = document.getElementById(id);
+        if (menuContent) {
+          menuContent.classList.toggle("show");
+        }
+      }
+
+      // Export Modal Functions
+      function openExportModal() {
+        const modal = document.getElementById("export-modal-overlay");
+        if (modal) {
+          modal.classList.add("open");
+          // Set default dates
+          const today = new Date();
+          const lastMonth = new Date(
+            today.getFullYear(),
+            today.getMonth() - 1,
+            today.getDate(),
+          );
+
+          document.getElementById("export-from-date").valueAsDate = lastMonth;
+          document.getElementById("export-to-date").valueAsDate = today;
+        }
+      }
+
+      function closeExportModal() {
+        const modal = document.getElementById("export-modal-overlay");
+        if (modal) {
+          modal.classList.remove("open");
+        }
+      }
+
+      function exportGroupBookings() {
+        openExportModal();
+      }
+
+      // Save Group Modal Functions
+      function openSaveGroupModal(groupId) {
+        const modal = document.getElementById("save-group-modal-overlay");
+        const saveGroupIdInput = document.getElementById("save-group-id");
+        const saveGroupNameInput = document.getElementById("save-group-name");
+
+        if (modal) {
+          modal.classList.add("open");
+
+          if (saveGroupIdInput) saveGroupIdInput.value = "";
+          if (saveGroupNameInput) saveGroupNameInput.value = "";
+          document.getElementById("save-group-airline").value = "";
+          document.getElementById("save-group-agency").value = "";
+          document.getElementById("save-plane-number").value = "";
+          document.getElementById("save-baggage").value = "";
+          document.getElementById("save-departure-date").value = "";
+          document.getElementById("save-departure-time").value = "";
+          document.getElementById("save-refund-type").value = "";
+          document.getElementById("save-return-date").value = "";
+          document.getElementById("save-return-time").value = "";
+          document.getElementById("save-price-per-person").value = "";
+          document.getElementById("save-sector-1").value = "";
+          document.getElementById("save-sector-2").value = "";
+          document.getElementById("save-sector-3").value = "";
+          document.getElementById("save-sector-4").value = "";
+
+          if (groupId) {
+            if (saveGroupIdInput) saveGroupIdInput.value = groupId;
+            if (typeof firebase !== "undefined" && firebase.database) {
+              try {
+                const db = firebase.database();
+                db.ref(`group_bookings/${groupId}`)
+                  .once("value")
+                  .then((snapshot) => {
+                    const group = snapshot.val();
+                    if (!group) return;
+
+                    if (saveGroupNameInput)
+                      saveGroupNameInput.value =
+                        group.groupName || group.group || "";
+                    document.getElementById("save-group-airline").value =
+                      group.airline || group.airlineName || "";
+                    document.getElementById("save-group-agency").value =
+                      group.vendorName || group.vendor || "";
+                    document.getElementById("save-plane-number").value =
+                      group.planeNumber ||
+                      group.airlineNum ||
+                      group.airlineNumber ||
+                      "";
+                    document.getElementById("save-baggage").value =
+                      group.baggage || group.baggageInfo || "";
+                    document.getElementById("save-departure-date").value =
+                      group.departureDate || group.departure_date || "";
+                    document.getElementById("save-departure-time").value =
+                      group.departureTime || group.departure_time || "";
+                    document.getElementById("save-refund-type").value =
+                      group.refundType || "";
+                    document.getElementById("save-return-date").value =
+                      group.returnDate || group.return_date || "";
+                    document.getElementById("save-return-time").value =
+                      group.returnTime || group.return_time || "";
+                    document.getElementById("save-price-per-person").value =
+                      group.pricePerPerson || group.price_per_person || "";
+                    document.getElementById("save-sector-1").value =
+                      group.sector1 || group.sector || group.route || "";
+                    document.getElementById("save-sector-2").value =
+                      group.sector2 || "";
+                    document.getElementById("save-sector-3").value =
+                      group.sector3 || "";
+                    document.getElementById("save-sector-4").value =
+                      group.sector4 || "";
+                  })
+                  .catch((error) => {
+                    console.error(
+                      "Unable to load group booking for edit:",
+                      error,
+                    );
+                  });
+              } catch (err) {
+                console.error("Unable to load booking for edit:", err);
+              }
+            }
+          }
+        }
+      }
+
+      function closeSaveGroupModal() {
+        const modal = document.getElementById("save-group-modal-overlay");
+        if (modal) {
+          modal.classList.remove("open");
+        }
+      }
+
+      function confirmSaveGroup() {
+        const vendor = document.getElementById("save-group-agency").value;
+        const airline = document.getElementById("save-group-airline")
+          ? document.getElementById("save-group-airline").value
+          : "";
+        const departureDate = document.getElementById(
+          "save-departure-date",
+        ).value;
+        const departureTime = document.getElementById(
+          "save-departure-time",
+        ).value;
+        const planeNumber = document.getElementById("save-plane-number").value;
+        const baggage = document.getElementById("save-baggage").value;
+        const refundType = document.getElementById("save-refund-type").value;
+        const returnDate = document.getElementById("save-return-date").value;
+        const returnTime = document.getElementById("save-return-time").value;
+        const pricePerPerson = document.getElementById(
+          "save-price-per-person",
+        ).value;
+
+        // Collect sector data
+        const sector1 = document.getElementById("save-sector-1").value;
+        const sector2 = document.getElementById("save-sector-2").value;
+        const sector3 = document.getElementById("save-sector-3").value;
+        const sector4 = document.getElementById("save-sector-4").value;
+
+        // Validate required fields
+        if (
+          !vendor ||
+          !planeNumber ||
+          !baggage ||
+          !departureDate ||
+          !departureTime ||
+          !refundType ||
+          !pricePerPerson ||
+          !airline
+        ) {
+          alert("Please fill in all required fields!");
+          return;
+        }
+
+        // Session storage se logged-in user nikalein (main.js ki tarah)
+        let currentLoggedInUser = "Unknown User";
+        try {
+          const rawUser = sessionStorage.getItem("currentUser");
+          if (rawUser) {
+            const userObj = JSON.parse(rawUser);
+            // Username ya ID/email jo bhi available ho wo pass kar dein
+            currentLoggedInUser =
+              userObj.username || userObj.id || userObj.email || "Unknown User";
+          }
+        } catch (err) {
+          console.warn("Unable to fetch logged-in user from session:", err);
+        }
+
+        const editingGroupId = document.getElementById("save-group-id")
+          ? document.getElementById("save-group-id").value
+          : "";
+        const existingGroupName = document.getElementById("save-group-name")
+          ? document.getElementById("save-group-name").value
+          : "";
+
+        // Group data object with sector information
+        const groupData = {
+          vendorName: vendor,
+          airline,
+          planeNumber,
+          baggage,
+          departureDate,
+          departureTime,
+          refundType,
+          returnDate,
+          returnTime,
+          pricePerPerson,
+          sector1: sector1 || "",
+          sector2: sector2 || "",
+          sector3: sector3 || "",
+          sector4: sector4 || "",
+          createdAt: new Date().toLocaleString(),
+          createdBy: currentLoggedInUser,
+          bookingStatus: "Pending",
+          numberOfPassengers: 1,
+          groupName: existingGroupName || `Group-${new Date().getTime()}`,
+        };
+
+        if (editingGroupId) {
+          updateGroupBooking(editingGroupId, groupData);
+        } else {
+          saveGroupToFirebase(groupData);
+        }
+        closeSaveGroupModal();
+      }
+
+      function saveGroupToFirebase(groupData) {
+        if (typeof firebase === "undefined" || !firebase.database) {
+          console.error(
+            "Firebase is not available. Cannot save group booking.",
+          );
+          alert("Unable to save group booking: Firebase is not initialized.");
+          return;
+        }
+
+        const db = firebase.database();
+        const groupBookingsRef = db.ref("group_bookings");
+        const newGroupRef = groupBookingsRef.push();
+
+        groupData.bookingCategory = "group_booking";
+        groupData.id = newGroupRef.key;
+
+        newGroupRef
+          .set(groupData)
+          .then(() => {
+            console.log("Group booking saved to Firebase:", groupData);
+
+            // Build sectors display
+            let sectorsDisplay = "";
+            if (groupData.sector1) sectorsDisplay += groupData.sector1;
+            if (groupData.sector2)
+              sectorsDisplay += (sectorsDisplay ? "-" : "") + groupData.sector2;
+            if (groupData.sector3)
+              sectorsDisplay += (sectorsDisplay ? "-" : "") + groupData.sector3;
+            if (groupData.sector4)
+              sectorsDisplay += (sectorsDisplay ? "-" : "") + groupData.sector4;
+
+            alert(
+              `✅ Group Booking Saved Successfully!\n\n📋 Details:\n- Airline: ${groupData.airline}\n- Vendor: ${groupData.vendorName}\n- Plane: ${groupData.planeNumber}\n- Baggage: ${groupData.baggage}\n- Departure: ${groupData.departureDate} @ ${groupData.departureTime}\n- Return: ${groupData.returnDate} @ ${groupData.returnTime}\n- Refund: ${groupData.refundType}\n- Price: PKR ${groupData.pricePerPerson}\n${sectorsDisplay ? `- Route: ${sectorsDisplay}` : ""}`,
+            );
+          })
+          .catch((error) => {
+            console.error("Error saving group booking:", error);
+            alert(
+              "Failed to save group booking. Please try again or check your Firebase connection.",
+            );
+          });
+      }
+
+      function updateGroupBooking(groupId, groupData) {
+        if (typeof firebase === "undefined" || !firebase.database) {
+          alert("Unable to update group booking: Firebase is not initialized.");
+          return;
+        }
+
+        const db = firebase.database();
+        const bookingRef = db.ref(`group_bookings/${groupId}`);
+        bookingRef
+          .update({
+            ...groupData,
+            id: groupId,
+          })
+          .then(() => {
+            alert("✅ Group booking updated successfully.");
+          })
+          .catch((error) => {
+            console.error("Error updating group booking:", error);
+            alert(
+              "Failed to update group booking. Please try again or check your Firebase connection.",
+            );
+          });
+      }
+
+      function deleteGroupBooking(groupId) {
+        if (!groupId) return;
+
+        const confirmed = confirm(
+          "Are you sure you want to delete this group booking? This cannot be undone.",
+        );
+        if (!confirmed) return;
+
+        if (typeof firebase === "undefined" || !firebase.database) {
+          alert("Unable to delete group booking: Firebase is not initialized.");
+          return;
+        }
+
+        const db = firebase.database();
+        db.ref(`group_bookings/${groupId}`)
+          .remove()
+          .then(() => {
+            alert("✅ Group booking deleted successfully.");
+          })
+          .catch((error) => {
+            console.error("Error deleting group booking:", error);
+            alert(
+              "Failed to delete group booking. Please try again or check your Firebase connection.",
+            );
+          });
+      }
+
+      function confirmExport() {
+        const fromDate = document.getElementById("export-from-date").value;
+        const toDate = document.getElementById("export-to-date").value;
+        const searchGroup = document.getElementById(
+          "export-search-group",
+        ).value;
+        const ticketNumber = document.getElementById("ticket-number").value;
+        const bookingRef = document.getElementById("booking-reference").value;
+        const ticketStatus = document.getElementById("ticket-status").value;
+        const packageType = document.getElementById("umrah-package-type").value;
+        const duration = document.getElementById("umrah-duration").value;
+        const makkahHotel = document.getElementById("makkah-hotel").value;
+        const madinahHotel = document.getElementById("madinah-hotel").value;
+        const format = document.querySelector(
+          'input[name="export-format"]:checked',
+        ).value;
+
+        // Create export data object
+        const exportData = {
+          filters: {
+            fromDate,
+            toDate,
+            searchGroup,
+            ticketStatus,
+          },
+          ticketInfo: {
+            ticketNumber,
+            bookingReference: bookingRef,
+            ticketStatus,
+          },
+          umrahPackage: {
+            packageType,
+            duration,
+            makkahHotel,
+            madinahHotel,
+          },
+          exportFormat: format,
+          exportedAt: new Date().toLocaleString(),
+        };
+
+        // Generate export based on format
+        if (format === "csv") {
+          exportToCSV(exportData);
+        } else if (format === "excel") {
+          alert("Excel export feature coming soon!");
+        } else if (format === "pdf") {
+          alert("PDF export feature coming soon!");
+        }
+
+        closeExportModal();
+      }
+
+      function exportToCSV(data) {
+        let csv = "Group Bookings Export Report\n";
+        csv += `Exported on: ${data.exportedAt}\n\n`;
+
+        csv += "FILTERS APPLIED:\n";
+        csv += `From Date,${data.filters.fromDate}\n`;
+        csv += `To Date,${data.filters.toDate}\n`;
+        csv += `Search Query,${data.filters.searchGroup || "All"}\n`;
+        csv += `Status,${data.filters.ticketStatus || "All"}\n\n`;
+
+        csv += "TICKET INFORMATION:\n";
+        csv += `Ticket Number,${data.ticketInfo.ticketNumber || "N/A"}\n`;
+        csv += `Booking Reference,${data.ticketInfo.bookingReference || "N/A"}\n`;
+        csv += `Ticket Status,${data.ticketInfo.ticketStatus || "N/A"}\n\n`;
+
+        csv += "UMRAH PACKAGE DETAILS:\n";
+        csv += `Package Type,${data.umrahPackage.packageType || "N/A"}\n`;
+        csv += `Duration,${data.umrahPackage.duration || "N/A"} Days\n`;
+        csv += `Makkah Hotel,${data.umrahPackage.makkahHotel || "N/A"}\n`;
+        csv += `Madinah Hotel,${data.umrahPackage.madinahHotel || "N/A"}\n`;
+
+        // Create blob and download
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+
+        link.setAttribute("href", url);
+        link.setAttribute(
+          "download",
+          `group-bookings-export-${new Date().getTime()}.csv`,
+        );
+        link.style.visibility = "hidden";
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        alert("Export completed successfully!");
+      }
+
+      // Modal Event Listeners
+      document.addEventListener("DOMContentLoaded", () => {
+        const passengersInput = document.getElementById(
+          "save-group-passengers",
+        );
+        const priceInput = document.getElementById("save-price-per-person");
+
+        if (passengersInput && priceInput) {
+          const calculateTotal = () => {
+            const passengers = parseInt(passengersInput.value) || 0;
+            const price = parseInt(priceInput.value) || 0;
+            return passengers * price;
+          };
+
+          passengersInput.addEventListener("change", calculateTotal);
+          passengersInput.addEventListener("input", calculateTotal);
+          priceInput.addEventListener("change", calculateTotal);
+          priceInput.addEventListener("input", calculateTotal);
+        }
+
+        // Save Group Modal Events
+        const saveGroupModal = document.getElementById(
+          "save-group-modal-overlay",
+        );
+        const closeSaveGroupBtn = document.getElementById(
+          "btn-close-save-group-modal",
+        );
+        const cancelSaveGroupBtn = document.getElementById(
+          "btn-cancel-save-group",
+        );
+        const confirmSaveGroupBtn = document.getElementById(
+          "btn-confirm-save-group",
+        );
+
+        if (closeSaveGroupBtn) {
+          closeSaveGroupBtn.addEventListener("click", closeSaveGroupModal);
+        }
+
+        if (cancelSaveGroupBtn) {
+          cancelSaveGroupBtn.addEventListener("click", closeSaveGroupModal);
+        }
+
+        if (confirmSaveGroupBtn) {
+          confirmSaveGroupBtn.addEventListener("click", confirmSaveGroup);
+        }
+
+        if (saveGroupModal) {
+          saveGroupModal.addEventListener("click", (e) => {
+            if (e.target === saveGroupModal) {
+              closeSaveGroupModal();
+            }
+          });
+        }
+
+        // Export Modal Events
+        const closeExportBtn = document.getElementById(
+          "btn-close-export-modal",
+        );
+        const cancelExportBtn = document.getElementById("btn-cancel-export");
+        const confirmExportBtn = document.getElementById("btn-confirm-export");
+        const modal = document.getElementById("export-modal-overlay");
+
+        if (closeExportBtn) {
+          closeExportBtn.addEventListener("click", closeExportModal);
+        }
+
+        if (cancelExportBtn) {
+          cancelExportBtn.addEventListener("click", closeExportModal);
+        }
+
+        if (confirmExportBtn) {
+          confirmExportBtn.addEventListener("click", confirmExport);
+        }
+
+        // Close modal when clicking outside
+        if (modal) {
+          modal.addEventListener("click", (e) => {
+            if (e.target === modal) {
+              closeExportModal();
+            }
+          });
+        }
+
+        // Populate Save Group Airline select
+        (function populateSaveGroupAirline() {
+          const select = document.getElementById("save-group-airline");
+          if (!select) return;
+
+          const defaults = [
+            "AIR SIAL",
+            "SAUDI AIRLINE",
+            "FLY JINNAH",
+            "PAKISTAN AIRLINE",
+            "EMIRATES",
+            "QATAR AIRWAYS",
+            "TURKISH AIRLINES",
+            "LUFTHANSA",
+            "ETIHAD AIRWAYS",
+            "AIR ARABIA",
+          ];
+
+          const ul = document.getElementById("airline-list");
+          const seen = new Set();
+
+          function normalize(name) {
+            return typeof name === "string"
+              ? name.trim().replace(/\s+/g, " ").toUpperCase()
+              : "";
+          }
+
+          function addOpt(name) {
+            const normalized = normalize(name);
+            if (!normalized || seen.has(normalized)) return;
+            seen.add(normalized);
+            const opt = document.createElement("option");
+            opt.value = name.trim();
+            opt.textContent = name.trim();
+            select.appendChild(opt);
+          }
+
+          function loadDefaults() {
+            if (ul && ul.children.length) {
+              Array.from(ul.children).forEach((li) =>
+                addOpt(li.textContent.trim()),
+              );
+            } else {
+              defaults.forEach(addOpt);
+            }
+          }
+
+          function loadServerAirlines(serverData) {
+            if (!Array.isArray(serverData) && typeof serverData === "object") {
+              serverData = Object.values(serverData);
+            }
+            if (!Array.isArray(serverData) || serverData.length === 0) {
+              return false;
+            }
+            serverData
+              .map((item) => (typeof item === "string" ? item.trim() : ""))
+              .filter(Boolean)
+              .forEach(addOpt);
+            return true;
+          }
+
+          function populateAirlineOptions() {
+            // Always keep one empty prompt option
+            select.innerHTML = '<option value="">Select airline</option>';
+            seen.clear();
+          }
+
+          populateAirlineOptions();
+
+          if (typeof firebase !== "undefined" && firebase.database) {
+            try {
+              const db = firebase.database();
+              db.ref("admin_data/airlines")
+                .once("value")
+                .then((snapshot) => {
+                  const data = snapshot.val();
+                  const loaded = loadServerAirlines(data);
+                  if (!loaded) {
+                    loadDefaults();
+                  }
+                })
+                .catch(() => {
+                  loadDefaults();
+                });
+            } catch (error) {
+              loadDefaults();
+            }
+          } else {
+            loadDefaults();
+          }
+
+          const addBtn = document.getElementById("btn-add-airline");
+          if (addBtn) {
+            addBtn.addEventListener("click", function () {
+              const input = document.getElementById("airline-new-input");
+              const name = input && input.value && input.value.trim();
+              if (!name) return;
+              addOpt(name);
+            });
+          }
+
+          document.addEventListener("airlineAdded", function (e) {
+            const name = e && e.detail && e.detail.name;
+            if (name) addOpt(name);
+          });
+        })();
+
+        (function populateSaveGroupVendorList() {
+          const select = document.getElementById("save-group-agency");
+          if (!select) return;
+
+          function addVendorOption(name) {
+            if (!name) return;
+            const exists = Array.from(select.options).some(
+              (option) => option.value === name,
+            );
+            if (exists) return;
+            const option = document.createElement("option");
+            option.value = name;
+            option.textContent = name;
+            select.appendChild(option);
+          }
+
+          function loadServerVendors(serverData) {
+            if (!Array.isArray(serverData) && typeof serverData === "object") {
+              serverData = Object.values(serverData);
+            }
+            if (!Array.isArray(serverData) || serverData.length === 0) {
+              return;
+            }
+            serverData
+              .map((item) => (typeof item === "string" ? item.trim() : ""))
+              .filter(Boolean)
+              .forEach(addVendorOption);
+          }
+
+          if (typeof firebase !== "undefined" && firebase.database) {
+            try {
+              const db = firebase.database();
+              db.ref("admin_data/vendors")
+                .once("value")
+                .then((snapshot) => {
+                  loadServerVendors(snapshot.val());
+                })
+                .catch(() => {
+                  /* ignore vendor load errors */
+                });
+            } catch (error) {
+              /* ignore vendor load exceptions */
+            }
+          }
+        })();
+
+        function renderGroupBookings(bookings) {
+          const container = document.getElementById(
+            "group-bookings-table-container",
+          );
+          const groupsCount = document.getElementById("stat-groups-count");
+          const passengersCount = document.getElementById(
+            "stat-passengers-count",
+          );
+          if (!container) return;
+
+          let rows = [];
+          if (Array.isArray(bookings)) {
+            rows = bookings;
+          } else if (bookings && typeof bookings === "object") {
+            rows = Object.values(bookings);
+          }
+
+          rows = rows.filter((item) => item && item.groupName);
+
+          function getRouteDisplay(item) {
+            if (!item) return "-";
+            const sectors = [];
+            if (item.sector1) sectors.push(item.sector1);
+            if (item.sector2) sectors.push(item.sector2);
+            if (item.sector3) sectors.push(item.sector3);
+            if (item.sector4) sectors.push(item.sector4);
+            if (sectors.length) return sectors.join(" - ");
+            if (item.sector) return item.sector;
+            if (item.route) return item.route;
+            if (item.originCity && item.destinationCity)
+              return `${item.originCity} - ${item.destinationCity}`;
+            if (item.originAirport && item.destinationAirport)
+              return `${item.originAirport} - ${item.destinationAirport}`;
+            return "-";
+          }
+
+          if (!rows.length) {
+            container.classList.add("loading-placeholder");
+            container.innerHTML = `
+              <div style="padding: 40px; text-align: center; color: #666;">
+                <i class="fas fa-inbox" style="font-size: 40px; margin-bottom: 15px; display: block; color: #999;"></i>
+                <p>No group bookings found.</p>
+              </div>
+            `;
+            return;
+          }
+
+          container.classList.remove("loading-placeholder");
+          const table = document.createElement("table");
+          table.style.width = "100%";
+          table.style.borderCollapse = "collapse";
+          table.style.minWidth = "100%";
+          table.innerHTML = `
+            <thead>
+              <tr style="background:#f3f4f6;color:#111827;text-align:left;">
+                <th style="padding:12px 10px;border-bottom:1px solid #e5e7eb;">Group Name</th>
+                <th style="padding:12px 10px;border-bottom:1px solid #e5e7eb;">Passengers</th>
+                <th style="padding:12px 10px;border-bottom:1px solid #e5e7eb;">Vendor</th>
+                <th style="padding:12px 10px;border-bottom:1px solid #e5e7eb;">Airline</th>
+                <th style="padding:12px 10px;border-bottom:1px solid #e5e7eb;">Route</th>
+                <th style="padding:12px 10px;border-bottom:1px solid #e5e7eb;">Departure</th>
+                <th style="padding:12px 10px;border-bottom:1px solid #e5e7eb;">Return</th>
+                <th style="padding:12px 10px;border-bottom:1px solid #e5e7eb;">Price/Person</th>
+                <th style="padding:12px 10px;border-bottom:1px solid #e5e7eb;">Status</th>
+              </tr>
+            </thead>
+          `;
+
+          const tbody = document.createElement("tbody");
+          rows.forEach((item) => {
+            const row = document.createElement("tr");
+            row.style.borderBottom = "1px solid #e5e7eb";
+            row.innerHTML = `
+              <td style="padding:12px 10px;">${item.groupName || "-"}</td>
+              <td style="padding:12px 10px;">${item.numberOfPassengers || "-"}</td>
+              <td style="padding:12px 10px;">${item.vendorName || "-"}</td>
+              <td style="padding:12px 10px;">${item.airline || "-"}</td>
+              <td style="padding:12px 10px;">${getRouteDisplay(item)}</td>
+              <td style="padding:12px 10px;">${item.departureDate || "-"} ${item.departureTime || ""}</td>
+              <td style="padding:12px 10px;">${item.returnDate || "-"} ${item.returnTime || ""}</td>
+              <td style="padding:12px 10px;">${item.pricePerPerson ? `PKR ${item.pricePerPerson}` : "-"}</td>
+              <td style="padding:12px 10px;">${item.bookingStatus || "-"}</td>
+            `;
+            tbody.appendChild(row);
+          });
+
+          table.appendChild(tbody);
+          container.innerHTML = "";
+          container.appendChild(table);
+        }
+
+        function loadGroupBookings() {
+          if (typeof firebase === "undefined" || !firebase.database) {
+            renderGroupBookings([]);
+            return;
+          }
+          try {
+            const db = firebase.database();
+            const groupBookingsRef = db.ref("group_bookings");
+            groupBookingsRef.on("value", (snapshot) => {
+              renderGroupBookings(snapshot.val() || []);
+            });
+          } catch (error) {
+            console.error("Failed to load group bookings:", error);
+            renderGroupBookings([]);
+          }
+        }
+
+        loadGroupBookings();
+      });
+    </script>
+    <script src="main.js"></script>
+  </body>
+</html>

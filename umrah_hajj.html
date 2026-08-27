@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flight Search Results - IMAM TRAVELS</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+    <link rel="stylesheet" href="umrah_hajj.css" />
+    <link rel="stylesheet" href="responsive.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <button
+          class="menu-toggle"
+          aria-label="Open menu"
+          onclick="openSideMenu()"
+        >
+          <span></span>
+        </button>
+
+        <a href="users.html" class="brand-link">
+          <img
+            src="imam-name-with-logo.png"
+            alt="IMAM TRAVELS"
+            class="brand-logo"
+          />
+        </a>
+
+        <div class="header-actions">
+          <button class="action-btn" aria-label="Messages">
+            <i class="fas fa-envelope"></i>
+          </button>
+          <div class="profile-dropdown">
+            <button
+              class="action-btn profile-toggle"
+              aria-label="Profile"
+              onclick="toggleProfileDropdown(event)"
+              type="button"
+            >
+              <i class="fas fa-user-circle"></i>
+            </button>
+            <div
+              id="profileDropdownMenu"
+              class="profile-dropdown-menu"
+              role="menu"
+              aria-label="Profile menu"
+            >
+              <button
+                type="button"
+                class="dropdown-item"
+                onclick="logoutUser()"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="side-menu-overlay" id="sideMenuOverlay" aria-hidden="true">
+      <aside class="side-menu">
+        <div class="side-menu-header">
+          <span>Menu</span>
+          <button
+            class="close-side-menu"
+            aria-label="Close menu"
+            onclick="closeSideMenu()"
+          >
+            ×
+          </button>
+        </div>
+
+        <nav class="side-menu-nav">
+          <a href="umrah_hajj.html" class="side-menu-link">Dashboard</a>
+          <a href="ummrah-booking.html" class="side-menu-link"
+            >Umrah Bookings</a
+          >
+        </nav>
+      </aside>
+    </div>
+
+    <main class="main-wrapper">
+      <section class="booking-widget-card">
+        <form
+          id="mainFlightSearchForm"
+          onsubmit="triggerLiveFlightSearch(event)"
+        >
+          <div class="search-box-row" id="searchBoxContainer">
+            <div class="field-group">
+              <label>Flying From</label>
+              <div class="input-wrapper">
+                <i class="fas fa-plane-departure"></i>
+                <input
+                  type="text"
+                  id="flyingFrom"
+                  placeholder="Origin Airport"
+                  onkeyup="filterAirports(this, 'fromDropdown')"
+                  autocomplete="off"
+                />
+                <div id="fromDropdown" class="airport-dropdown-panel"></div>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label>Flying To</label>
+              <div class="input-wrapper">
+                <i class="fas fa-plane-arrival"></i>
+                <input
+                  type="text"
+                  id="flyingTo"
+                  placeholder="Destination Airport"
+                  onkeyup="filterAirports(this, 'toDropdown')"
+                  autocomplete="off"
+                />
+                <div id="toDropdown" class="airport-dropdown-panel"></div>
+              </div>
+            </div>
+
+            <!-- Departure Date Field Group Section -->
+            <div class="field-group calendar-box-input">
+              <label>Departure Date</label>
+              <div
+                class="input-wrapper"
+                onclick="toggleCalendarDropdown(event)"
+              >
+                <i class="fas fa-calendar-alt"></i>
+                <input
+                  type="text"
+                  id="departureDate"
+                  placeholder="Select Date"
+                  readonly
+                  style="cursor: pointer"
+                />
+                <div
+                  class="inline-arrows"
+                  style="
+                    position: absolute;
+                    right: 12px;
+                    display: flex;
+                    gap: 8px;
+                    font-size: 11px;
+                    color: var(--text-muted);
+                    pointer-events: none;
+                  "
+                >
+                  <i class="fas fa-chevron-left"></i>
+                  <i class="fas fa-chevron-right"></i>
+                </div>
+              </div>
+
+              <!-- Real Premium 2-Month Multi Calendar Custom Panel -->
+              <div id="calendarDropdown" class="calendar-dropdown-panel">
+                <div class="calendar-header-controls">
+                  <button
+                    type="button"
+                    class="cal-nav-btn"
+                    onclick="moveCalendarMonth(-1, event)"
+                  >
+                    <i class="fas fa-chevron-left"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="cal-nav-btn"
+                    onclick="moveCalendarMonth(1, event)"
+                  >
+                    <i class="fas fa-chevron-right"></i>
+                  </button>
+                </div>
+
+                <div class="months-split-container">
+                  <!-- Left side Month View Grid -->
+                  <div class="month-view-box">
+                    <h3 class="month-title" id="left-month-title">Jul 2026</h3>
+                    <div class="weekday-row">
+                      <span>Mo</span><span>Tu</span><span>We</span
+                      ><span>Th</span><span>Fr</span><span>Sa</span
+                      ><span>Su</span>
+                    </div>
+                    <div class="days-grid-matrix" id="left-days-grid"></div>
+                  </div>
+
+                  <!-- Right side Month View Grid -->
+                  <div class="month-view-box">
+                    <h3 class="month-title" id="right-month-title">Aug 2026</h3>
+                    <div class="weekday-row">
+                      <span>Mo</span><span>Tu</span><span>We</span
+                      ><span>Th</span><span>Fr</span><span>Sa</span
+                      ><span>Su</span>
+                    </div>
+                    <div class="days-grid-matrix" id="right-days-grid"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="field-group passenger-box-input">
+              <label>Passengers / Class</label>
+              <div
+                class="input-wrapper"
+                onclick="togglePassengerDropdown(event)"
+              >
+                <i class="fas fa-user-friends"></i>
+                <input
+                  type="text"
+                  id="passengerClassInput"
+                  value="1 Adult, Economy"
+                  readonly
+                  style="cursor: pointer"
+                />
+                <i class="fas fa-chevron-down chevron-right-icon"></i>
+              </div>
+
+              <div id="passengerDropdown" class="passenger-dropdown-panel">
+                <div class="counter-row">
+                  <div class="counter-label">
+                    <strong>Adults</strong>
+                    <span>Age 12+</span>
+                  </div>
+                  <div class="counter-controls">
+                    <button
+                      type="button"
+                      onclick="changePassengerCount('adults', -1)"
+                    >
+                      -
+                    </button>
+                    <span id="count-adults">1</span>
+                    <button
+                      type="button"
+                      onclick="changePassengerCount('adults', 1)"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+
+                <div class="counter-row">
+                  <div class="counter-label">
+                    <strong>Children</strong>
+                    <span>Age 2-11</span>
+                  </div>
+                  <div class="counter-controls">
+                    <button
+                      type="button"
+                      onclick="changePassengerCount('children', -1)"
+                    >
+                      -
+                    </button>
+                    <span id="count-children">0</span>
+                    <button
+                      type="button"
+                      onclick="changePassengerCount('children', 1)"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+
+                <div class="counter-row">
+                  <div class="counter-label">
+                    <strong>Infants</strong>
+                    <span>Under 2</span>
+                  </div>
+                  <div class="counter-controls">
+                    <button
+                      type="button"
+                      onclick="changePassengerCount('infants', -1)"
+                    >
+                      -
+                    </button>
+                    <span id="count-infants">0</span>
+                    <button
+                      type="button"
+                      onclick="changePassengerCount('infants', 1)"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+
+                <hr class="dropdown-divider" />
+
+                <div class="class-selection-group">
+                  <label class="class-radio-label">
+                    <input
+                      type="radio"
+                      name="cabinClass"
+                      value="Economy"
+                      checked
+                      onclick="updatePassengerInput()"
+                    />
+                    <span>Economy</span>
+                  </label>
+                  <label class="class-radio-label">
+                    <input
+                      type="radio"
+                      name="cabinClass"
+                      value="Premium Economy"
+                      onclick="updatePassengerInput()"
+                    />
+                    <span>Premium Economy</span>
+                  </label>
+                  <label class="class-radio-label">
+                    <input
+                      type="radio"
+                      name="cabinClass"
+                      value="Business"
+                      onclick="updatePassengerInput()"
+                    />
+                    <span>Business</span>
+                  </label>
+                  <label class="class-radio-label">
+                    <input
+                      type="radio"
+                      name="cabinClass"
+                      value="First Class"
+                      onclick="updatePassengerInput()"
+                    />
+                    <span>First Class</span>
+                  </label>
+                </div>
+
+                <button
+                  type="button"
+                  class="btn-done-passengers"
+                  onclick="closePassengerDropdown()"
+                >
+                  Done
+                </button>
+              </div>
+            </div>
+
+            <div class="field-group search-action">
+              <button type="submit" class="btn-core-search" id="btnSearch">
+                <span class="btn-text"
+                  ><i class="fas fa-search"></i> Search</span
+                >
+                <div class="spinner hidden"></div>
+              </button>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <div class="layout-split-body">
+        <aside class="filter-sidebar-wrapper" id="filterSidebar">
+          <div class="filter-heading-block">
+            <div>
+              <h3>Search by Filters</h3>
+              <p class="filter-summary" id="filterSummary">
+                Loading package data...
+              </p>
+            </div>
+            <button
+              type="button"
+              class="btn-reset-filters"
+              id="resetFiltersBtn"
+            >
+              Clear
+            </button>
+          </div>
+          <div id="filterContent"></div>
+        </aside>
+
+        <section class="results-output-stream">
+          <div id="searchLoader" class="no-flights-msg">
+            <i class="fas fa-circle-notch fa-spin loader-icon"></i>
+            <p>
+              Connecting to Cloud Servers... Fetching Real-time Live Prices.
+            </p>
+          </div>
+
+          <div id="flightResultsSection">
+            <div id="resultsGrid" class="results-output-stream"></div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="main-footer">
+      <div class="footer-container">
+        <div class="footer-block footer-brand-block">
+          <a href="#" class="footer-logo-link">
+            <img
+              src="imam-name-with-logo.png"
+              alt="IMAM TRAVELS"
+              class="footer-logo-img"
+            />
+          </a>
+          <p class="footer-description">
+            IMAM TRAVELS delivers premium Umrah and flight booking experiences
+            with live pricing, hotel packages, and fast online support.
+          </p>
+        </div>
+
+        <div class="footer-block footer-links-block">
+          <h3>Quick Links</h3>
+          <ul class="footer-nav-links">
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Contact Us</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-block footer-contact-block">
+          <h3>Contact</h3>
+          <p>imamtravelsjpj@gmail.com</p>
+          <a href="https://wa.me/923331233009?text=ASSALAM+O+ALAIKUM"
+            ><p>+92-333-1233009</p></a
+          >
+          <div class="footer-social-links">
+            <a
+              href="https://www.facebook.com/profile.php?id=61553215993240"
+              target="_blank"
+              aria-label="Facebook"
+              ><i class="fab fa-facebook-f"></i
+            ></a>
+            <a
+              href="https://www.instagram.com/imamtravelsjpj/"
+              target="_blank"
+              aria-label="Instagram"
+              ><i class="fab fa-instagram"></i
+            ></a>
+            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" aria-label="Youtube"><i class="fab fa-youtube"></i></a>
+            <a
+              href="https://whatsapp.com/channel/0029VbB1sTGHQbRw4gZ4pq2T"
+              aria-label="Whatsapp"
+              target="_blank"
+              ><i class="fab fa-whatsapp"></i
+            ></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom-bar">
+        <p class="copyright-text">© 2026 IMAM TRAVELS. All Rights Reserved.</p>
+      </div>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.9.3/dist/html2pdf.bundle.min.js"></script>
+    <div id="pdfPreviewOverlay" class="pdf-preview-overlay" aria-hidden="true">
+      <div
+        class="pdf-preview-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label="PDF Preview"
+      >
+        <div class="pdf-preview-header">
+          <h3>PDF Preview</h3>
+          <button
+            type="button"
+            class="pdf-preview-close"
+            onclick="closePdfPreview()"
+          >
+            ×
+          </button>
+        </div>
+        <div id="pdfPreviewBody" class="pdf-preview-body"></div>
+        <div class="pdf-preview-footer">
+          <button
+            type="button"
+            onclick="downloadCurrentPackagePdf()"
+            class="pdf-preview-download"
+          >
+            Download PDF
+          </button>
+          <button
+            type="button"
+            onclick="closePdfPreview()"
+            class="pdf-preview-cancel"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+    <script src="main.js"></script>
+  </body>
+</html>

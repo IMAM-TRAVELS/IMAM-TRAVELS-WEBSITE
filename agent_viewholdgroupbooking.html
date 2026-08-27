@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Group Bookings - Held / Confirmed</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="umrah_hajj.css" />
+    <link rel="stylesheet" href="responsive.css" />
+    <link rel="stylesheet" href="agent_viewholdgroupbooking.css" />
+    <style>
+      .mode-toggle {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .mode-toggle button {
+        padding: 8px 12px;
+        border-radius: 6px;
+        border: 1px solid #e5e7eb;
+        background: #fff;
+        cursor: pointer;
+      }
+      .mode-toggle button.active {
+        background: #2563eb;
+        color: #fff;
+        border-color: #2563eb;
+      }
+      .booking-widget-card {
+        position: relative;
+        overflow: hidden;
+      }
+      .booking-widget-card .hero-bg {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(
+            135deg,
+            rgba(99, 102, 241, 0.06),
+            rgba(59, 130, 246, 0.04)
+          ),
+          url("kaba pic.jpg");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        filter: brightness(0.98) saturate(0.95);
+      }
+      .booking-widget-card > div {
+        position: relative;
+        z-index: 1;
+      }
+      .layout-split-body {
+        position: relative;
+      }
+      .layout-split-body .content-bg {
+        position: absolute;
+        inset: 0 0 0 0;
+        background: #ffffff;
+        border-radius: 14px;
+        box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+        z-index: 0;
+        pointer-events: none;
+      }
+      .layout-split-body > * {
+        position: relative;
+        z-index: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <button
+          class="menu-toggle"
+          aria-label="Open menu"
+          onclick="openSideMenu()"
+        >
+          <span></span>
+        </button>
+
+        <a href="agent_viewgroupbooking.html" class="brand-link">
+          <img
+            src="imam-name-with-logo.png"
+            alt="IMAM TRAVELS"
+            class="brand-logo"
+          />
+        </a>
+
+        <div class="header-actions">
+          <button class="action-btn" aria-label="Messages">
+            <i class="fas fa-envelope"></i>
+          </button>
+          <div class="profile-dropdown">
+            <!-- searchLoader removed: not used on this page -->
+            <div
+              id="profileDropdownMenu"
+              class="profile-dropdown-menu"
+              role="menu"
+              aria-label="Profile menu"
+            >
+              <button
+                type="button"
+                class="dropdown-item"
+                onclick="logoutUser()"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="side-menu-overlay" id="sideMenuOverlay" aria-hidden="true">
+      <aside class="side-menu">
+        <div class="side-menu-header">
+          <span>Menu</span>
+          <button
+            class="close-side-menu"
+            aria-label="Close menu"
+            onclick="closeSideMenu()"
+          >
+            ×
+          </button>
+        </div>
+
+        <nav class="side-menu-nav">
+          <a href="agent_viewgroupbooking.html" class="side-menu-link"
+            >Dashboard</a
+          >
+          <a href="agent_viewholdgroupbooking.html" class="side-menu-link"
+            >Group Bookings</a
+          >
+        </nav>
+      </aside>
+    </div>
+
+    <main class="main-wrapper">
+      <section class="booking-widget-card" style="margin-bottom: 12px">
+        <div class="hero-bg" aria-hidden="true"></div>
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+          "
+        >
+          <div>
+            <strong style="color: var(--text-main)"
+              >Showing: Held Group Bookings</strong
+            >
+          </div>
+          <div style="flex: 1; text-align: right">
+            <input
+              type="text"
+              id="groupSearchInput"
+              placeholder="Search by group name, airline, or vendor..."
+              style="
+                padding: 8px 12px;
+                width: 320px;
+                border: 1px solid #e5e7eb;
+                border-radius: 6px;
+              "
+              onkeyup="filterGroupBookings()"
+            />
+          </div>
+        </div>
+      </section>
+
+      <div class="layout-split-body">
+        <div class="content-bg" aria-hidden="true"></div>
+        <section class="results-output-stream" style="width: 100%">
+          <div
+            id="searchLoader"
+            class="no-flights-msg"
+            style="display: block; text-align: center; padding: 20px"
+          >
+            <i class="fas fa-circle-notch fa-spin loader-icon"></i>
+            <p>Connecting to Cloud Servers... Fetching Group Bookings.</p>
+          </div>
+
+          <div id="groupBookingsSection">
+            <div class="theme-card">
+              <div class="row">
+                <div class="col-12">
+                  <div class="overflow-hidden">
+                    <div
+                      class="d-flex justify-content-between align-items-center mb-2"
+                    >
+                      <h2 class="fcp-card-heading m-0">
+                        Umrah Booking Records
+                      </h2>
+                      <div class="d-flex align-items-center gap-3">
+                        <div class="d-flex align-items-center gap-2">
+                          <span class="fs-14px text-dark-818181">Show</span>
+                          <select
+                            class="form-select form-select-sm w-auto shadow-none border-color-CDD3E3 fs-14px"
+                          >
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                          </select>
+                          <span class="fs-14px text-dark-818181">entries</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="w-100 fcp-table overflow-auto"
+                      id="umrah-booking-table-container"
+                    >
+                      <div
+                        class="table-loading-placeholder"
+                        style="
+                          padding: 28px;
+                          text-align: center;
+                          color: #64748b;
+                        "
+                      >
+                        <span class="loading-spinner" aria-hidden="true"></span>
+                        <p style="margin-top: 12px">
+                          Loading your agent bookings…
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="main-footer">
+      <div class="footer-container">
+        <div class="footer-block footer-brand-block">
+          <a href="#" class="footer-logo-link">
+            <img
+              src="imam-name-with-logo.png"
+              alt="IMAM TRAVELS"
+              class="footer-logo-img"
+            />
+          </a>
+          <p class="footer-description">
+            IMAM TRAVELS delivers premium Umrah and flight booking experiences.
+          </p>
+        </div>
+        <div class="footer-block footer-links-block">
+          <h3>Quick Links</h3>
+          <ul class="footer-nav-links">
+            <li><a href="#">Privacy Policy</a></li>
+          </ul>
+        </div>
+        <div class="footer-block footer-contact-block">
+          <h3>Contact</h3>
+          <p>imamtravelsjpj@gmail.com</p>
+        </div>
+      </div>
+      <div class="footer-bottom-bar">
+        <p class="copyright-text">© 2026 IMAM TRAVELS.</p>
+      </div>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="firebase-config.js"></script>
+    <script>
+      function getCurrentUserAgentId() {
+        try {
+          const currentUser = JSON.parse(
+            sessionStorage.getItem("currentUser") || "null",
+          );
+          if (!currentUser) return "";
+          return String(
+            currentUser.id || currentUser.username || currentUser.agentId || "",
+          ).trim();
+        } catch (error) {
+          return "";
+        }
+      }
+
+      function normalizeAgentId(agentId) {
+        return String(agentId || "").trim();
+      }
+
+      function isMatchingAgentId(bookingAgentId, currentAgentId) {
+        const bookingId = normalizeAgentId(bookingAgentId);
+        const currentId = normalizeAgentId(currentAgentId);
+        if (!bookingId || !currentId) return false;
+        if (bookingId === currentId) return true;
+
+        const bookingRoot = bookingId.split("/")[0].trim();
+        const currentRoot = currentId.split("/")[0].trim();
+        return Boolean(
+          bookingRoot && currentRoot && bookingRoot === currentRoot,
+        );
+      }
+
+      function isHoldGroupBooking(record) {
+        if (!record || typeof record !== "object") return false;
+
+        const hasGroupContext = Boolean(
+          record.groupName ||
+          record.group ||
+          record.group_id ||
+          record.groupId ||
+          record.packageType === "group" ||
+          record.packageType === "Group" ||
+          record.packageType === "GROUP" ||
+          record.bookingCategory === "group_booking" ||
+          record.bookingType === "group_booking" ||
+          record.packageAirline ||
+          record.packageSector ||
+          record.sector ||
+          record.firstName ||
+          record.lastName ||
+          Array.isArray(record.passengers),
+        );
+
+        if (!hasGroupContext) return false;
+
+        const status = String(
+          record.status || record.bookingStatus || record.booking_status || "",
+        ).toLowerCase();
+
+        const isHoldLikeStatus =
+          /(hold|held|pending|reserved|confirm|confirmed|cancel|cancelled)/.test(
+            status,
+          ) ||
+          record.isHold === true ||
+          record.hold === true ||
+          record.held === true;
+
+        return isHoldLikeStatus;
+      }
+
+      function getAgentGroupHoldBookings() {
+        const currentAgentId = getCurrentUserAgentId();
+        if (!currentAgentId || typeof firebase === "undefined") {
+          return Promise.resolve([]);
+        }
+
+        const db = firebase.database();
+        return db
+          .ref("group_holdbooking")
+          .once("value")
+          .then((snapshot) => {
+            const items = snapshot.val() || {};
+            return Object.entries(items)
+              .filter(([id, record]) => {
+                if (!isHoldGroupBooking(record)) return false;
+
+                const bookingAgentId =
+                  record.agentId ||
+                  record.agent_id ||
+                  record.agentID ||
+                  record.createdBy ||
+                  record.savedBy ||
+                  record.agent ||
+                  record.userId ||
+                  record.agentName ||
+                  record.agencyAgentId ||
+                  record.vendorAgentId;
+
+                return isMatchingAgentId(bookingAgentId, currentAgentId);
+              })
+              .map(([id, record]) => ({ id, ...record }));
+          });
+      }
+
+      function formatCell(v) {
+        return v === undefined || v === null || v === "" ? "—" : String(v);
+      }
+
+      function formatDateOnly(value) {
+        if (value === undefined || value === null || value === "") {
+          return "—";
+        }
+
+        const raw = String(value).trim();
+        if (!raw) return "—";
+
+        const numericValue = Number(raw);
+        const dateValue = Number.isFinite(numericValue)
+          ? new Date(numericValue)
+          : new Date(raw);
+
+        if (Number.isNaN(dateValue.getTime())) {
+          return raw;
+        }
+
+        return dateValue.toLocaleString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        });
+      }
+
+      function getPassengerDisplayName(record) {
+        if (!record || typeof record !== "object") return "—";
+
+        const directName =
+          record.passengerName ||
+          record.customerName ||
+          record.name ||
+          record.paxName ||
+          record.travelerName;
+        if (directName && String(directName).trim()) {
+          return String(directName).trim();
+        }
+
+        const passengerEntries = Array.isArray(record.passengers)
+          ? record.passengers
+          : [];
+
+        for (const passenger of passengerEntries) {
+          if (!passenger || typeof passenger !== "object") continue;
+          const candidate = [
+            passenger.title,
+            passenger.firstName,
+            passenger.lastName,
+          ]
+            .filter(Boolean)
+            .join(" ")
+            .trim();
+          if (candidate) return candidate;
+        }
+
+        const fallback = [
+          record.travelerTitle,
+          record.firstName,
+          record.lastName,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .trim();
+
+        return fallback || "—";
+      }
+
+      function renderAgentHeldGroupTable(rows) {
+        const container = document.getElementById(
+          "umrah-booking-table-container",
+        );
+        if (!container) return;
+
+        if (!rows.length) {
+          container.innerHTML = `<div class="table-empty" style="padding: 28px; text-align: center; color: #64748b;">No held group bookings found for your agent account.</div>`;
+          return;
+        }
+
+        let html = `
+          <div class="table-wrapper" style="overflow-x:auto">
+            <table class="w-100 umrah-list-table" style="width:100%;border-collapse:collapse;margin-top:10px;font-family:inherit">
+              <thead>
+                <tr style="background:#1e293b;color:#fff">
+                  <th style="padding:12px;text-align:left;font-weight:600">DATE</th>
+                  <th style="padding:12px;text-align:left;font-weight:600">AGENT ID</th>
+                  <th style="padding:12px;text-align:left;font-weight:600">PASSENGER NAME</th>
+                  <th style="padding:12px;text-align:left;font-weight:600">ROUTE</th>
+                  <th style="padding:12px;text-align:center;font-weight:600">NO OF PAX</th>
+                  <th style="padding:12px;text-align:left;font-weight:600">OUTBOUND DATE</th>
+                  <th style="padding:12px;text-align:left;font-weight:600">BOOKING STATUS</th>
+                  <th style="padding:12px;text-align:left;font-weight:600">HOLD TIME LEFT</th>
+                  <th style="padding:12px;text-align:center;font-weight:600">ACTION</th>
+                </tr>
+              </thead>
+              <tbody>
+        `;
+
+        rows.forEach((b) => {
+          const id = b.id || "";
+          const bookingDateValue =
+            b.bookingDate ||
+            b.date ||
+            b.createdAt ||
+            b.timestamp ||
+            b.departureDate ||
+            b.departureTime ||
+            "—";
+          const bookingDate = formatCell(
+            Number.isFinite(Number(bookingDateValue))
+              ? new Date(Number(bookingDateValue)).toLocaleString("en-GB", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                })
+              : bookingDateValue,
+          );
+          const agentId = formatCell(
+            b.agentId || b.agent_id || b.agentID || b.savedBy || "—",
+          );
+          const passengerName = formatCell(getPassengerDisplayName(b));
+          const route = formatCell(
+            b.route ||
+              b.packageSector ||
+              b.sector ||
+              [b.sector1, b.sector2, b.sector3, b.sector4]
+                .filter(Boolean)
+                .join(" / ") ||
+              "—",
+          );
+          const paxCount = formatCell(
+            b.pax ||
+              b.noOfPax ||
+              b.no_of_pax ||
+              b.passengerCount ||
+              b.adults ||
+              "—",
+          );
+          const outboundDate = formatDateOnly(
+            b.outboundDate ||
+              b.departureDate ||
+              b.departure_time ||
+              b.departureTime ||
+              "—",
+          );
+          const bookingStatus = formatCell(
+            b.bookingStatus || b.booking_status || b.status || "—",
+          );
+          const holdExpiresAt =
+            typeof getHoldExpiryTimestamp === "function"
+              ? getHoldExpiryTimestamp(b)
+              : null;
+          const holdCountdown = holdExpiresAt
+            ? `<span data-hold-expires="${holdExpiresAt}" data-hold-id="${id}" data-hold-collection="group_holdbooking">${formatHoldCountdown(holdExpiresAt)}</span>`
+            : "—";
+
+          html += `
+            <tr style="border-bottom:1px solid #e2e8f0">
+              <td style="padding:12px;color:#334155;white-space:nowrap">${bookingDate}</td>
+              <td style="padding:12px;color:#334155;white-space:nowrap">${agentId}</td>
+              <td style="padding:12px;color:#334155;white-space:nowrap">${passengerName}</td>
+              <td style="padding:12px;color:#334155;white-space:nowrap">${route}</td>
+              <td style="padding:12px;color:#334155;text-align:center;font-weight:700">${paxCount}</td>
+              <td style="padding:12px;color:#334155;white-space:nowrap"><div class="hotel-line">${outboundDate}</div></td>
+              <td style="padding:12px;color:#334155;white-space:nowrap">${bookingStatus}</td>
+              <td style="padding:12px;color:#15803d;white-space:nowrap">${holdCountdown}</td>
+              <td style="padding:12px;text-align:center">
+                <div class="d-inline-flex align-items-center gap-2">
+                  <a href="agent_viewbooking.html?bookingId=${encodeURIComponent(id)}&source=group_holdbooking&v=${Date.now()}" class="action-btn action-btn--view" title="Open Booking"><i class="fa-solid fa-eye"></i></a>
+                </div>
+              </td>
+            </tr>
+          `;
+        });
+
+        html += `</tbody></table></div>`;
+        container.innerHTML = html;
+      }
+
+      function loadHeldGroupBookings() {
+        const container = document.getElementById(
+          "umrah-booking-table-container",
+        );
+        if (!container) return;
+
+        container.innerHTML = `<div class="table-loading-placeholder" style="padding: 28px; text-align: center; color: #64748b;"><span class="loading-spinner" aria-hidden="true"></span><p style="margin-top:12px">Loading held group bookings…</p></div>`;
+
+        if (typeof firebase === "undefined" || !firebase.database) {
+          container.innerHTML = `<div class="table-empty" style="padding: 28px; text-align: center; color: #64748b;">Firebase not available. Please refresh.</div>`;
+          return;
+        }
+
+        (typeof processExpiredHoldBookings === "function"
+          ? processExpiredHoldBookings(
+              firebase.database(),
+              "group_holdbooking",
+            ).then(() => getAgentGroupHoldBookings())
+          : getAgentGroupHoldBookings()
+        )
+          .then((rows) => {
+            renderAgentHeldGroupTable(rows);
+            if (typeof startHoldCountdowns === "function")
+              startHoldCountdowns();
+          })
+          .catch((err) => {
+            console.error(err);
+            container.innerHTML = `<div class="table-empty" style="padding: 28px; text-align: center; color: #d32f2f;">Unable to load held group bookings.</div>`;
+          });
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        try {
+          loadHeldGroupBookings();
+        } catch (e) {
+          console.error(e);
+        }
+      });
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>

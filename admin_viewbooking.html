@@ -1,0 +1,1009 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Booking Detail</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    />
+    <link rel="stylesheet" href="admin_viewbooking.css" />
+    <link rel="stylesheet" href="responsive.css" />
+  </head>
+  <body>
+    <div class="ubd-page">
+      <div class="ubd-wrap">
+        <div class="ubd-titlebar">
+          <div>
+            <a class="ubd-back-link" href="umrah-pack.html">
+              <i class="bi bi-arrow-left"></i> Back to held bookings
+            </a>
+            <h1 class="ubd-title">
+              Booking Detail
+              <span class="ubd-title-ref" id="booking-ref">(UR-000000)</span>
+            </h1>
+          </div>
+          <div class="ubd-meta-actions">
+            <div class="ubd-meta" id="booking-meta"></div>
+            <div class="ubd-action-buttons" id="booking-actions"></div>
+          </div>
+        </div>
+
+        <section class="ubd-card" id="booking-details-container">
+          <div class="loading-state">Loading booking details…</div>
+        </section>
+      </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+      const adminFirebaseConfig = {
+        apiKey: "AIzaSyBo2FgOHKx7Wbt6uMmfocwyzE0ubyQpFUI",
+        authDomain: "imam-travel-website.firebaseapp.com",
+        databaseURL:
+          "https://imam-travel-website-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "imam-travel-website",
+        storageBucket: "imam-travel-website.firebasestorage.app",
+        messagingSenderId: "413792759906",
+        appId: "1:413792759906:web:cfdf22215e2a4fb9c61fdb",
+      };
+
+      let db = null;
+
+      function getQueryParam(name) {
+        return new URLSearchParams(window.location.search).get(name);
+      }
+
+      function getBookingLookupCollections() {
+        const source = (getQueryParam("source") || "").toLowerCase();
+        const forcedCollection = (getQueryParam("collection") || "").trim();
+        const preferred = [];
+
+        if (forcedCollection) preferred.push(forcedCollection);
+
+        if (source === "group") {
+          preferred.push(
+            "group_bookings",
+            "group_holdbooking",
+            "user_bookings",
+          );
+        } else {
+          preferred.push(
+            "user_bookings",
+            "group_bookings",
+            "group_holdbooking",
+          );
+        }
+
+        const unique = [];
+        const seen = new Set();
+        preferred.forEach((collection) => {
+          if (!collection || seen.has(collection)) return;
+          seen.add(collection);
+          unique.push(collection);
+        });
+
+        return unique;
+      }
+
+      async function loadBookingRecord(bookingId) {
+        const collections = getBookingLookupCollections();
+
+        for (const collection of collections) {
+          try {
+            let booking = null;
+
+            if (useFirebaseRest) {
+              booking = await firebaseDbGetRest(`${collection}/${bookingId}`);
+            } else {
+              const snapshot = await db
+                .ref(`${collection}/${bookingId}`)
+                .once("value");
+              booking = snapshot.val();
+            }
+
+            if (booking) {
+              return { collection, booking };
+            }
+          } catch (error) {
+            console.warn(`Booking lookup failed for ${collection}:`, error);
+          }
+        }
+
+        return null;
+      }
+
+      function safeText(value) {
+        if (value === undefined || value === null || value === "") return "—";
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function formatDate(value, options = {}) {
+        if (!value) return "—";
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return safeText(value);
+        return date.toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          ...options,
+        });
+      }
+
+      function formatTime(value) {
+        if (!value) return "—";
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return safeText(value);
+        return date.toLocaleTimeString("en-GB", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      }
+
+      const isGitHubPagesHost = /^https?:\/\/[^/]+\.github\.io$/.test(
+        window.location.origin,
+      );
+      const useFirebaseRest = isGitHubPagesHost;
+      const firebaseRestRoot = adminFirebaseConfig.databaseURL.replace(
+        /\/+$/,
+        "",
+      );
+
+      function getFirebaseRestUrl(path = "") {
+        const trimmed = String(path || "").replace(/^\/+|\/+$/g, "");
+        return `${firebaseRestRoot}/${trimmed}.json`;
+      }
+
+      async function firebaseDbRestRequest(path, method = "GET", body = null) {
+        const url = getFirebaseRestUrl(path);
+        const options = {
+          method,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+        if (body !== null) {
+          options.body = JSON.stringify(body);
+        }
+        const response = await fetch(url, options);
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(
+            `Firebase REST ${method} failed: ${response.status} ${text}`,
+          );
+        }
+        return response.json();
+      }
+
+      function firebaseDbGetRest(path) {
+        return firebaseDbRestRequest(path, "GET");
+      }
+
+      function firebaseDbPatchRest(path, data) {
+        return firebaseDbRestRequest(path, "PATCH", data);
+      }
+
+      function firebaseDbDeleteRest(path) {
+        return firebaseDbRestRequest(path, "DELETE");
+      }
+
+      function initializeFirebase() {
+        if (typeof firebase === "undefined") return false;
+        try {
+          if (!firebase.apps.length) {
+            firebase.initializeApp(adminFirebaseConfig);
+          }
+          db = firebase.database();
+          return true;
+        } catch (error) {
+          console.error("Firebase initialization failed:", error);
+          return false;
+        }
+      }
+
+      let activeBookingCollection = "user_bookings";
+      let currentBookingState = null;
+
+      function getCurrentBookingCollection() {
+        const forcedCollection = (getQueryParam("collection") || "").trim();
+        if (forcedCollection) return forcedCollection;
+        const source = (getQueryParam("source") || "").toLowerCase();
+        return source === "group" ? "group_bookings" : "user_bookings";
+      }
+
+      function getStatusClass(status) {
+        if (!status) return "ubd-status--neutral";
+        const normalized = status.toLowerCase();
+        if (
+          normalized.includes("confirm") ||
+          normalized.includes("approved") ||
+          normalized.includes("held")
+        ) {
+          return "ubd-status--approved";
+        }
+        if (
+          normalized.includes("pending") ||
+          normalized.includes("hold") ||
+          normalized.includes("waiting")
+        ) {
+          return "ubd-status--pending";
+        }
+        return "ubd-status--neutral";
+      }
+
+      function disableBookingButtons(disabled) {
+        [
+          document.getElementById("btn-confirm-booking"),
+          document.getElementById("btn-cancel-booking"),
+          document.getElementById("btn-delete-booking"),
+        ].forEach((button) => {
+          if (button) button.disabled = disabled;
+        });
+      }
+
+      function updateBookingStatus(bookingId, newStatus) {
+        if (!bookingId) return;
+        const targetCollection =
+          activeBookingCollection || getCurrentBookingCollection();
+        const normalizedStatus = String(newStatus || "").trim();
+        if (!normalizedStatus) return null;
+
+        disableBookingButtons(true);
+        const payload = {
+          status: normalizedStatus,
+          bookingStatus: normalizedStatus,
+        };
+
+        const updatePromise = useFirebaseRest
+          ? firebaseDbPatchRest(`${targetCollection}/${bookingId}`, payload)
+          : db.ref(`${targetCollection}/${bookingId}`).update(payload);
+
+        return updatePromise
+          .then(() => {
+            if (currentBookingState) {
+              currentBookingState.status = normalizedStatus;
+              currentBookingState.bookingStatus = normalizedStatus;
+            }
+
+            const statusValue = document.querySelector(".ubd-meta-status");
+            if (statusValue) {
+              statusValue.textContent = normalizedStatus.toUpperCase();
+              statusValue.className = `ubd-meta-status ${getStatusClass(
+                normalizedStatus,
+              )}`;
+            }
+            document
+              .querySelectorAll("[data-hold-expires]")
+              .forEach((timer) => {
+                timer.textContent = normalizedStatus.toUpperCase();
+                timer.removeAttribute("data-hold-expires");
+              });
+
+            if (currentBookingState) {
+              setBookingActionButtons(bookingId, currentBookingState);
+            }
+
+            return normalizedStatus;
+          })
+          .catch((error) => {
+            console.error("Unable to update booking status:", error);
+            alert("Unable to update booking status. Please try again.");
+            return null;
+          })
+          .finally(() => disableBookingButtons(false));
+      }
+
+      async function saveBookingDiscounts(bookingId) {
+        if (!bookingId) return false;
+        const targetCollection =
+          activeBookingCollection || getCurrentBookingCollection();
+        const discountInputs = Array.from(
+          document.querySelectorAll(".ubd-passenger-discount"),
+        );
+        if (!discountInputs.length) return true;
+
+        const updates = {};
+        discountInputs.forEach((input) => {
+          const index = Number(input.dataset.passengerIndex);
+          const value = Number(input.value);
+          const discountValue =
+            Number.isNaN(value) || value < 0 ? 0 : Math.floor(value);
+          updates[`passengers/${index}/discount`] = discountValue;
+        });
+
+        try {
+          if (useFirebaseRest) {
+            await firebaseDbPatchRest(
+              `${targetCollection}/${bookingId}`,
+              updates,
+            );
+          } else {
+            await db.ref(`${targetCollection}/${bookingId}`).update(updates);
+          }
+          return true;
+        } catch (error) {
+          console.error("Unable to save booking discounts:", error);
+          alert("Unable to save discount values. Please try again.");
+          return false;
+        }
+      }
+
+      function recalculateBookingTotals() {
+        const rows = Array.from(
+          document.querySelectorAll(".ubd-passenger-row"),
+        );
+        let totalDiscount = 0;
+        let totalNet = 0;
+
+        rows.forEach((row) => {
+          const index = row.dataset.passengerIndex;
+          const fare = Number(row.dataset.fare || 0);
+          const discountInput = row.querySelector(".ubd-passenger-discount");
+          const discount = Number(discountInput?.value || 0);
+          const safeDiscount =
+            Number.isNaN(discount) || discount < 0 ? 0 : Math.floor(discount);
+          const net = Math.max(0, fare - safeDiscount);
+
+          totalDiscount += safeDiscount;
+          totalNet += net;
+
+          const netCell = document.getElementById(`passenger-net-${index}`);
+          if (netCell) {
+            netCell.textContent = net.toLocaleString();
+          }
+        });
+
+        const totalDiscountEl = document.getElementById("total-discount");
+        const totalNetEl = document.getElementById("total-net");
+        const summaryDiscountEl = document.getElementById(
+          "summary-total-discount",
+        );
+        const summaryNetEl = document.getElementById("summary-total-net");
+
+        if (totalDiscountEl) {
+          totalDiscountEl.textContent = `-${totalDiscount.toLocaleString()}`;
+        }
+        if (totalNetEl) {
+          totalNetEl.textContent = totalNet.toLocaleString();
+        }
+        if (summaryDiscountEl) {
+          summaryDiscountEl.textContent = `-${totalDiscount.toLocaleString()}`;
+        }
+        if (summaryNetEl) {
+          summaryNetEl.textContent = totalNet.toLocaleString();
+        }
+      }
+
+      function installPassengerDiscountHandlers() {
+        const discountInputs = Array.from(
+          document.querySelectorAll(".ubd-passenger-discount"),
+        );
+        discountInputs.forEach((input) => {
+          input.addEventListener("input", () => {
+            const value = Number(input.value);
+            if (Number.isNaN(value) || value < 0) {
+              input.value = "0";
+            }
+            recalculateBookingTotals();
+          });
+        });
+        recalculateBookingTotals();
+      }
+
+      function deleteBooking(bookingId) {
+        if (!bookingId) return;
+        if (
+          !confirm(
+            "Delete this booking permanently? This action cannot be undone.",
+          )
+        ) {
+          return;
+        }
+
+        const targetCollection =
+          activeBookingCollection || getCurrentBookingCollection();
+        disableBookingButtons(true);
+        return db
+          .ref(`${targetCollection}/${bookingId}`)
+          .remove()
+          .then(() => {
+            alert("Booking deleted successfully.");
+            const shouldGoBackToGroupPage =
+              targetCollection === "group_bookings" ||
+              targetCollection === "group_holdbooking";
+            window.location.href = shouldGoBackToGroupPage
+              ? "admin_viewholdgroupbooking.html"
+              : "umrah-pack.html";
+          })
+          .catch((error) => {
+            console.error("Unable to delete booking:", error);
+            alert("Unable to delete booking. Please try again.");
+          })
+          .finally(() => disableBookingButtons(false));
+      }
+
+      function setBookingActionButtons(bookingId, booking) {
+        currentBookingState = booking || currentBookingState;
+        const actionContainer = document.getElementById("booking-actions");
+        if (!actionContainer) return;
+
+        const status = String(
+          currentBookingState?.status ||
+            currentBookingState?.bookingStatus ||
+            booking?.status ||
+            booking?.bookingStatus ||
+            "",
+        ).toLowerCase();
+        const isConfirmed = /confirm|approved/.test(status);
+        const isCanceled = /cancel|canceled|cancelled/.test(status);
+
+        const confirmDisabled = false;
+        const cancelDisabled = false;
+
+        actionContainer.innerHTML = `
+          <div class="ubd-action-buttons-inner">
+            <button id="btn-confirm-booking" class="ubd-btn ubd-btn-confirm" ${
+              confirmDisabled ? "disabled" : ""
+            }>
+              ${isConfirmed ? "CONFIRMED" : "CONFIRM BOOKING"}
+            </button>
+            <button id="btn-cancel-booking" class="ubd-btn ubd-btn-cancel" ${
+              cancelDisabled ? "disabled" : ""
+            }>
+              ${isCanceled ? "CANCELLED" : "CANCEL BOOKING"}
+            </button>
+            <button id="btn-delete-booking" class="ubd-btn ubd-btn-delete">
+              DELETE BOOKING
+            </button>
+          </div>`;
+
+        const confirmBtn = document.getElementById("btn-confirm-booking");
+        const cancelBtn = document.getElementById("btn-cancel-booking");
+        const deleteBtn = document.getElementById("btn-delete-booking");
+
+        if (confirmBtn) {
+          confirmBtn.addEventListener("click", async () => {
+            const discountSaved = await saveBookingDiscounts(bookingId);
+            if (discountSaved === false) return;
+            updateBookingStatus(bookingId, "Booking Confirmed");
+          });
+        }
+        if (cancelBtn) {
+          cancelBtn.addEventListener("click", () => {
+            if (!confirm("Are you sure you want to cancel this booking?"))
+              return;
+            updateBookingStatus(bookingId, "Cancelled");
+          });
+        }
+        if (deleteBtn) {
+          deleteBtn.addEventListener("click", () => {
+            deleteBooking(bookingId);
+          });
+        }
+      }
+
+      function renderBookingError(message) {
+        const container = document.getElementById("booking-details-container");
+        if (!container) return;
+        container.innerHTML = `
+          <div class="booking-error">
+            <div class="error-icon">⚠️</div>
+            <p>${safeText(message)}</p>
+          </div>`;
+      }
+
+      function buildPassengerTableRows(passengers, perPaxFare, bookingId) {
+        if (!Array.isArray(passengers) || passengers.length === 0) {
+          return `
+            <tr><td colspan="9" class="ubd-center">No passenger details available.</td></tr>`;
+        }
+
+        const bookingIdParam = bookingId
+          ? encodeURIComponent(String(bookingId))
+          : "";
+
+        return passengers
+          .map((passenger, index) => {
+            const passengerTitle =
+              passenger.travelerTitle ||
+              passenger.travellerTitle ||
+              passenger.title ||
+              "";
+            const fullName = [
+              passengerTitle,
+              passenger.firstName || passenger.travellerFirstName,
+              passenger.lastName || passenger.travellerLastName,
+            ]
+              .filter(Boolean)
+              .join(" ");
+            const fare = Number(passenger.fare || perPaxFare || 0);
+            const discount = Math.max(0, Number(passenger.discount || 0));
+            const net = Math.max(0, fare - discount);
+            const documentType =
+              passenger.documentType || passenger.passportType || "Passport";
+            const documentNumber =
+              passenger.passportNumber || passenger.documentNumber || "";
+            const attachmentLinks = Array.isArray(passenger.attachments)
+              ? passenger.attachments
+                  .map((attachmentName, attIndex) => {
+                    const safeFilename = safeText(
+                      attachmentName || `attachment-${attIndex + 1}`,
+                    );
+                    const downloadUrl = bookingIdParam
+                      ? `/umrah-bookings/${bookingIdParam}/attachments/${index}/${attIndex}`
+                      : "#";
+                    return `
+                      <a
+                        href="${downloadUrl}"
+                        download="${safeFilename}"
+                        class="ubd-attachment-link"
+                        title="Download ${safeFilename}"
+                      >
+                        <i class="bi bi-paperclip"></i>
+                      </a>`;
+                  })
+                  .join(" ")
+              : "";
+            return `
+              <tr class="ubd-passenger-row" data-fare="${fare}" data-passenger-index="${index}">
+                <td>${index + 1}</td>
+                <td class="ubd-nowrap"><span class="ubd-strong">${safeText(fullName)}</span></td>
+                <td>${safeText(`${documentNumber}`)}</td>
+                <td class="ubd-nowrap">${formatDate(passenger.dob)}</td>
+                <td class="ubd-nowrap">${formatDate(passenger.passportExpiry)}</td>
+                <td class="ubd-num">${fare.toLocaleString()}</td>
+                <td class="ubd-num ubd-neg">
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    inputmode="numeric"
+                    class="ubd-passenger-discount"
+                    data-passenger-index="${index}"
+                    value="${discount}"
+                    style="width: 80px; text-align: right; padding: 8px 10px; border-radius: 10px; border: 1px solid #cbd5e1; background: #ffffff;"
+                    aria-label="Discount for passenger ${index + 1}"
+                  />
+                </td>
+                <td class="ubd-num ubd-pos" id="passenger-net-${index}">${net.toLocaleString()}</td>
+                <td class="ubd-center">
+                  <div class="ubd-actions-cell">
+                    ${attachmentLinks || '<span class="ubd-subtle">-</span>'}
+                  </div>
+                </td>
+              </tr>`;
+          })
+          .join("");
+      }
+
+      function buildAccommodationRows(booking) {
+        const rows = [];
+        if (booking.makkahHotel || booking.madinahHotel) {
+          rows.push({
+            hotelName: booking.makkahHotel || "-",
+            city: "Makkah",
+            checkIn: booking.makkahCheckIn || "-",
+            checkOut: booking.makkahCheckOut || "-",
+            nights: booking.makkahNights || "-",
+            roomType: booking.roomType || "-",
+          });
+          rows.push({
+            hotelName: booking.madinahHotel || "-",
+            city: "Madina",
+            checkIn: booking.madinahCheckIn || "-",
+            checkOut: booking.madinahCheckOut || "-",
+            nights: booking.madinahNights || "-",
+            roomType: booking.roomType || "-",
+          });
+        }
+        return rows;
+      }
+
+      function buildFlightRows(booking) {
+        const rows = [];
+        if (booking.packageOutboundSector || booking.departureTime) {
+          rows.push({
+            leg: "DEPART",
+            flightNo:
+              booking.flightNumber ||
+              booking.airlineNumber ||
+              booking.packageAirline ||
+              "-",
+            from: booking.packageOutboundSector || "-",
+            to: booking.packageInboundSector || "-",
+            date: formatDate(booking.departureTime),
+            time: formatTime(booking.departureTime),
+            stops: booking.stops || "-",
+            travelClass: booking.travelClass || "Economy",
+            baggage: booking.baggage || "-",
+            seat: booking.seat || "-",
+            meal: booking.meal || "-",
+          });
+        }
+        if (booking.packageInboundSector || booking.returnTime) {
+          rows.push({
+            leg: "RETURN",
+            flightNo:
+              booking.returnFlightNumber ||
+              booking.returnFlightNumber ||
+              booking.flightNumber ||
+              booking.airlineNumber ||
+              booking.packageAirline ||
+              "-",
+            from: booking.packageInboundSector || "-",
+            to: booking.packageOutboundSector || "-",
+            date: formatDate(booking.returnTime),
+            time: formatTime(booking.returnTime),
+            stops: booking.returnStops || booking.stops || "-",
+            travelClass:
+              booking.returnClass || booking.travelClass || "Economy",
+            baggage: booking.returnBaggage || booking.baggage || "-",
+            seat: booking.returnSeat || booking.seat || "-",
+            meal: booking.returnMeal || booking.meal || "-",
+          });
+        }
+        return rows;
+      }
+
+      function buildBookingDetailsHtml(booking, bookingId) {
+        const passengers = Array.isArray(booking.passengers)
+          ? booking.passengers
+          : [];
+        const perPaxFare = Number(booking.selectedPrice || 0);
+        const passengerCount =
+          passengers.length || Number(booking.passengerCount || 0) || 1;
+        const totalFare = passengers.reduce(
+          (sum, passenger) => sum + Number(passenger.fare || perPaxFare || 0),
+          0,
+        );
+        const totalDiscount = passengers.reduce(
+          (sum, passenger) =>
+            sum + Math.max(0, Number(passenger.discount || 0)),
+          0,
+        );
+        const totalNet = Math.max(0, totalFare - totalDiscount);
+        const bookedOn = booking.timestamp
+          ? new Date(Number(booking.timestamp))
+          : null;
+
+        const bookedOnLabel = bookedOn
+          ? bookedOn.toLocaleString("en-GB", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : "—";
+
+        const status = booking.status || "Held";
+        const statusClass = getStatusClass(status);
+        const accommodationRows = buildAccommodationRows(booking);
+        const flightRows = buildFlightRows(booking);
+        const passengerRows = buildPassengerTableRows(
+          passengers,
+          perPaxFare,
+          bookingId,
+        );
+
+        return `
+          <section class="ubd-card">
+            <h2 class="ubd-section-title"><i class="bi bi-people-fill"></i> 1. Passenger & Fare Summary</h2>
+            <div class="ubd-table-scroll">
+              <table class="ubd-table ubd-pax-table">
+                <colgroup>
+                  <col style="width: 36px;" />
+                  <col style="width: 250px;" />
+                  <col style="width: 200px;" />
+                  <col style="width: 110px;" />
+                  <col style="width: 110px;" />
+                  <col />
+                  <col style="width: 90px;" />
+                  <col />
+                  <col />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>SR</th>
+                    <th>Pax Name</th>
+                    <th>Passport</th>
+                    <th>DOB</th>
+                    <th>DOE</th>
+                    <th class="ubd-num">Fare (PKR)</th>
+                    <th class="ubd-num">Discount (PKR)</th>
+                    <th class="ubd-num">Net Receivable (PKR)</th>
+                    <th class="ubd-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${passengerRows}
+                  ${
+                    passengers.length
+                      ? `<tr class="ubd-total">
+                      <td colspan="5" class="ubd-left">Total (${passengers.length} Passengers)</td>
+                      <td class="ubd-num">${totalFare.toLocaleString()}</td>
+                      <td class="ubd-num ubd-neg" id="total-discount">-${totalDiscount.toLocaleString()}</td>
+                      <td class="ubd-num ubd-pos" id="total-net">${totalNet.toLocaleString()}</td>
+                      <td></td>
+                    </tr>`
+                      : ""
+                  }
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          ${
+            accommodationRows.length
+              ? `<section class="ubd-card">
+            <h2 class="ubd-section-title"><i class="bi bi-building"></i> 2. Accommodation Details</h2>
+            <div class="ubd-table-scroll">
+              <table class="ubd-table">
+                <thead>
+                  <tr>
+                    <th class="ubd-left">Hotel Name</th>
+                    <th>City</th>
+                    <th>Check-In</th>
+                    <th>Check-Out</th>
+                    <th>Nights</th>
+                    <th>Room Type</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${accommodationRows
+                    .map(
+                      (row) => `
+                  <tr>
+                    <td class="ubd-strong ubd-left">${safeText(row.hotelName)}</td>
+                    <td>${safeText(row.city)}</td>
+                    <td>${safeText(row.checkIn)}</td>
+                    <td>${safeText(row.checkOut)}</td>
+                    <td>${safeText(row.nights)}</td>
+                    <td>${safeText(row.roomType)}</td>
+                  </tr>`,
+                    )
+                    .join("")}
+                </tbody>
+              </table>
+            </div>
+            </section>`
+              : ""
+          }
+
+          <section class="ubd-card">
+            <h2 class="ubd-section-title"><i class="bi bi-airplane-fill"></i> ${accommodationRows.length ? 3 : 2}. Flight Details</h2>
+            ${
+              flightRows.length
+                ? flightRows
+                    .map(
+                      (flight) => `
+              <div class="ubd-leg">
+                <div class="ubd-table-scroll">
+                  <table class="ubd-table ubd-flight-table">
+                    <colgroup>
+                      <col style="width: 7%;" />
+                      <col style="width: 8%;" />
+                      <col style="width: 14%;" />
+                      <col style="width: 4%;" />
+                      <col style="width: 14%;" />
+                      <col style="width: 9%;" />
+                      <col style="width: 11%;" />
+                      <col style="width: 8%;" />
+                      <col style="width: 6%;" />
+                      <col style="width: 7%;" />
+                      <col style="width: 5%;" />
+                      <col style="width: 7%;" />
+                    </colgroup>
+                    <thead>
+                      <tr>
+                        <th class="ubd-leg-cell">${safeText(flight.leg)}</th>
+                        <th>Flight No.</th>
+                        <th class="ubd-from">From</th>
+                        <th class="ubd-arrow-col"></th>
+                        <th class="ubd-to">To</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Stops</th>
+                        <th>Class</th>
+                        <th>Baggage</th>
+                        <th>Seat</th>
+                        <th>Meal</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="ubd-leg-cell"></td>
+                        <td class="ubd-strong">${safeText(flight.flightNo)}</td>
+                        <td class="ubd-from"><span class="ubd-strong">${safeText(
+                          flight.from,
+                        )}</span></td>
+                        <td class="ubd-arrow-col"><span class="ubd-arrow"><i class="bi bi-arrow-right"></i></span></td>
+                        <td class="ubd-to"><span class="ubd-strong">${safeText(
+                          flight.to,
+                        )}</span></td>
+                        <td class="ubd-nowrap">${safeText(flight.date)}</td>
+                        <td class="ubd-nowrap">${safeText(flight.time)}</td>
+                        <td class="ubd-nowrap">${safeText(flight.stops)}</td>
+                        <td>${safeText(flight.travelClass)}</td>
+                        <td class="ubd-nowrap">${safeText(flight.baggage)}</td>
+                        <td>${safeText(flight.seat)}</td>
+                        <td class="ubd-nowrap">${safeText(flight.meal)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>`,
+                    )
+                    .join("")
+                : `<div class="ubd-no-data">No flight details available.</div>`
+            }
+          </section>
+
+          <section class="ubd-card">
+            <h2 class="ubd-section-title"><i class="bi bi-receipt"></i> ${accommodationRows.length ? 4 : 3}. Fare Summary</h2>
+            <div class="ubd-table-scroll">
+              <table class="ubd-table">
+                <thead>
+                  <tr>
+                    <th class="ubd-left">Passenger Type</th>
+                    <th class="ubd-center">PAX × Per Pax Fare</th>
+                    <th class="ubd-num">Fare (PKR)</th>
+                    <th class="ubd-num">Discount (PKR)</th>
+                    <th class="ubd-num">Net Receivable (PKR)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="ubd-total">
+                    <td class="ubd-strong ubd-left">GRAND TOTAL (${passengerCount} Passengers)</td>
+                    <td class="ubd-center">${passengerCount} Pax × ${perPaxFare.toLocaleString()} PKR</td>
+                    <td class="ubd-num">${totalFare.toLocaleString()}</td>
+                    <td class="ubd-num ubd-neg" id="summary-total-discount">-${totalDiscount.toLocaleString()}</td>
+                    <td class="ubd-num ubd-pos" id="summary-total-net">${totalNet.toLocaleString()}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="ubd-card">
+            <h2 class="ubd-section-title"><i class="bi bi-chat-left-text"></i> Remarks</h2>
+            <textarea class="ubd-remarks-input" rows="3" maxlength="1000" disabled>${safeText(
+              booking.remarks || "",
+            )}</textarea>
+            <div class="ubd-remarks-actions">
+              <button class="ubd-btn ubd-btn-accept" disabled><i class="bi bi-save"></i> SAVE REMARKS</button>
+            </div>
+          </section>
+        `;
+      }
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        const bookingId = getQueryParam("bookingId");
+        const refEl = document.getElementById("booking-ref");
+        if (refEl && bookingId) {
+          refEl.textContent = `(UR-${safeText(bookingId)})`;
+        }
+
+        const backLink = document.querySelector(".ubd-back-link");
+        if (backLink) {
+          const source = getQueryParam("source");
+          const isGroupSource =
+            source === "group" ||
+            getQueryParam("collection") === "group_bookings" ||
+            getQueryParam("collection") === "group_holdbooking";
+          backLink.href = isGroupSource
+            ? "admin_viewholdgroupbooking.html"
+            : "umrah-pack.html";
+          backLink.innerHTML = `<i class="bi bi-arrow-left"></i> ${isGroupSource ? "Back to group bookings" : "Back to held bookings"}`;
+        }
+
+        if (!bookingId) {
+          renderBookingError("Invalid booking identifier.");
+          return;
+        }
+
+        if (!initializeFirebase()) {
+          renderBookingError(
+            "Firebase is not available on this page. Please refresh.",
+          );
+          return;
+        }
+
+        try {
+          const bookingRecord = await loadBookingRecord(bookingId);
+          const booking = bookingRecord ? bookingRecord.booking : null;
+
+          if (!booking) {
+            renderBookingError("Booking not found or it has been removed.");
+            return;
+          }
+
+          activeBookingCollection =
+            (bookingRecord && bookingRecord.collection) ||
+            getCurrentBookingCollection();
+
+          if (
+            activeBookingCollection === "group_holdbooking" &&
+            typeof window.processExpiredHoldBookings === "function"
+          ) {
+            await window.processExpiredHoldBookings(
+              db,
+              activeBookingCollection,
+            );
+            const refreshedBooking = await db
+              .ref(`${activeBookingCollection}/${bookingId}`)
+              .once("value");
+            if (refreshedBooking.val()) {
+              Object.assign(booking, refreshedBooking.val());
+            }
+          }
+
+          const metaContainer = document.getElementById("booking-meta");
+          if (metaContainer) {
+            const bookedOn = booking.timestamp
+              ? new Date(Number(booking.timestamp)).toLocaleString("en-GB", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              : "—";
+            metaContainer.innerHTML = `
+              <div class="ubd-meta-card">
+                <span class="ubd-meta-icon"><i class="bi bi-calendar-event"></i></span>
+                <div>
+                  <div class="ubd-meta-label">Booked On</div>
+                  <div class="ubd-meta-value">${safeText(bookedOn)}</div>
+                </div>
+              </div>
+              <div class="ubd-meta-card">
+                <span class="ubd-meta-icon"><i class="bi bi-clock-history"></i></span>
+                <div>
+                  <div class="ubd-meta-label">STATUS</div>
+                  <div class="ubd-meta-status ${getStatusClass(booking.status)}">${safeText(
+                    booking.status || "Held",
+                  ).toUpperCase()}</div>
+                  ${
+                    activeBookingCollection === "group_holdbooking" &&
+                    /hold|held|pending|reserved/i.test(
+                      String(booking.status || "Held"),
+                    ) &&
+                    typeof window.getHoldExpiryTimestamp === "function" &&
+                    typeof window.formatHoldCountdown === "function" &&
+                    window.getHoldExpiryTimestamp(booking)
+                      ? `<div class="ubd-meta-label" style="margin-top:6px">TIME LEFT</div><div class="ubd-meta-value" data-hold-expires="${window.getHoldExpiryTimestamp(booking)}" data-hold-id="${bookingId}" data-hold-collection="${activeBookingCollection}">${window.formatHoldCountdown(window.getHoldExpiryTimestamp(booking))}</div>`
+                      : ""
+                  }
+                </div>
+              </div>`;
+            if (typeof window.startHoldCountdowns === "function") {
+              window.startHoldCountdowns();
+            }
+          }
+
+          currentBookingState = booking;
+          setBookingActionButtons(bookingId, booking);
+
+          const container = document.getElementById(
+            "booking-details-container",
+          );
+          if (!container) return;
+          container.innerHTML = buildBookingDetailsHtml(booking, bookingId);
+          installPassengerDiscountHandlers();
+        } catch (error) {
+          console.error("Error loading booking details:", error);
+          renderBookingError("Unable to load booking details at this time.");
+        }
+      });
+    </script>
+    <script src="main.js"></script>
+  </body>
+</html>

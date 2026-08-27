@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Umrah Booking - IMAM TRAVELS</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css"
+    />
+    <link rel="stylesheet" href="ummrah-booking.css" />
+    <link rel="stylesheet" href="responsive.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <button
+          class="menu-toggle"
+          aria-label="Open menu"
+          onclick="openSideMenu()"
+        >
+          <span></span>
+        </button>
+
+        <a href="umrah_hajj.html" class="brand-link">
+          <img
+            src="imam-name-with-logo.png"
+            alt="IMAM TRAVELS"
+            class="brand-logo"
+          />
+        </a>
+
+        <div class="header-actions">
+          <button class="action-btn" aria-label="Messages">
+            <i class="fas fa-envelope"></i>
+          </button>
+          <div class="profile-dropdown">
+            <button
+              class="action-btn profile-toggle"
+              aria-label="Profile"
+              type="button"
+              onclick="toggleProfileDropdown(event)"
+            >
+              <i class="fas fa-user-circle"></i>
+            </button>
+            <div
+              id="profileDropdownMenu"
+              class="profile-dropdown-menu"
+              role="menu"
+              aria-label="Profile menu"
+            >
+              <button
+                type="button"
+                class="dropdown-item"
+                onclick="logoutUser()"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="side-menu-overlay" id="sideMenuOverlay" aria-hidden="true">
+      <aside class="side-menu" onclick="event.stopPropagation()">
+        <div class="side-menu-header">
+          <span>Menu</span>
+          <button
+            class="close-side-menu"
+            aria-label="Close menu"
+            onclick="closeSideMenu()"
+            type="button"
+          >
+            ×
+          </button>
+        </div>
+
+        <nav class="side-menu-nav">
+          <a href="umrah_hajj.html" class="side-menu-link">Dashboard</a>
+          <a href="ummrah-booking.html" class="side-menu-link"
+            >Umrah Bookings</a
+          >
+        </nav>
+      </aside>
+    </div>
+
+    <main class="main-wrapper">
+      <div class="position-relative">
+        <div class="container">
+          <div class="row mt-3">
+            <div class="col-12">
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="page-head">
+                  <h2 class="page-title">Umrah Bookings</h2>
+                  <p class="page-subtitle text-dark">
+                    Manage and view your Umrah reservations
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-3 mb-3 horizontal-card-row">
+            <div class="col-lg-3 col-sm-6">
+              <div class="theme-card mb-0">
+                <div class="d-flex align-items-center gap-3 w-100">
+                  <div class="icon-lg">
+                    <i class="bi bi-moon-stars fs-2"></i>
+                  </div>
+                  <div>
+                    <p class="fw-semibold mb-0">Total Umrah</p>
+                    <h4 class="m-0">1</h4>
+                    <p class="mb-0">
+                      <span class="fw-semibold text-danger">-86% </span> from
+                      last month
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+              <div class="theme-card mb-0">
+                <div class="d-flex align-items-center gap-3 w-100">
+                  <div class="icon-lg">
+                    <i class="bi bi-check-circle fs-2"></i>
+                  </div>
+                  <div>
+                    <p class="fw-semibold mb-0">Confirmed</p>
+                    <h4 class="m-0">1</h4>
+                    <p class="mb-0">
+                      <span class="fw-semibold text-danger">-83% </span> from
+                      last month
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+              <div class="theme-card mb-0">
+                <div class="d-flex align-items-center gap-3 w-100">
+                  <div class="icon-lg"><i class="bi bi-x-circle fs-2"></i></div>
+                  <div>
+                    <p class="fw-semibold mb-0">Cancelled</p>
+                    <h4 class="m-0">0</h4>
+                    <p class="mb-0">
+                      <span class="fw-semibold text-success">-100% </span> from
+                      last month
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+              <div class="theme-card mb-0">
+                <div class="d-flex align-items-center gap-3 w-100">
+                  <div class="icon-lg">
+                    <i class="bi bi-currency-dollar fs-2"></i>
+                  </div>
+                  <div>
+                    <p class="fw-semibold mb-0">Total Revenue</p>
+                    <h4 class="m-0">1,006,000</h4>
+                    <p class="mb-0">
+                      <span class="fw-semibold text-danger">-71% </span> from
+                      last month
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="theme-card">
+            <div class="row">
+              <div class="col-12">
+                <div class="row g-3 align-items-start horizontal-form-row">
+                  <div class="col-lg-3 col-md-6">
+                    <label class="form-label fw-medium mb-1">Search</label>
+                    <div class="position-relative">
+                      <input
+                        type="text"
+                        class="form-control form-control-lg custom-placeholder-input bg-white"
+                        placeholder=" "
+                        style="height: 48px"
+                      />
+                      <span class="custom-placeholder-value">
+                        PNR, Voucher, Name or Email
+                      </span>
+                    </div>
+                  </div>
+                  <div class="col-lg-3 col-md-6">
+                    <label class="form-label fw-medium mb-1">From Date</label>
+                    <div class="checkout-datepicker-container w-100 mb-0">
+                      <div
+                        class="dp__main dp__theme_light"
+                        data-datepicker-instance=""
+                        format="e=&gt;g(e)"
+                        clearable="false"
+                      >
+                        <div>
+                          <div
+                            class="fcp-custom-input w-100 d-flex justify-content-between align-items-center cursor-pointer"
+                            tabindex="0"
+                          >
+                            <div class="d-flex flex-column text-start w-100">
+                              <span>Select date </span>
+                            </div>
+                            <svg
+                              width="10"
+                              height="6"
+                              viewBox="0 0 10 6"
+                              xmlns="http://www.w3.org/2000/svg"
+                              aria-hidden="true"
+                            >
+                              <path
+                                d="M1 1L5 5L9 1"
+                                stroke="#333"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                fill="none"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-3 col-md-6">
+                    <label class="form-label fw-medium mb-1">To Date</label>
+                    <div class="checkout-datepicker-container w-100 mb-0">
+                      <div
+                        class="dp__main dp__theme_light"
+                        data-datepicker-instance=""
+                        format="e=&gt;g(e)"
+                        clearable="false"
+                      >
+                        <div>
+                          <div
+                            class="fcp-custom-input w-100 d-flex justify-content-between align-items-center cursor-pointer"
+                            tabindex="0"
+                          >
+                            <div class="d-flex flex-column text-start w-100">
+                              <span>Select date </span>
+                            </div>
+                            <svg
+                              width="10"
+                              height="6"
+                              viewBox="0 0 10 6"
+                              xmlns="http://www.w3.org/2000/svg"
+                              aria-hidden="true"
+                            >
+                              <path
+                                d="M1 1L5 5L9 1"
+                                stroke="#333"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                fill="none"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-3 col-md-6">
+                    <label class="form-label fw-medium mb-1"
+                      >Outbound Date</label
+                    >
+                    <div class="checkout-datepicker-container w-100 mb-0">
+                      <div
+                        class="dp__main dp__theme_light"
+                        data-datepicker-instance=""
+                        format="e=&gt;g(e)"
+                        clearable="false"
+                      >
+                        <div>
+                          <div
+                            class="fcp-custom-input w-100 d-flex justify-content-between align-items-center cursor-pointer"
+                            tabindex="0"
+                          >
+                            <div class="d-flex flex-column text-start w-100">
+                              <span>Select date range </span>
+                            </div>
+                            <svg
+                              width="10"
+                              height="6"
+                              viewBox="0 0 10 6"
+                              xmlns="http://www.w3.org/2000/svg"
+                              aria-hidden="true"
+                            >
+                              <path
+                                d="M1 1L5 5L9 1"
+                                stroke="#333"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                fill="none"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-3 col-md-6">
+                    <label class="form-label fw-medium mb-1"
+                      >Booking Status</label
+                    >
+                    <select
+                      class="form-select form-select-lg bg-white"
+                      style="height: 48px"
+                    >
+                      <option value="">All Booking Status</option>
+                      <option value="On Hold">On Hold</option>
+                      <option value="Confirmed">Confirmed</option>
+                      <option value="Rejected">Rejected</option>
+                    </select>
+                  </div>
+                  <div class="col-lg-3 col-md-6">
+                    <label class="form-label fw-medium mb-1">Visa Status</label>
+                    <select
+                      class="form-select form-select-lg bg-white"
+                      style="height: 48px"
+                    >
+                      <option value="">All Visa Status</option>
+                      <option value="Docs Received">Docs Received</option>
+                      <option value="Processing">Processing</option>
+                      <option value="Approved">Approved</option>
+                      <option value="Delivered">Delivered</option>
+                      <option value="Sent to Embassy">Sent to Embassy</option>
+                    </select>
+                  </div>
+                  <div class="col-lg-3 col-md-6">
+                    <label
+                      class="form-label fw-medium mb-1 invisible"
+                      aria-hidden="true"
+                      >Search</label
+                    >
+                    <button
+                      class="btn btn-primary w-100 font-semibold fs-16px"
+                      style="height: 48px"
+                    >
+                      Search
+                    </button>
+                  </div>
+                  <div class="col-lg-3 col-md-6">
+                    <label
+                      class="form-label fw-medium mb-1 invisible"
+                      aria-hidden="true"
+                      >Clear</label
+                    >
+                    <button
+                      class="btn btn-outline-secondary w-100 font-semibold fs-16px"
+                      style="height: 48px"
+                    >
+                      Clear Filters
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="theme-card">
+            <div class="row">
+              <div class="col-12">
+                <div class="overflow-hidden">
+                  <div
+                    class="d-flex justify-content-between align-items-center mb-2"
+                  >
+                    <h2 class="fcp-card-heading m-0">Umrah Booking Records</h2>
+                    <div class="d-flex align-items-center gap-3">
+                      <div class="d-flex align-items-center gap-2">
+                        <span class="fs-14px text-dark-818181">Show</span>
+                        <select
+                          class="form-select form-select-sm w-auto shadow-none border-color-CDD3E3 fs-14px"
+                        >
+                          <option value="10">10</option>
+                          <option value="25">25</option>
+                          <option value="50">50</option>
+                        </select>
+                        <span class="fs-14px text-dark-818181">entries</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="w-100 fcp-table overflow-auto" id="umrah-booking-table-container">
+                    <div class="table-loading-placeholder" style="padding: 28px; text-align: center; color: #64748b;">
+                      <span class="loading-spinner" aria-hidden="true"></span>
+                      <p style="margin-top: 12px;">Loading your agent bookings…</p>
+                    </div>
+                  </div>
+
+      </div>
+    </main>
+
+    <footer class="main-footer">
+      <div class="footer-container">
+        <div class="footer-block footer-brand-block">
+          <a href="#" class="footer-logo-link">
+            <img
+              src="imam-name-with-logo.png"
+              alt="IMAM TRAVELS"
+              class="footer-logo-img"
+            />
+          </a>
+          <p class="footer-description">
+            IMAM TRAVELS delivers premium Umrah and flight booking experiences
+            with live pricing, hotel packages, and fast online support.
+          </p>
+        </div>
+
+        <div class="footer-block footer-links-block">
+          <h3>Quick Links</h3>
+          <ul class="footer-nav-links">
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Contact Us</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-block footer-contact-block">
+          <h3>Contact</h3>
+          <p>imamtravelsjpj@gmail.com</p>
+          <p>+92-333-1233009</p>
+          <div class="footer-social-links">
+            <a
+              href="https://www.facebook.com/profile.php?id=61553215993240"
+              target="_blank"
+              aria-label="Facebook"
+              ><i class="fab fa-facebook-f"></i
+            ></a>
+            <a
+              href="https://www.instagram.com/imamtravelsjpj/"
+              target="_blank"
+              aria-label="Instagram"
+              ><i class="fab fa-instagram"></i
+            ></a>
+            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" aria-label="Youtube"><i class="fab fa-youtube"></i></a>
+            <a
+              href="https://whatsapp.com/channel/0029VbB1sTGHQbRw4gZ4pq2T"
+              aria-label="Whatsapp"
+              target="_blank"
+              ><i class="fab fa-whatsapp"></i
+            ></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom-bar">
+        <p class="copyright-text">© 2026 IMAM TRAVELS. All Rights Reserved.</p>
+      </div>
+    </footer>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="admin-controller.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>

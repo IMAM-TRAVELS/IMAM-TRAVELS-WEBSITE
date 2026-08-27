@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Imam Travel - Umrah Packages</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="umrah-pack.css" />
+    <link rel="stylesheet" href="responsive.css" />
+  </head>
+  <body>
+    <header class="company-header">
+      <a href="admins.html" class="header-link">
+        <img
+          src="imam travel and tours logo.jpeg"
+          alt="Logo"
+          class="company-logo"
+        />
+        <span class="company-name">Imam Travel and Tours</span>
+      </a>
+    </header>
+
+    <nav class="top-nav">
+      <div class="nav-left"></div>
+      <div class="nav-right">
+        <span>Quick links <i class="fas fa-caret-down"></i></span>
+        <span>Configuration</span>
+        <span>Change password</span>
+        <span class="logout" onclick="logoutUser()" style="cursor: pointer">
+          <i class="fas fa-key"></i> Logout
+        </span>
+      </div>
+    </nav>
+
+    <div class="page-shell main-container">
+      <aside class="sidebar">
+        <div id="ticketSidebar">
+          <div class="menu-group">
+            <button class="menu-head active" onclick="toggleMenu('trans')">
+              Transactions <i class="fas fa-caret-down"></i>
+            </button>
+            <div id="trans" class="menu-content show">
+              <a href="umrah-pack.html"
+                ><button class="sub-link">Ummrah booking hold</button></a
+              >
+              <a href="admin_viewgroupbooking.html"
+                ><button class="sub-link">Add Group booking</button></a
+              >
+              <a href="admin_viewholdgroupbooking.html"
+                ><button class="sub-link">Group Bookings Hold</button></a
+              >
+              <a href="ticket_booking.html"
+                ><button class="sub-link">Under working</button></a
+              >
+              <a href="#"><button class="sub-link">Under working</button></a>
+
+              <a href="#"><button class="sub-link">Under working</button></a>
+
+              <a href="setting.html"
+                ><button class="sub-link">Setting</button></a
+              >
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <section id="umrah-packages" class="page-panel active-panel">
+          <div class="panel-header">
+            <h2>Ummrah Booking</h2>
+          </div>
+
+          <div
+            class="modal-overlay"
+            id="hotel-modal-overlay"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Manage hotels dialog"
+          >
+            <div class="modal-window-box" style="width: min(980px, 92vw)">
+              <div class="modal-header-nav">
+                <h3>Manage Hotels</h3>
+                <button
+                  class="btn-close-circle"
+                  id="btn-close-hotel-modal"
+                  type="button"
+                >
+                  ×
+                </button>
+              </div>
+
+              <div style="padding: 18px 22px; overflow: auto">
+                <div style="display: flex; gap: 12px; margin-bottom: 12px">
+                  <div
+                    style="
+                      flex: 1;
+                      display: flex;
+                      gap: 8px;
+                      align-items: center;
+                    "
+                  >
+                    <input
+                      id="makkah-new-input"
+                      placeholder="Add Makkah hotel"
+                      style="
+                        flex: 1;
+                        padding: 8px 10px;
+                        border: 1px solid var(--border-light);
+                        border-radius: 8px;
+                        background: #fff;
+                      "
+                    />
+                    <button
+                      id="btn-add-makkah"
+                      class="btn-admin-action"
+                      style="padding: 8px 10px"
+                    >
+                      Add
+                    </button>
+                  </div>
+
+                  <div
+                    style="
+                      flex: 1;
+                      display: flex;
+                      gap: 8px;
+                      align-items: center;
+                    "
+                  >
+                    <input
+                      id="madinah-new-input"
+                      placeholder="Add Madinah hotel"
+                      style="
+                        flex: 1;
+                        padding: 8px 10px;
+                        border: 1px solid var(--border-light);
+                        border-radius: 8px;
+                        background: #fff;
+                      "
+                    />
+                    <button
+                      id="btn-add-madinah"
+                      class="btn-admin-action"
+                      style="padding: 8px 10px"
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+
+                <div style="display: flex; gap: 18px">
+                  <div
+                    style="
+                      flex: 1;
+                      background: #fff;
+                      border: 1px solid var(--border-light);
+                      border-radius: 10px;
+                      padding: 12px;
+                    "
+                  >
+                    <h4 style="margin: 0 0 10px">Makkah Hotels</h4>
+                    <ul
+                      id="makkah-hotel-list"
+                      style="
+                        list-style: none;
+                        padding: 0;
+                        margin: 0;
+                        max-height: 320px;
+                        overflow: auto;
+                      "
+                    ></ul>
+                  </div>
+
+                  <div
+                    style="
+                      flex: 1;
+                      background: #fff;
+                      border: 1px solid var(--border-light);
+                      border-radius: 10px;
+                      padding: 12px;
+                    "
+                  >
+                    <h4 style="margin: 0 0 10px">Madinah Hotels</h4>
+                    <ul
+                      id="madinah-hotel-list"
+                      style="
+                        list-style: none;
+                        padding: 0;
+                        margin: 0;
+                        max-height: 320px;
+                        overflow: auto;
+                      "
+                    ></ul>
+                  </div>
+                </div>
+
+                <div style="margin-top: 14px; text-align: right">
+                  <button
+                    id="btn-close-hotel-modal-bottom"
+                    class="btn-dismiss"
+                    type="button"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="data-table-card loading-placeholder"
+            id="bookings-list-card"
+          >
+            <span class="loading-spinner" aria-hidden="true"></span>
+            <p>Loading held bookings…</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div
+      class="modal-overlay"
+      id="booking-details-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Booking details dialog"
+      onclick="if (event.target === this) closeBookingDetailsModal();"
+    >
+      <div class="modal-window-box" role="document">
+        <div class="modal-header-nav">
+          <h3>Booking Details</h3>
+          <button
+            class="btn-close-circle"
+            type="button"
+            onclick="closeBookingDetailsModal()"
+            aria-label="Close booking details"
+          >
+            ×
+          </button>
+        </div>
+        <div
+          id="booking-details-content"
+          style="overflow: auto; max-height: calc(92vh - 120px)"
+        ></div>
+      </div>
+    </div>
+
+    <div
+      class="modal-overlay"
+      id="package-modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Create package dialog"
+    >
+      <div class="modal-window-box">
+        <div class="modal-header-nav">
+          <h3>Create Live Umrah Package</h3>
+          <button
+            class="btn-close-circle"
+            id="btn-close-modal-top"
+            type="button"
+            aria-label="Close dialog"
+          >
+            ×
+          </button>
+        </div>
+
+        <form id="umrah-package-form">
+          <div class="form-section-card">
+            <div class="form-section-title">Flight Logistics Matrix</div>
+            <div class="form-grid-layout">
+              <div class="input-field-group full-width">
+                <label>Airline Provider Name</label>
+                <select id="pkg-airline" required>
+                  <option value="" disabled selected>Select airline</option>
+                  <option value="Air Arabia">G9-Air Arabia</option>
+                  <option value="Salam Air">OV-Salam Air</option>
+                  <option value="PIA">PIA-PAKISTAN AIRLINES</option>
+                  <option value="Fly Jinnah">9P-Fly Jinnah</option>
+                  <option value="Air Sial">PF-Air Sial</option>
+                  <option value="Saudi Arabian Airlines">
+                    SV-Saudi Arabian Airlines
+                  </option>
+                  <option value="Emirates">EK-Emirates</option>
+                  <option value="Etihad Airways">EY-Etihad Airways</option>
+                  <option value="Flydubai">FY-Flydubai</option>
+                  <option value="Airblue">PF-Airblue</option>
+                  <option value="Qatar Airways">QR-Qatar Airways</option>
+                </select>
+              </div>
+              <div class="input-field-group full-width">
+                <label>Outbound Route Sector</label>
+                <select id="pkg-sector-outbound" required>
+                  <option value="" disabled selected>
+                    Select outbound route
+                  </option>
+                  <option value="Islamabad - Jeddah">Islamabad - Jeddah</option>
+                  <option value="Muscat - Jeddah">Muscat - Jeddah</option>
+                  <option value="Sialkot - Jeddah">Sialkot - Jeddah</option>
+                  <option value="(Sialkot-Muscat) - Jeddah">
+                    (Sialkot-Muscat) - Jeddah
+                  </option>
+                  <option value="Lahore - Jeddah">Lahore - Jeddah</option>
+                  <option value="Karachi - Jeddah">Karachi - Jeddah</option>
+                  <option value="Karachi - MADINAH">Karachi - MADINAH</option>
+                  <option value="Lahore - MADINAH">Lahore - MADINAH</option>
+                </select>
+              </div>
+              <div class="input-field-group full-width">
+                <label>Return Route Sector</label>
+                <select id="pkg-sector-inbound" required>
+                  <option value="" disabled selected>
+                    Select return route
+                  </option>
+                  <option value="Jeddah - Islamabad">Jeddah - Islamabad</option>
+                  <option value="Jeddah - Muscat">Jeddah - Muscat</option>
+                  <option value="Jeddah - Sialkot">Jeddah - Sialkot</option>
+                  <option value="Jeddah - (Sialkot-Muscat)">
+                    Jeddah - (Sialkot-Muscat)
+                  </option>
+                  <option value="Jeddah - Lahore">Jeddah - Lahore</option>
+                  <option value="Jeddah - Karachi">Jeddah - Karachi</option>
+                  <option value="MADINAH - Karachi">MADINAH - Karachi</option>
+                  <option value="MADINAH - Lahore">MADINAH - Lahore</option>
+                </select>
+              </div>
+              <div class="input-field-group">
+                <label>Departure Schedule Date/Time</label>
+                <input type="datetime-local" id="pkg-dept-time" required />
+              </div>
+              <div class="input-field-group">
+                <label>Return Schedule Date/Time</label>
+                <input type="datetime-local" id="pkg-ret-time" />
+              </div>
+              <div class="input-field-group">
+                <label>Total Available Seat Inventory</label>
+                <input
+                  type="text"
+                  id="pkg-seats"
+                  placeholder="e.g. Max 40"
+                  maxlength="40"
+                  required
+                  autocomplete="off"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section-card">
+            <div class="form-section-title">
+              Hotel Accommodations & Pricing Matrix
+            </div>
+            <div class="table-wrapper">
+              <table class="pricing-matrix-table">
+                <thead>
+                  <tr>
+                    <th style="width: 25%">Makkah Hotel</th>
+                    <th style="width: 25%">Madinah Hotel</th>
+                    <th>Sharing (PKR)</th>
+                    <th>Double (PKR)</th>
+                    <th>Triple (PKR)</th>
+                    <th>Quad (PKR)</th>
+                  </tr>
+                </thead>
+                <tbody id="hotel-matrix-rows"></tbody>
+              </table>
+            </div>
+          </div>
+        </form>
+
+        <div class="modal-footer-actions">
+          <button class="btn-dismiss" id="btn-close-modal-bottom" type="button">
+            Cancel
+          </button>
+          <button
+            class="btn-admin-action"
+            id="btn-submit-package"
+            type="button"
+          >
+            <i class="fa-solid fa-floppy-disk"></i> Save Package
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="admin-controller.js"></script>
+    <script>
+      function logoutUser() {
+        window.location.href = "ticketing.html";
+      }
+
+      function toggleMenu(targetId) {
+        const menu = document.getElementById(targetId);
+        if (!menu) return;
+        menu.classList.toggle("show");
+      }
+    </script>
+    <script src="main.js"></script>
+  </body>
+</html>

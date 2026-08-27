@@ -1,0 +1,1925 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flight Confirmation</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+    <link rel="stylesheet" href="flight-conform.css" />
+    <link rel="stylesheet" href="responsive.css" />
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <button
+          class="menu-toggle"
+          aria-label="Open menu"
+          onclick="openSideMenu()"
+        >
+          <span></span>
+        </button>
+
+        <a href="umrah_hajj.html" class="brand-link">
+          <img
+            src="imam-name-with-logo.png"
+            alt="IMAM TRAVELS"
+            class="brand-logo"
+          />
+        </a>
+
+        <div class="header-actions">
+          <button class="action-btn" aria-label="Messages">
+            <i class="fas fa-envelope"></i>
+          </button>
+          <div class="profile-dropdown">
+            <button
+              class="action-btn profile-toggle"
+              aria-label="Profile"
+              type="button"
+              onclick="toggleProfileDropdown(event)"
+            >
+              <i class="fas fa-user-circle"></i>
+            </button>
+            <div
+              id="profileDropdownMenu"
+              class="profile-dropdown-menu"
+              role="menu"
+              aria-label="Profile menu"
+            >
+              <button
+                type="button"
+                class="dropdown-item"
+                onclick="logoutUser()"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="side-menu-overlay" id="sideMenuOverlay" aria-hidden="true">
+      <aside class="side-menu" onclick="event.stopPropagation()">
+        <div class="side-menu-header">
+          <span>Menu</span>
+          <button
+            class="close-side-menu"
+            aria-label="Close menu"
+            onclick="closeSideMenu()"
+            type="button"
+          >
+            ×
+          </button>
+        </div>
+
+        <nav class="side-menu-nav">
+          <a href="umrah_hajj.html" class="side-menu-link">Dashboard</a>
+          <a href="ummrah-booking.html" class="side-menu-link"
+            >Umrah Bookings</a
+          >
+        </nav>
+      </aside>
+    </div>
+
+    <div class="page">
+      <div class="progress">
+        <div class="step active">
+          <span class="badge">1</span>
+          <div class="step-info">
+            <strong>Fill your info</strong>
+            <span>Enter traveler details</span>
+          </div>
+        </div>
+        <div class="step">
+          <span class="badge">2</span>
+          <div class="step-info">
+            <strong>Review</strong>
+            <span>Check booking summary</span>
+          </div>
+        </div>
+        <div class="step">
+          <span class="badge">3</span>
+          <div class="step-info">
+            <strong>Finalize payment</strong>
+            <span>Complete transaction</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="panel">
+          <div class="booking-review">
+            <div class="flight-card-grid">
+              <div class="flight-card">
+                <div class="flight-card-row">
+                  <div class="flight-card-title">
+                    <span class="flight-icon" id="flightLogo">✈</span>
+                    <div>
+                      <h3 id="flightTitle">Outbound Flight</h3>
+                    </div>
+                  </div>
+                  <div class="flight-route-info">
+                    <div class="flight-leg">
+                      <strong id="departureValue">Loading...</strong>
+                      <span id="departureLabel">Departure</span>
+                    </div>
+                    <div class="flight-leg flight-leg--return">
+                      <strong id="returnValue">Loading...</strong>
+                      <span id="returnLabel">Arrival</span>
+                    </div>
+                  </div>
+                  <div class="flight-card-meta flight-card-meta--inline">
+                    <div class="flight-meta-item">
+                      <span>Trip duration</span>
+                      <strong id="tripDuration">0 days</strong>
+                    </div>
+                    <div class="flight-meta-item">
+                      <span>Travelers</span>
+                      <strong id="passengerCount">1</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="package-section">
+            <div class="package-info">
+              <div class="package-block">
+                <h3>Makkah Hotel</h3>
+                <p id="hotelMakkah">Loading hotel details...</p>
+              </div>
+              <div class="package-block">
+                <h3>Madinah Hotel</h3>
+                <p id="hotelMadinah">Loading hotel details...</p>
+              </div>
+            </div>
+
+            <div class="panel panel-top">
+              <div class="panel-header">
+                <h2>Traveller Details</h2>
+                <button
+                  id="addPassengerButton"
+                  class="button button-secondary button-small"
+                  type="button"
+                  style="display: none"
+                >
+                  Add Passenger
+                </button>
+              </div>
+              <div class="form-note">
+                Note: Use all given names and surnames exactly as they appear on
+                your passport to avoid complications.
+              </div>
+              <div class="section-subtitle">1. Adult Passenger</div>
+              <div class="form-section">
+                <div class="input-grid input-grid-5">
+                  <div class="field-box">
+                    <label>Title</label>
+                    <select id="travellerTitle">
+                      <option>Select</option>
+                      <option>Mr</option>
+                      <option>Mrs</option>
+                      <option>Ms</option>
+                      <option>Miss</option>
+                      <option>Mstr</option>
+                      <option>Inf</option>
+                    </select>
+                  </div>
+                  <div class="field-box">
+                    <label>First Name</label>
+                    <input
+                      id="travellerFirstName"
+                      type="text"
+                      placeholder="First Name"
+                    />
+                  </div>
+                  <div class="field-box">
+                    <label>Last Name</label>
+                    <input
+                      id="travellerLastName"
+                      type="text"
+                      placeholder="Last Name"
+                    />
+                  </div>
+                  <div class="field-box date-field">
+                    <label>Date of Birth</label>
+                    <div class="date-input-wrapper">
+                      <input
+                        id="dobInput"
+                        type="text"
+                        inputmode="numeric"
+                        placeholder="DD/MM/YYYY"
+                      />
+                      <button
+                        type="button"
+                        class="date-picker-button"
+                        data-target="dobInput"
+                        aria-label="Open calendar"
+                      >
+                        <i class="fas fa-calendar-alt"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="field-box">
+                    <label>Nationality</label>
+                    <select id="travellerNationality">
+                      <option selected>Select</option>
+                      <option>Afghanistan</option>
+                      <option>Albania</option>
+                      <option>Algeria</option>
+                      <option>Andorra</option>
+                      <option>Angola</option>
+                      <option>Antigua and Barbuda</option>
+                      <option>Argentina</option>
+                      <option>Armenia</option>
+                      <option>Australia</option>
+                      <option>Austria</option>
+                      <option>Azerbaijan</option>
+                      <option>Bahamas</option>
+                      <option>Bahrain</option>
+                      <option>Bangladesh</option>
+                      <option>Barbados</option>
+                      <option>Belarus</option>
+                      <option>Belgium</option>
+                      <option>Belize</option>
+                      <option>Benin</option>
+                      <option>Bhutan</option>
+                      <option>Bolivia</option>
+                      <option>Bosnia and Herzegovina</option>
+                      <option>Botswana</option>
+                      <option>Brazil</option>
+                      <option>Brunei</option>
+                      <option>Bulgaria</option>
+                      <option>Burkina Faso</option>
+                      <option>Burundi</option>
+                      <option>Cabo Verde</option>
+                      <option>Cambodia</option>
+                      <option>Cameroon</option>
+                      <option>Canada</option>
+                      <option>Central African Republic</option>
+                      <option>Chad</option>
+                      <option>Chile</option>
+                      <option>China</option>
+                      <option>Colombia</option>
+                      <option>Comoros</option>
+                      <option>Congo, Democratic Republic of the</option>
+                      <option>Congo, Republic of the</option>
+                      <option>Costa Rica</option>
+                      <option>Côte d'Ivoire</option>
+                      <option>Croatia</option>
+                      <option>Cuba</option>
+                      <option>Cyprus</option>
+                      <option>Czech Republic</option>
+                      <option>Denmark</option>
+                      <option>Djibouti</option>
+                      <option>Dominica</option>
+                      <option>Dominican Republic</option>
+                      <option>Ecuador</option>
+                      <option>Egypt</option>
+                      <option>El Salvador</option>
+                      <option>Equatorial Guinea</option>
+                      <option>Eritrea</option>
+                      <option>Estonia</option>
+                      <option>Eswatini</option>
+                      <option>Ethiopia</option>
+                      <option>Fiji</option>
+                      <option>Finland</option>
+                      <option>France</option>
+                      <option>Gabon</option>
+                      <option>Gambia</option>
+                      <option>Georgia</option>
+                      <option>Germany</option>
+                      <option>Ghana</option>
+                      <option>Greece</option>
+                      <option>Grenada</option>
+                      <option>Guatemala</option>
+                      <option>Guinea</option>
+                      <option>Guinea-Bissau</option>
+                      <option>Guyana</option>
+                      <option>Haiti</option>
+                      <option>Honduras</option>
+                      <option>Hungary</option>
+                      <option>Iceland</option>
+                      <option>India</option>
+                      <option>Indonesia</option>
+                      <option>Iran</option>
+                      <option>Iraq</option>
+                      <option>Ireland</option>
+                      <option>Israel</option>
+                      <option>Italy</option>
+                      <option>Jamaica</option>
+                      <option>Japan</option>
+                      <option>Jordan</option>
+                      <option>Kazakhstan</option>
+                      <option>Kenya</option>
+                      <option>Kiribati</option>
+                      <option>Korea, North</option>
+                      <option>Korea, South</option>
+                      <option>Kosovo</option>
+                      <option>Kuwait</option>
+                      <option>Kyrgyzstan</option>
+                      <option>Laos</option>
+                      <option>Latvia</option>
+                      <option>Lebanon</option>
+                      <option>Lesotho</option>
+                      <option>Liberia</option>
+                      <option>Libya</option>
+                      <option>Liechtenstein</option>
+                      <option>Lithuania</option>
+                      <option>Luxembourg</option>
+                      <option>Madagascar</option>
+                      <option>Malawi</option>
+                      <option>Malaysia</option>
+                      <option>Maldives</option>
+                      <option>Mali</option>
+                      <option>Malta</option>
+                      <option>Marshall Islands</option>
+                      <option>Mauritania</option>
+                      <option>Mauritius</option>
+                      <option>Mexico</option>
+                      <option>Micronesia</option>
+                      <option>Moldova</option>
+                      <option>Monaco</option>
+                      <option>Mongolia</option>
+                      <option>Montenegro</option>
+                      <option>Morocco</option>
+                      <option>Mozambique</option>
+                      <option>Myanmar</option>
+                      <option>Namibia</option>
+                      <option>Nauru</option>
+                      <option>Nepal</option>
+                      <option>Netherlands</option>
+                      <option>New Zealand</option>
+                      <option>Nicaragua</option>
+                      <option>Niger</option>
+                      <option>Nigeria</option>
+                      <option>North Macedonia</option>
+                      <option>Norway</option>
+                      <option>Oman</option>
+                      <option>Pakistan</option>
+                      <option>Palau</option>
+                      <option>Panama</option>
+                      <option>Papua New Guinea</option>
+                      <option>Paraguay</option>
+                      <option>Peru</option>
+                      <option>Philippines</option>
+                      <option>Poland</option>
+                      <option>Portugal</option>
+                      <option>Qatar</option>
+                      <option>Romania</option>
+                      <option>Russia</option>
+                      <option>Rwanda</option>
+                      <option>Saint Kitts and Nevis</option>
+                      <option>Saint Lucia</option>
+                      <option>Saint Vincent and the Grenadines</option>
+                      <option>Samoa</option>
+                      <option>San Marino</option>
+                      <option>Sao Tome and Principe</option>
+                      <option>Saudi Arabia</option>
+                      <option>Senegal</option>
+                      <option>Serbia</option>
+                      <option>Seychelles</option>
+                      <option>Sierra Leone</option>
+                      <option>Singapore</option>
+                      <option>Slovakia</option>
+                      <option>Slovenia</option>
+                      <option>Solomon Islands</option>
+                      <option>Somalia</option>
+                      <option>South Africa</option>
+                      <option>Spain</option>
+                      <option>Sri Lanka</option>
+                      <option>Sudan</option>
+                      <option>South Sudan</option>
+                      <option>Suriname</option>
+                      <option>Sweden</option>
+                      <option>Switzerland</option>
+                      <option>Syria</option>
+                      <option>Tajikistan</option>
+                      <option>Tanzania</option>
+                      <option>Thailand</option>
+                      <option>Timor-Leste</option>
+                      <option>Togo</option>
+                      <option>Tonga</option>
+                      <option>Trinidad and Tobago</option>
+                      <option>Tunisia</option>
+                      <option>Turkey</option>
+                      <option>Turkmenistan</option>
+                      <option>Tuvalu</option>
+                      <option>Uganda</option>
+                      <option>Ukraine</option>
+                      <option>United Arab Emirates</option>
+                      <option>United Kingdom</option>
+                      <option>United States</option>
+                      <option>Uruguay</option>
+                      <option>Uzbekistan</option>
+                      <option>Vanuatu</option>
+                      <option>Vatican City</option>
+                      <option>Venezuela</option>
+                      <option>Vietnam</option>
+                      <option>Yemen</option>
+                      <option>Zambia</option>
+                      <option>Zimbabwe</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="input-grid input-grid-5">
+                  <div class="field-box">
+                    <label>Document Type</label>
+                    <select id="documentType">
+                      <option value="" disabled selected>Select</option>
+                      <option>Passport</option>
+                      <option>ID</option>
+                    </select>
+                  </div>
+                  <div class="field-box">
+                    <label>Document Number</label>
+                    <input
+                      id="documentNumber"
+                      type="text"
+                      placeholder="Enter doc number"
+                    />
+                  </div>
+                  <div class="field-box date-field">
+                    <label>Passport issue</label>
+                    <div class="date-input-wrapper">
+                      <input
+                        id="passportIssue"
+                        type="text"
+                        inputmode="numeric"
+                        placeholder="DD/MM/YYYY"
+                      />
+                      <button
+                        type="button"
+                        class="date-picker-button"
+                        data-target="passportIssue"
+                        aria-label="Open calendar"
+                      >
+                        <i class="fas fa-calendar-alt"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="field-box date-field">
+                    <label>Passport expiry</label>
+                    <div class="date-input-wrapper">
+                      <input
+                        id="passportExpiry"
+                        type="text"
+                        inputmode="numeric"
+                        placeholder="DD/MM/YYYY"
+                      />
+                      <button
+                        type="button"
+                        class="date-picker-button"
+                        data-target="passportExpiry"
+                        aria-label="Open calendar"
+                      >
+                        <i class="fas fa-calendar-alt"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="field-box">
+                    <label>Passport country</label>
+                    <select id="passportCountry">
+                      <option selected>Select</option>
+                      <option>Afghanistan</option>
+                      <option>Albania</option>
+                      <option>Algeria</option>
+                      <option>Andorra</option>
+                      <option>Angola</option>
+                      <option>Antigua and Barbuda</option>
+                      <option>Argentina</option>
+                      <option>Armenia</option>
+                      <option>Australia</option>
+                      <option>Austria</option>
+                      <option>Azerbaijan</option>
+                      <option>Bahamas</option>
+                      <option>Bahrain</option>
+                      <option>Bangladesh</option>
+                      <option>Barbados</option>
+                      <option>Belarus</option>
+                      <option>Belgium</option>
+                      <option>Belize</option>
+                      <option>Benin</option>
+                      <option>Bhutan</option>
+                      <option>Bolivia</option>
+                      <option>Bosnia and Herzegovina</option>
+                      <option>Botswana</option>
+                      <option>Brazil</option>
+                      <option>Brunei</option>
+                      <option>Bulgaria</option>
+                      <option>Burkina Faso</option>
+                      <option>Burundi</option>
+                      <option>Cabo Verde</option>
+                      <option>Cambodia</option>
+                      <option>Cameroon</option>
+                      <option>Canada</option>
+                      <option>Central African Republic</option>
+                      <option>Chad</option>
+                      <option>Chile</option>
+                      <option>China</option>
+                      <option>Colombia</option>
+                      <option>Comoros</option>
+                      <option>Congo, Democratic Republic of the</option>
+                      <option>Congo, Republic of the</option>
+                      <option>Costa Rica</option>
+                      <option>Côte d'Ivoire</option>
+                      <option>Croatia</option>
+                      <option>Cuba</option>
+                      <option>Cyprus</option>
+                      <option>Czech Republic</option>
+                      <option>Denmark</option>
+                      <option>Djibouti</option>
+                      <option>Dominica</option>
+                      <option>Dominican Republic</option>
+                      <option>Ecuador</option>
+                      <option>Egypt</option>
+                      <option>El Salvador</option>
+                      <option>Equatorial Guinea</option>
+                      <option>Eritrea</option>
+                      <option>Estonia</option>
+                      <option>Eswatini</option>
+                      <option>Ethiopia</option>
+                      <option>Fiji</option>
+                      <option>Finland</option>
+                      <option>France</option>
+                      <option>Gabon</option>
+                      <option>Gambia</option>
+                      <option>Georgia</option>
+                      <option>Germany</option>
+                      <option>Ghana</option>
+                      <option>Greece</option>
+                      <option>Grenada</option>
+                      <option>Guatemala</option>
+                      <option>Guinea</option>
+                      <option>Guinea-Bissau</option>
+                      <option>Guyana</option>
+                      <option>Haiti</option>
+                      <option>Honduras</option>
+                      <option>Hungary</option>
+                      <option>Iceland</option>
+                      <option>India</option>
+                      <option>Indonesia</option>
+                      <option>Iran</option>
+                      <option>Iraq</option>
+                      <option>Ireland</option>
+                      <option>Israel</option>
+                      <option>Italy</option>
+                      <option>Jamaica</option>
+                      <option>Japan</option>
+                      <option>Jordan</option>
+                      <option>Kazakhstan</option>
+                      <option>Kenya</option>
+                      <option>Kiribati</option>
+                      <option>Korea, North</option>
+                      <option>Korea, South</option>
+                      <option>Kosovo</option>
+                      <option>Kuwait</option>
+                      <option>Kyrgyzstan</option>
+                      <option>Laos</option>
+                      <option>Latvia</option>
+                      <option>Lebanon</option>
+                      <option>Lesotho</option>
+                      <option>Liberia</option>
+                      <option>Libya</option>
+                      <option>Liechtenstein</option>
+                      <option>Lithuania</option>
+                      <option>Luxembourg</option>
+                      <option>Madagascar</option>
+                      <option>Malawi</option>
+                      <option>Malaysia</option>
+                      <option>Maldives</option>
+                      <option>Mali</option>
+                      <option>Malta</option>
+                      <option>Marshall Islands</option>
+                      <option>Mauritania</option>
+                      <option>Mauritius</option>
+                      <option>Mexico</option>
+                      <option>Micronesia</option>
+                      <option>Moldova</option>
+                      <option>Monaco</option>
+                      <option>Mongolia</option>
+                      <option>Montenegro</option>
+                      <option>Morocco</option>
+                      <option>Mozambique</option>
+                      <option>Myanmar</option>
+                      <option>Namibia</option>
+                      <option>Nauru</option>
+                      <option>Nepal</option>
+                      <option>Netherlands</option>
+                      <option>New Zealand</option>
+                      <option>Nicaragua</option>
+                      <option>Niger</option>
+                      <option>Nigeria</option>
+                      <option>North Macedonia</option>
+                      <option>Norway</option>
+                      <option>Oman</option>
+                      <option>Pakistan</option>
+                      <option>Palau</option>
+                      <option>Panama</option>
+                      <option>Papua New Guinea</option>
+                      <option>Paraguay</option>
+                      <option>Peru</option>
+                      <option>Philippines</option>
+                      <option>Poland</option>
+                      <option>Portugal</option>
+                      <option>Qatar</option>
+                      <option>Romania</option>
+                      <option>Russia</option>
+                      <option>Rwanda</option>
+                      <option>Saint Kitts and Nevis</option>
+                      <option>Saint Lucia</option>
+                      <option>Saint Vincent and the Grenadines</option>
+                      <option>Samoa</option>
+                      <option>San Marino</option>
+                      <option>Sao Tome and Principe</option>
+                      <option>Saudi Arabia</option>
+                      <option>Senegal</option>
+                      <option>Serbia</option>
+                      <option>Seychelles</option>
+                      <option>Sierra Leone</option>
+                      <option>Singapore</option>
+                      <option>Slovakia</option>
+                      <option>Slovenia</option>
+                      <option>Solomon Islands</option>
+                      <option>Somalia</option>
+                      <option>South Africa</option>
+                      <option>Spain</option>
+                      <option>Sri Lanka</option>
+                      <option>Sudan</option>
+                      <option>South Sudan</option>
+                      <option>Suriname</option>
+                      <option>Sweden</option>
+                      <option>Switzerland</option>
+                      <option>Syria</option>
+                      <option>Tajikistan</option>
+                      <option>Tanzania</option>
+                      <option>Thailand</option>
+                      <option>Timor-Leste</option>
+                      <option>Togo</option>
+                      <option>Tonga</option>
+                      <option>Trinidad and Tobago</option>
+                      <option>Tunisia</option>
+                      <option>Turkey</option>
+                      <option>Turkmenistan</option>
+                      <option>Tuvalu</option>
+                      <option>Uganda</option>
+                      <option>Ukraine</option>
+                      <option>United Arab Emirates</option>
+                      <option>United Kingdom</option>
+                      <option>United States</option>
+                      <option>Uruguay</option>
+                      <option>Uzbekistan</option>
+                      <option>Vanuatu</option>
+                      <option>Vatican City</option>
+                      <option>Venezuela</option>
+                      <option>Vietnam</option>
+                      <option>Yemen</option>
+                      <option>Zambia</option>
+                      <option>Zimbabwe</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="attachments-block"
+                style="
+                  background: #cc0000;
+                  border: 1px solid #ffff;
+                  border-radius: 8px;
+                  padding: 16px;
+                  margin-top: 16px;
+                "
+              >
+                <div style="display: flex; align-items: flex-start; gap: 12px">
+                  <div style="font-size: 20px; margin-top: 4px">⚠️</div>
+                  <div>
+                    <div
+                      style="
+                        font-weight: 600;
+                        color: #ffff;
+                        margin-bottom: 8px;
+                        font-size: 14px;
+                      "
+                    >
+                      Important - Document Submission
+                    </div>
+                    <div
+                      style="color: #ffff; font-size: 13px; line-height: 1.5"
+                    >
+                      <strong
+                        >Please send the following documents to the IMAM TRAVELS
+                        COMPANY group:</strong
+                      >
+                      <ul style="margin: 8px 0; padding-left: 20px">
+                        <li>Passport (copy)</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div id="additionalPassengerSections"></div>
+            </div>
+
+            <div class="panel">
+              <h2>Traveller Contact</h2>
+              <div class="input-grid">
+                <div class="field-box">
+                  <input
+                    id="contactEmail"
+                    type="email"
+                    placeholder="you@example.com"
+                  />
+                </div>
+                <div class="field-box">
+                  <input
+                    id="contactPhone"
+                    type="tel"
+                    placeholder="+92 300 0000000"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <h2>Remarks</h2>
+              <div class="field-box">
+                <textarea
+                  id="bookingRemarks"
+                  placeholder="Any notes for the travel team..."
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="action-row">
+              <button
+                id="holdBookingButton"
+                class="button button-secondary"
+                type="button"
+              >
+                Hold Booking
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="summary-side">
+          <div class="summary-card hilite">
+            <h3>Fare Summary</h3>
+            <div class="summary-row summary-row--two-col">
+              <div class="summary-cell">
+                <label>Package Fare</label>
+                <strong id="fareSummaryValue">PKR 0</strong>
+              </div>
+              <div class="summary-cell">
+                <label>Adult x1</label>
+                <strong id="adultFareValue">PKR 0</strong>
+              </div>
+              <div class="summary-cell">
+                <label>Selected Room</label>
+                <strong id="roomTypeValue">Loading...</strong>
+              </div>
+              <div class="summary-cell">
+                <label>Selected Price</label>
+                <strong id="fareValueDisplay">PKR 0</strong>
+              </div>
+            </div>
+            <div class="summary-total">
+              <span>Total Amount</span>
+              <strong id="totalValue">PKR 0</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="main-footer">
+      <div class="footer-container">
+        <div class="footer-block footer-brand-block">
+          <a href="#" class="footer-logo-link">
+            <img
+              src="imam-name-with-logo.png"
+              alt="IMAM TRAVELS"
+              class="footer-logo-img"
+            />
+          </a>
+          <p class="footer-description">
+            IMAM TRAVELS delivers premium Umrah and flight booking experiences
+            with live pricing, hotel packages, and fast online support.
+          </p>
+        </div>
+
+        <div class="footer-block footer-links-block">
+          <h3>Quick Links</h3>
+          <ul class="footer-nav-links">
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Contact Us</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-block footer-contact-block">
+          <h3>Contact</h3>
+          <p>imamtravelsjpj@gmail.com</p>
+          <p>+92-333-1233009</p>
+          <div class="footer-social-links">
+            <a
+              href="https://www.facebook.com/profile.php?id=61553215993240"
+              target="_blank"
+              aria-label="Facebook"
+              ><i class="fab fa-facebook-f"></i
+            ></a>
+            <a
+              href="https://www.instagram.com/imamtravelsjpj/"
+              target="_blank"
+              aria-label="Instagram"
+              ><i class="fab fa-instagram"></i
+            ></a>
+            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" aria-label="Youtube"><i class="fab fa-youtube"></i></a>
+            <a
+              href="https://whatsapp.com/channel/0029VbB1sTGHQbRw4gZ4pq2T"
+              aria-label="Whatsapp"
+              target="_blank"
+              ><i class="fab fa-whatsapp"></i
+            ></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom-bar">
+        <p class="copyright-text">© 2026 IMAM TRAVELS. All Rights Reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      function getLocaleCountryFallback() {
+        const language =
+          navigator.language || navigator.languages?.[0] || "en-US";
+        const localeMatch = language.match(/[-_](\w{2})$/i);
+        const regionCode = localeMatch ? localeMatch[1].toUpperCase() : "PK";
+
+        const countryMap = {
+          PK: "Pakistan",
+          SA: "Saudi Arabia",
+          AE: "United Arab Emirates",
+          OM: "Oman",
+          QA: "Qatar",
+          BH: "Bahrain",
+          KW: "Kuwait",
+          JO: "Jordan",
+          EG: "Egypt",
+          US: "United States",
+          GB: "United Kingdom",
+          IN: "India",
+          BD: "Bangladesh",
+          MY: "Malaysia",
+          SG: "Singapore",
+          ID: "Indonesia",
+          TR: "Turkey",
+          FR: "France",
+          DE: "Germany",
+        };
+
+        return countryMap[regionCode] || "Pakistan";
+      }
+
+      async function detectPreferredCountry() {
+        const fallbackCountry = getLocaleCountryFallback();
+
+        if (!navigator.geolocation) {
+          return fallbackCountry;
+        }
+
+        try {
+          const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+              enableHighAccuracy: false,
+              timeout: 6000,
+              maximumAge: 600000,
+            });
+          });
+
+          const { latitude, longitude } = position.coords;
+          const response = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`,
+          );
+
+          if (!response.ok) {
+            throw new Error("Location lookup failed");
+          }
+
+          const data = await response.json();
+          if (data.countryName) {
+            return data.countryName;
+          }
+        } catch (error) {
+          try {
+            const response = await fetch("https://ipapi.co/json/");
+            if (!response.ok) {
+              throw new Error("IP lookup failed");
+            }
+            const data = await response.json();
+            if (data.country_name) {
+              return data.country_name;
+            }
+          } catch (ipError) {
+            console.warn("Location fallback failed:", ipError);
+          }
+        }
+
+        return fallbackCountry;
+      }
+
+      async function applyAutoCountrySelection(root = document) {
+        const preferredCountry = await detectPreferredCountry();
+        const selectors = root.querySelectorAll(
+          'select[id="travellerNationality"], select[id="passportCountry"], select[id^="travellerNationality"], select[id^="passportCountry"]',
+        );
+
+        selectors.forEach((select) => {
+          if (!select || !select.options || !select.options.length) return;
+          const currentValue = String(select.value || "").trim();
+          if (currentValue && currentValue !== "Select") return;
+
+          Array.from(select.options).forEach((option) => {
+            if (
+              option.value &&
+              option.value.trim().toLowerCase() ===
+                preferredCountry.toLowerCase()
+            ) {
+              select.value = option.value;
+            }
+          });
+        });
+      }
+
+      window.detectPreferredCountry = detectPreferredCountry;
+      window.applyAutoCountrySelection = applyAutoCountrySelection;
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const storedData = sessionStorage.getItem("selectedPackageData");
+        const storedCurrentUser = sessionStorage.getItem("currentUser");
+        let currentUser = null;
+        try {
+          currentUser = storedCurrentUser
+            ? JSON.parse(storedCurrentUser)
+            : null;
+        } catch (err) {
+          currentUser = null;
+        }
+
+        if (!storedData) {
+          document.body.innerHTML = `
+            <div class="page">
+              <div class="empty-state">
+                <h1>No selected package found</h1>
+                <p>Please return to the package list and select a package first.</p>
+                <p><a href="umrah_hajj.html">Back to Packages</a></p>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        let pkg;
+        try {
+          pkg = JSON.parse(storedData);
+        } catch (err) {
+          console.error(err);
+          document.body.innerHTML = `
+            <div class="page">
+              <div class="empty-state">
+                <h1>Unable to load selected package</h1>
+                <p>Please refresh or select a package again.</p>
+                <p><a href="umrah_hajj.html">Back to Packages</a></p>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        const hotelRow = (pkg.pricingMatrix && pkg.pricingMatrix[0]) || {};
+        const selectedPrice =
+          pkg.selectedPrice ||
+          hotelRow.sharingPrice ||
+          hotelRow.doublePrice ||
+          hotelRow.triplePrice ||
+          hotelRow.quadPrice ||
+          0;
+        const departure = pkg.departureTime
+          ? new Date(pkg.departureTime.replace(" ", "T"))
+          : null;
+        const arrival = pkg.returnTime
+          ? new Date(pkg.returnTime.replace(" ", "T"))
+          : null;
+        const makkahHotel = pkg.makkahHotel || hotelRow.makkahHotel || "";
+        const madinahHotel = pkg.madinahHotel || hotelRow.madinahHotel || "";
+        const makkahHotelDistance =
+          pkg.makkahHotelDistance || hotelRow.makkahHotelDistance || "";
+        const madinahHotelDistance =
+          pkg.madinahHotelDistance || hotelRow.madinahHotelDistance || "";
+        const durationDays =
+          departure && arrival
+            ? Math.max(
+                1,
+                Math.round((arrival - departure) / (1000 * 60 * 60 * 24)),
+              )
+            : 0;
+        const passengerCount =
+          pkg.passengerCount ||
+          pkg.passengers ||
+          (pkg.selectedRoomType === "double"
+            ? 2
+            : pkg.selectedRoomType === "triple"
+              ? 3
+              : pkg.selectedRoomType === "quad"
+                ? 4
+                : 1);
+
+        let currentPassengerCount = Number(passengerCount) || 1;
+
+        const airlineLogoMatchers = [
+          { regex: /\b(air blue|airblue)\b/i, logo: "PA.png" },
+          { regex: /\b(air sial)\b/i, logo: "PF.png" },
+          { regex: /\b(fly jinnah)\b/i, logo: "9P.png" },
+          {
+            regex: /\b(jazeera|jazeera air|jazeera airways|j9)\b/i,
+            logo: "J9.png",
+          },
+          {
+            regex: /\b(flynas|fly nas|fly nas airlines|xy)\b/i,
+            logo: "XY.png",
+          },
+          {
+            regex: /\b(flyadeal|fly adeal|fly adeal airlines)\b/i,
+            logo: "XY.png",
+          },
+          { regex: /\b(air arabia)\b/i, logo: "G9.png" },
+          { regex: /\b(salam air)\b/i, logo: "OV.png" },
+          {
+            regex:
+              /\b(pia|pakistan airline|pakistan airlines|pakistan international)\b/i,
+            logo: "PK.png",
+          },
+          { regex: /\b(saudi arabian|saudi)\b/i, logo: "SV.png" },
+          { regex: /\b(emirates)\b/i, logo: "EK.png" },
+          { regex: /\b(qatar airways|qatar)\b/i, logo: "QR.png" },
+          { regex: /\b(flydubai|fly dubai|fy|fz)\b/i, logo: "FZ.png" },
+          { regex: /\b(etihad airways|etihad)\b/i, logo: "EY.png" },
+          { regex: /\b(9p)\b/i, logo: "9P.png" },
+          { regex: /\b(g9)\b/i, logo: "G9.png" },
+          { regex: /\b(ov)\b/i, logo: "OV.png" },
+          { regex: /\b(pf)\b/i, logo: "PF.png" },
+          { regex: /\b(pk)\b/i, logo: "PK.png" },
+          { regex: /\b(sv)\b/i, logo: "SV.png" },
+          { regex: /\b(ek)\b/i, logo: "EK.png" },
+          { regex: /\b(qr)\b/i, logo: "QR.png" },
+          { regex: /\b(pa)\b/i, logo: "PA.png" },
+          { regex: /\b(fz)\b/i, logo: "FZ.png" },
+          { regex: /\b(ey)\b/i, logo: "EY.png" },
+        ];
+
+        function getAirlineLogoSrc(name) {
+          if (!name) return null;
+          for (const entry of airlineLogoMatchers) {
+            if (entry.regex.test(name)) {
+              return entry.logo;
+            }
+          }
+          return null;
+        }
+
+        const flightLogoEl = document.getElementById("flightLogo");
+        const logoSrc = getAirlineLogoSrc(pkg.airline);
+        if (flightLogoEl && logoSrc) {
+          flightLogoEl.innerHTML = `<img src="${logoSrc}" alt="${pkg.airline} logo" />`;
+        } else if (flightLogoEl) {
+          flightLogoEl.textContent = pkg.airline ? pkg.airline.charAt(0) : "✈";
+        }
+        document.getElementById("flightTitle").textContent =
+          pkg.airline || "Airline";
+        document.getElementById("departureValue").textContent =
+          departure && !Number.isNaN(departure.getTime())
+            ? departure.toLocaleString([], {
+                dateStyle: "medium",
+                timeStyle: "short",
+              })
+            : "Loading...";
+        document.getElementById("departureLabel").textContent =
+          pkg.outboundSector || pkg.sector || "Departure";
+        document.getElementById("returnValue").textContent =
+          arrival && !Number.isNaN(arrival.getTime())
+            ? arrival.toLocaleString([], {
+                dateStyle: "medium",
+                timeStyle: "short",
+              })
+            : "Loading...";
+        document.getElementById("returnLabel").textContent =
+          pkg.inboundSector || pkg.returnSector || "Arrival";
+        document.getElementById("tripDuration").textContent =
+          `${durationDays} day${durationDays === 1 ? "" : "s"}`;
+        document.getElementById("passengerCount").textContent = passengerCount;
+        document.getElementById("roomTypeValue").textContent =
+          pkg.selectedRoomType || "Sharing";
+        document.getElementById("fareValueDisplay").textContent =
+          `PKR ${Number(selectedPrice).toLocaleString()}`;
+
+        function updateFareSummary(count) {
+          const unitFare = Number(selectedPrice) || 0;
+          const totalFare = unitFare * count;
+          const adultLabel =
+            document.querySelector("#adultFareValue")?.previousElementSibling;
+          if (adultLabel) {
+            adultLabel.textContent = `Adult x${count}`;
+          }
+          document.getElementById("adultFareValue").textContent =
+            `PKR ${totalFare.toLocaleString()}`;
+          document.getElementById("fareSummaryValue").textContent =
+            `PKR ${unitFare.toLocaleString()}`;
+          document.getElementById("totalValue").textContent =
+            `PKR ${totalFare.toLocaleString()}`;
+        }
+
+        renderAdditionalPassengers(currentPassengerCount);
+        updateFareSummary(currentPassengerCount);
+
+        const addPassengerButton =
+          document.getElementById("addPassengerButton");
+        if (addPassengerButton) {
+          if (pkg.selectedRoomType === "sharing") {
+            addPassengerButton.style.display = "inline-flex";
+            addPassengerButton.disabled = currentPassengerCount >= 10;
+            addPassengerButton.addEventListener("click", () => {
+              if (currentPassengerCount >= 10) {
+                alert("Maximum 10 passengers may be added.");
+                return;
+              }
+              currentPassengerCount = Number(currentPassengerCount) + 1;
+              document.getElementById("passengerCount").textContent =
+                currentPassengerCount;
+              renderAdditionalPassengers(currentPassengerCount);
+              updateFareSummary(currentPassengerCount);
+              const lastSection = document.querySelector(
+                ".additional-passenger-block:last-child",
+              );
+              if (lastSection) {
+                lastSection.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                });
+              }
+              addPassengerButton.disabled = currentPassengerCount >= 10;
+            });
+          } else {
+            addPassengerButton.style.display = "none";
+          }
+        }
+
+        updateFareSummary(currentPassengerCount);
+        const seatsElement = document.getElementById("seatsValue");
+        if (seatsElement) {
+          seatsElement.textContent = pkg.availableSeats || "N/A";
+        }
+        const notesElement = document.getElementById("notesValue");
+        if (notesElement) {
+          notesElement.textContent = pkg.flexibility || "Standard";
+        }
+        document.getElementById("hotelMakkah").textContent =
+          makkahHotel || "No details available.";
+        document.getElementById("hotelMadinah").textContent =
+          madinahHotel || "No details available.";
+
+        const today = new Date();
+        const isoToday = today.toISOString().split("T")[0];
+
+        function getPassengerOptions() {
+          const titleSelect = document.getElementById("travellerTitle");
+          const nationalitySelect = document.getElementById(
+            "travellerNationality",
+          );
+          const passportTypeSelect =
+            document.getElementById("documentType") ||
+            document.getElementById("passportType");
+          const passportCountrySelect =
+            document.getElementById("passportCountry");
+          return {
+            titleOptions: titleSelect ? titleSelect.innerHTML : "",
+            nationalityOptions: nationalitySelect
+              ? nationalitySelect.innerHTML
+              : "",
+            passportTypeOptions: passportTypeSelect
+              ? passportTypeSelect.innerHTML
+              : "",
+            passportCountryOptions: passportCountrySelect
+              ? passportCountrySelect.innerHTML
+              : "",
+          };
+        }
+
+        function getLocaleCountryFallback() {
+          const language =
+            navigator.language || navigator.languages?.[0] || "en-US";
+          const localeMatch = language.match(/[-_](\w{2})$/i);
+          const regionCode = localeMatch ? localeMatch[1].toUpperCase() : "PK";
+
+          const countryMap = {
+            PK: "Pakistan",
+            SA: "Saudi Arabia",
+            AE: "United Arab Emirates",
+            OM: "Oman",
+            QA: "Qatar",
+            BH: "Bahrain",
+            KW: "Kuwait",
+            JO: "Jordan",
+            EG: "Egypt",
+            US: "United States",
+            GB: "United Kingdom",
+            IN: "India",
+            BD: "Bangladesh",
+            MY: "Malaysia",
+            SG: "Singapore",
+            ID: "Indonesia",
+            TR: "Turkey",
+            FR: "France",
+            DE: "Germany",
+          };
+
+          return countryMap[regionCode] || "Pakistan";
+        }
+
+        async function detectPreferredCountry() {
+          const fallbackCountry = getLocaleCountryFallback();
+
+          if (!navigator.geolocation) {
+            return fallbackCountry;
+          }
+
+          try {
+            const position = await new Promise((resolve, reject) => {
+              navigator.geolocation.getCurrentPosition(resolve, reject, {
+                enableHighAccuracy: false,
+                timeout: 6000,
+                maximumAge: 600000,
+              });
+            });
+
+            const { latitude, longitude } = position.coords;
+            const response = await fetch(
+              `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`,
+            );
+
+            if (!response.ok) {
+              throw new Error("Location lookup failed");
+            }
+
+            const data = await response.json();
+            if (data.countryName) {
+              return data.countryName;
+            }
+          } catch (error) {
+            try {
+              const response = await fetch("https://ipapi.co/json/");
+              if (!response.ok) {
+                throw new Error("IP lookup failed");
+              }
+              const data = await response.json();
+              if (data.country_name) {
+                return data.country_name;
+              }
+            } catch (ipError) {
+              console.warn("Location fallback failed:", ipError);
+            }
+          }
+
+          return fallbackCountry;
+        }
+
+        async function applyAutoCountrySelection(root = document) {
+          const preferredCountry = await detectPreferredCountry();
+          const selectors = root.querySelectorAll(
+            'select[id="travellerNationality"], select[id="passportCountry"], select[id^="travellerNationality"], select[id^="passportCountry"]',
+          );
+
+          selectors.forEach((select) => {
+            if (!select || !select.options || !select.options.length) return;
+            const currentValue = String(select.value || "").trim();
+            if (currentValue && currentValue !== "Select") return;
+
+            Array.from(select.options).forEach((option) => {
+              if (
+                option.value &&
+                option.value.trim().toLowerCase() ===
+                  preferredCountry.toLowerCase()
+              ) {
+                select.value = option.value;
+              }
+            });
+          });
+        }
+
+        function renderAdditionalPassengers(count) {
+          const container = document.getElementById(
+            "additionalPassengerSections",
+          );
+          if (!container) return;
+          container.innerHTML = "";
+          if (count <= 1) return;
+
+          const options = getPassengerOptions();
+          for (let index = 2; index <= count; index += 1) {
+            const section = document.createElement("div");
+            section.className = "additional-passenger-block";
+            section.innerHTML = `
+              <div class="section-title-row">
+                <div class="section-subtitle">${index}. Adult Passenger</div>
+                <button type="button" class="remove-passenger-button">
+                  ✕ Remove
+                </button>
+              </div>
+              <div class="form-section">
+                <div class="input-grid input-grid-5">
+                  <div class="field-box">
+                    <label>Title</label>
+                    <select id="travellerTitle${index}">${options.titleOptions}</select>
+                  </div>
+                  <div class="field-box">
+                    <label>First Name</label>
+                    <input id="travellerFirstName${index}" type="text" placeholder="First Name" />
+                  </div>
+                  <div class="field-box">
+                    <label>Last Name</label>
+                    <input id="travellerLastName${index}" type="text" placeholder="Last Name" />
+                  </div>
+                  <div class="field-box date-field">
+                    <label>DOB</label>
+                    <div class="date-input-wrapper">
+                      <input id="dobInput${index}" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" class="flatpickr-input" autocomplete="off" />
+                      <button type="button" class="date-picker-button" data-target="dobInput${index}" aria-label="Open calendar">
+                        <i class="fas fa-calendar-alt"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="field-box">
+                    <label>Nationality</label>
+                    <select id="travellerNationality${index}">${options.nationalityOptions}</select>
+                  </div>
+                </div>
+                <div class="input-grid input-grid-5">
+                  <div class="field-box">
+                    <label>Document Type</label>
+                    <select id="passportType${index}">${options.passportTypeOptions}</select>
+                  </div>
+                  <div class="field-box">
+                    <label>Document Number</label>
+                    <input id="passportNumber${index}" type="text" placeholder="Enter doc number" />
+                  </div>
+                  <div class="field-box date-field">
+                    <label>Passport issue</label>
+                    <div class="date-input-wrapper">
+                      <input id="passportIssue${index}" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" class="flatpickr-input" autocomplete="off" />
+                      <button type="button" class="date-picker-button" data-target="passportIssue${index}" aria-label="Open calendar">
+                        <i class="fas fa-calendar-alt"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="field-box date-field">
+                    <label>Passport expiry</label>
+                    <div class="date-input-wrapper">
+                      <input id="passportExpiry${index}" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" class="flatpickr-input" autocomplete="off" />
+                      <button type="button" class="date-picker-button" data-target="passportExpiry${index}" aria-label="Open calendar">
+                        <i class="fas fa-calendar-alt"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="field-box">
+                    <label>Passport country</label>
+                    <select id="passportCountry${index}">${options.passportCountryOptions}</select>
+                  </div>
+                </div>
+                <div class="attachments-block" style="background: #cc0000; border: 1px solid #ffff; border-radius: 8px; padding: 16px; margin-top: 16px;">
+                  <div style="display: flex; align-items: flex-start; gap: 12px;">
+                    <div style="font-size: 20px; margin-top: 4px;">⚠️</div>
+                    <div>
+                      <div style="font-weight: 600; color: #ffff; margin-bottom: 8px; font-size: 14px;">Important - Document Submission</div>
+                      <div style="color: #ffff; font-size: 13px; line-height: 1.5;">
+                        <strong>Please send the following documents to the IMAM TRAVELS COMPANY group:</strong>
+                        <ul style="margin: 8px 0; padding-left: 20px;">
+                          <li>Passport (copy)</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `;
+            const removeButton = section.querySelector(
+              ".remove-passenger-button",
+            );
+            if (removeButton) {
+              removeButton.addEventListener("click", () => {
+                if (currentPassengerCount <= 2) {
+                  currentPassengerCount = 1;
+                } else {
+                  currentPassengerCount -= 1;
+                }
+                document.getElementById("passengerCount").textContent =
+                  currentPassengerCount;
+                addPassengerButton.disabled = false;
+                renderAdditionalPassengers(currentPassengerCount);
+                updateFareSummary(currentPassengerCount);
+              });
+            }
+            container.appendChild(section);
+          }
+
+          window.applyAutoCountrySelection(container);
+
+          document
+            .querySelectorAll(
+              "#additionalPassengerSections .date-input-wrapper input",
+            )
+            .forEach((input) => {
+              if (input._flatpickr) return;
+              if (typeof flatpickr === "undefined") {
+                input.setAttribute("autocomplete", "off");
+                return;
+              }
+              const isDobInput = input.id.startsWith("dobInput");
+              const picker = flatpickr(input, {
+                allowInput: true,
+                dateFormat: "d/m/Y",
+                clickOpens: true,
+                maxDate: isDobInput ? "today" : null,
+                disableMobile: true,
+                onReady: () => {
+                  input.setAttribute("autocomplete", "off");
+                },
+                onChange: (selectedDates) => {
+                  if (selectedDates.length > 0) {
+                    input.dataset.fromFlatpickr = "true";
+                    input.value = picker.formatDate(selectedDates[0], "d/m/Y");
+                    setTimeout(() => {
+                      delete input.dataset.fromFlatpickr;
+                    }, 0);
+                  }
+                },
+              });
+
+              const formatDateInput = (value) => {
+                const digitsOnly = value.replace(/\D/g, "").slice(0, 8);
+                if (digitsOnly.length <= 2) return digitsOnly;
+                if (digitsOnly.length <= 4) {
+                  return `${digitsOnly.slice(0, 2)}/${digitsOnly.slice(2)}`;
+                }
+                return `${digitsOnly.slice(0, 2)}/${digitsOnly.slice(2, 4)}/${digitsOnly.slice(4)}`;
+              };
+
+              input.addEventListener("input", () => {
+                if (input.dataset.fromFlatpickr === "true") return;
+                const formattedValue = formatDateInput(input.value);
+                if (formattedValue !== input.value) {
+                  input.value = formattedValue;
+                }
+              });
+
+              input._flatpickr = picker;
+            });
+          document
+            .querySelectorAll(
+              "#additionalPassengerSections .date-picker-button",
+            )
+            .forEach((button) => {
+              button.onclick = (event) => {
+                event.preventDefault();
+                const targetId = button.getAttribute("data-target");
+                const targetInput = document.getElementById(targetId);
+                if (!targetInput) return;
+                const picker = targetInput._flatpickr;
+                if (picker) {
+                  picker.open();
+                } else if (typeof targetInput.showPicker === "function") {
+                  try {
+                    targetInput.showPicker();
+                  } catch (err) {
+                    if (err && err.name !== "NotAllowedError") {
+                      console.warn("showPicker error:", err);
+                    }
+                  }
+                }
+              };
+            });
+        }
+
+        function getPassengerField(index, baseId) {
+          const id = index === 1 ? baseId : `${baseId}${index}`;
+          return document.getElementById(id)?.value || "";
+        }
+
+        function getPassengerFieldTrim(index, baseId) {
+          const id = index === 1 ? baseId : `${baseId}${index}`;
+          return document.getElementById(id)?.value.trim() || "";
+        }
+
+        function buildPassengerData(index) {
+          const isFirstPassenger = index === 1;
+          return {
+            title: getPassengerField(index, "travellerTitle"),
+            firstName: getPassengerFieldTrim(index, "travellerFirstName"),
+            lastName: getPassengerFieldTrim(index, "travellerLastName"),
+            dob: getPassengerField(index, "dobInput"),
+            nationality: getPassengerField(index, "travellerNationality"),
+            passportType: getPassengerField(
+              index,
+              isFirstPassenger ? "documentType" : "passportType",
+            ),
+            passportNumber: getPassengerFieldTrim(
+              index,
+              isFirstPassenger ? "documentNumber" : "passportNumber",
+            ),
+            passportIssue: getPassengerField(index, "passportIssue"),
+            passportExpiry: getPassengerField(index, "passportExpiry"),
+            passportCountry: getPassengerField(index, "passportCountry"),
+            attachments: [], // Documents to be sent via WhatsApp/Email
+          };
+        }
+
+        const flightFirebaseConfig = {
+          apiKey: "AIzaSyCEkpq_ui4cI9n8gMcHUVYAAsEfYmvVB1E",
+          authDomain: "imam-travel-website.firebaseapp.com",
+          databaseURL:
+            "https://imam-travel-website-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId: "imam-travel-website",
+          storageBucket: "imam-travel-website.firebasestorage.app",
+          messagingSenderId: "210252178503",
+          appId: "1:210252178503:web:4cbae2ad6abc94f95a9462",
+          measurementId: "G-HL3KDRKPZ1",
+        };
+
+        const isLocalDev =
+          window.location.protocol === "file:" ||
+          /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/.test(
+            window.location.origin,
+          );
+        const isGitHubPagesHost = /^https?:\/\/[^/]+\.github\.io$/.test(
+          window.location.origin,
+        );
+        const supportsStorageUpload = !isLocalDev && !isGitHubPagesHost;
+        const useFirebaseRest = isGitHubPagesHost;
+        const firebaseRestRoot = flightFirebaseConfig.databaseURL.replace(
+          /\/+$/,
+          "",
+        );
+
+        function getFirebaseRestUrl(path = "") {
+          const trimmed = String(path || "").replace(/^\/+|\/+$/g, "");
+          return `${firebaseRestRoot}/${trimmed}.json`;
+        }
+
+        async function firebaseDbRestRequest(
+          path,
+          method = "GET",
+          body = null,
+        ) {
+          const url = getFirebaseRestUrl(path);
+          const options = {
+            method,
+            headers: {
+              "Content-Type": "application/json",
+            },
+          };
+          if (body !== null) {
+            options.body = JSON.stringify(body);
+          }
+          const response = await fetch(url, options);
+          if (!response.ok) {
+            const text = await response.text();
+            throw new Error(
+              `Firebase REST ${method} failed: ${response.status} ${text}`,
+            );
+          }
+          return response.json();
+        }
+
+        function firebaseDbPushRest(path, data) {
+          return firebaseDbRestRequest(path, "POST", data);
+        }
+
+        function firebaseDbSetRest(path, data) {
+          return firebaseDbRestRequest(path, "PUT", data);
+        }
+
+        let db = null;
+        let storage = null;
+        if (typeof firebase !== "undefined") {
+          if (!firebase.apps.length) {
+            firebase.initializeApp(flightFirebaseConfig);
+          }
+          db = firebase.database();
+          if (supportsStorageUpload) {
+            try {
+              storage = firebase.storage();
+            } catch (e) {
+              console.warn("Firebase storage not available:", e);
+              storage = null;
+            }
+          } else if (!isLocalDev && !isGitHubPagesHost) {
+            console.warn(
+              "Firebase Storage uploads are disabled for this origin due to CORS restrictions.",
+            );
+          }
+        }
+
+        document
+          .querySelectorAll(".date-input-wrapper input")
+          .forEach((input) => {
+            if (typeof flatpickr === "undefined") {
+              input.setAttribute("autocomplete", "off");
+              return;
+            }
+
+            const isDobInput = input.id.startsWith("dobInput");
+            const picker = flatpickr(input, {
+              allowInput: true,
+              dateFormat: "d/m/Y",
+              clickOpens: true,
+              maxDate: isDobInput ? "today" : null,
+              disableMobile: true,
+              onReady: () => {
+                input.setAttribute("autocomplete", "off");
+              },
+              onChange: (selectedDates) => {
+                if (selectedDates.length > 0) {
+                  input.dataset.fromFlatpickr = "true";
+                  input.value = picker.formatDate(selectedDates[0], "d/m/Y");
+                  setTimeout(() => {
+                    delete input.dataset.fromFlatpickr;
+                  }, 0);
+                }
+              },
+            });
+
+            const formatDateInput = (value) => {
+              const digitsOnly = value.replace(/\D/g, "").slice(0, 8);
+              if (digitsOnly.length <= 2) return digitsOnly;
+              if (digitsOnly.length <= 4) {
+                return `${digitsOnly.slice(0, 2)}/${digitsOnly.slice(2)}`;
+              }
+              return `${digitsOnly.slice(0, 2)}/${digitsOnly.slice(2, 4)}/${digitsOnly.slice(4)}`;
+            };
+
+            input.addEventListener("input", () => {
+              if (input.dataset.fromFlatpickr === "true") return;
+              const formattedValue = formatDateInput(input.value);
+              if (formattedValue !== input.value) {
+                input.value = formattedValue;
+              }
+            });
+
+            input.addEventListener("blur", () => {
+              if (input.dataset.fromFlatpickr === "true") return;
+              const value = input.value.trim();
+              if (!value) return;
+              const formattedValue = formatDateInput(value);
+              if (formattedValue !== value) {
+                input.value = formattedValue;
+              }
+            });
+          });
+
+        function cleanupFirebaseConnection() {
+          if (typeof firebase === "undefined" || !firebase.apps.length) return;
+          try {
+            const database = firebase.database();
+            if (database && typeof database.goOffline === "function") {
+              database.goOffline();
+            }
+          } catch (error) {
+            console.warn("Firebase cleanup failed:", error);
+          }
+        }
+
+        window.addEventListener("pagehide", cleanupFirebaseConnection, {
+          capture: true,
+        });
+        window.addEventListener("pageshow", function (event) {
+          if (!event.persisted) return;
+          if (typeof firebase === "undefined" || !firebase.apps.length) return;
+
+          try {
+            const database = firebase.database();
+            if (database && typeof database.goOnline === "function") {
+              database.goOnline();
+            }
+          } catch (error) {
+            console.warn("Firebase restore failed:", error);
+          }
+        });
+
+        const dateInputs = document.querySelectorAll(
+          'input[id^="dobInput"], input[id^="passportIssue"], input[id^="passportExpiry"]',
+        );
+        if (dateInputs.length) {
+          dateInputs.forEach((input) => {
+            input.max = isoToday;
+          });
+        }
+
+        const holdBookingButton = document.getElementById("holdBookingButton");
+        if (holdBookingButton) {
+          const originalButtonText = holdBookingButton.textContent;
+          const setButtonState = (isSaving) => {
+            holdBookingButton.disabled = isSaving;
+            holdBookingButton.textContent = isSaving
+              ? "Saving, please wait..."
+              : originalButtonText;
+          };
+
+          holdBookingButton.addEventListener("click", async () => {
+            if (!db) {
+              alert(
+                "Booking server is not available right now. Please try again later.",
+              );
+              return;
+            }
+
+            setButtonState(true);
+
+            const bookingData = {
+              travelerTitle:
+                document.getElementById("travellerTitle")?.value || "",
+              firstName:
+                document.getElementById("travellerFirstName")?.value.trim() ||
+                "",
+              lastName:
+                document.getElementById("travellerLastName")?.value.trim() ||
+                "",
+              dob: document.getElementById("dobInput")?.value || "",
+              nationality:
+                document.getElementById("travellerNationality")?.value || "",
+              passportType:
+                document.getElementById("passportType")?.value || "",
+              passportNumber:
+                document.getElementById("passportNumber")?.value.trim() || "",
+              passportIssue:
+                document.getElementById("passportIssue")?.value || "",
+              passportExpiry:
+                document.getElementById("passportExpiry")?.value || "",
+              passportCountry:
+                document.getElementById("passportCountry")?.value || "",
+              email:
+                document.getElementById("contactEmail")?.value.trim() || "",
+              phone:
+                document.getElementById("contactPhone")?.value.trim() || "",
+              remarks:
+                document.getElementById("bookingRemarks")?.value.trim() || "",
+              packageAirline: pkg?.airline || "",
+              packageSector: pkg?.sector || "",
+              packageOutboundSector: pkg?.outboundSector || "",
+              packageInboundSector: pkg?.inboundSector || "",
+              departureTime: departure ? departure.toISOString() : "",
+              returnTime: arrival ? arrival.toISOString() : "",
+              selectedPrice: Number(selectedPrice) || 0,
+              roomType: pkg?.selectedRoomType || "",
+              passengerCount: currentPassengerCount || 1,
+              totalFare:
+                (Number(selectedPrice) || 0) * (currentPassengerCount || 1),
+              makkahHotel: makkahHotel || "",
+              madinahHotel: madinahHotel || "",
+              makkahHotelDistance: makkahHotelDistance || "",
+              madinahHotelDistance: madinahHotelDistance || "",
+              passengers: Array.from(
+                { length: currentPassengerCount },
+                (_, idx) => buildPassengerData(idx + 1),
+              ),
+              status: "Held",
+              holdStartedAt: Date.now(),
+              holdExpiresAt: Date.now() + 60 * 60 * 1000,
+              agentId: currentUser?.id || currentUser?.username || "",
+              agentName:
+                currentUser?.displayName ||
+                currentUser?.name ||
+                currentUser?.username ||
+                "",
+              savedBy: currentUser?.displayName || currentUser?.username || "",
+              sourcePage: "flight-conform",
+              timestamp: firebase.database.ServerValue.TIMESTAMP,
+            };
+
+            try {
+              console.log("Booking data to save:", bookingData);
+
+              // Create a new DB ref to reserve an id for this booking
+              let bookingId = null;
+              const saveViaRest = useFirebaseRest || !db;
+              const bookingRef = saveViaRest
+                ? null
+                : db.ref("user_bookings").push();
+              if (bookingRef) {
+                bookingId = bookingRef.key;
+              }
+
+              // Note: Documents will be sent via WhatsApp/Email per user instructions
+              // No file upload functionality in this version
+
+              if (saveViaRest) {
+                const result = await firebaseDbPushRest(
+                  "user_bookings",
+                  bookingData,
+                );
+                bookingId = result && result.name ? result.name : bookingId;
+              } else {
+                await bookingRef.set(bookingData);
+              }
+
+              if (bookingId) {
+                window.location.href = `agent_viewbooking.html?bookingId=${encodeURIComponent(
+                  bookingId,
+                )}&source=user_bookings`;
+              } else {
+                alert(
+                  "Booking held successfully, but the booking details page could not be opened.",
+                );
+              }
+            } catch (error) {
+              console.error("Booking save failed:", error);
+              try {
+                localStorage.setItem(
+                  "lastFailedBooking",
+                  JSON.stringify(bookingData),
+                );
+              } catch (e) {
+                console.warn("Could not save failed booking locally:", e);
+              }
+              alert(
+                "Unable to hold booking right now. Booking was saved locally — please contact admin with the 'lastFailedBooking' data if the server remains unavailable.",
+              );
+            } finally {
+              setButtonState(false);
+            }
+          });
+        }
+      });
+
+      window.toggleProfileDropdown = function (event) {
+        event.stopPropagation();
+        const menu = document.getElementById("profileDropdownMenu");
+        if (!menu) return;
+        menu.classList.toggle("show");
+      };
+
+      window.openSideMenu = function () {
+        const overlay = document.getElementById("sideMenuOverlay");
+        if (!overlay) return;
+        overlay.classList.add("open");
+        overlay.setAttribute("aria-hidden", "false");
+      };
+
+      window.closeSideMenu = function () {
+        const overlay = document.getElementById("sideMenuOverlay");
+        if (!overlay) return;
+        overlay.classList.remove("open");
+        overlay.setAttribute("aria-hidden", "true");
+      };
+
+      window.logoutUser = function () {
+        window.location.href = "ticketing.html";
+      };
+
+      window.addEventListener("click", function (event) {
+        const menu = document.getElementById("profileDropdownMenu");
+        if (!menu) return;
+        const dropdown = menu.closest(".profile-dropdown");
+        if (!dropdown) return;
+        if (!dropdown.contains(event.target)) {
+          menu.classList.remove("show");
+        }
+
+        const overlay = document.getElementById("sideMenuOverlay");
+        if (
+          overlay &&
+          overlay.classList.contains("open") &&
+          event.target === overlay
+        ) {
+          closeSideMenu();
+        }
+      });
+    </script>
+    <script src="main.js"></script>
+  </body>
+</html>

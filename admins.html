@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Imam Travel Admin Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="admins.css" />
+    <link rel="stylesheet" href="responsive.css" />
+  </head>
+  <body>
+    <header class="company-header">
+      <a href="admins.html" class="header-link">
+        <img
+          src="imam travel and tours logo.jpeg"
+          alt="Logo"
+          class="company-logo"
+        />
+        <span class="company-name">Imam Travel Company</span>
+      </a>
+    </header>
+
+    <nav class="top-nav">
+      <div class="nav-left"></div>
+      <div class="nav-right">
+        <span>Quick links <i class="fas fa-caret-down"></i></span>
+        <span>Configuration</span>
+        <span>Change password</span>
+        <span class="logout" onclick="logoutUser()" style="cursor: pointer">
+          <i class="fas fa-key"></i> Logout
+        </span>
+      </div>
+    </nav>
+
+    <div class="main-container">
+      <aside class="sidebar">
+        <div id="ticketSidebar">
+          <div class="menu-group">
+            <button class="menu-head active" onclick="toggleMenu('trans')">
+              Transactions <i class="fas fa-caret-down"></i>
+            </button>
+
+            <div id="trans" class="menu-content show">
+              <a href="umrah-pack.html"
+                ><button class="sub-link">Ummrah booking hold</button></a
+              >
+              <a href="admin_viewgroupbooking.html"
+                ><button class="sub-link">Group Bookings</button></a
+              >
+              <a href="admin_viewholdgroupbooking.html"
+                ><button class="sub-link">Group Bookings Hold</button></a
+              >
+              <a href="ticket_booking.html"
+                ><button class="sub-link">Under working</button></a
+              >
+              <a href="#"><button class="sub-link">Under working</button></a>
+              
+              <a href="#"><button class="sub-link">Under working</button></a>
+              
+              <a href="setting.html"
+                ><button class="sub-link">Setting</button></a
+              >
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <section id="dashboard" class="page-panel">
+          <div class="panel-header">
+            <h2>Overview</h2>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <p class="stat-label">Active Packages</p>
+              <h3 id="stat-packages">0</h3>
+            </div>
+            <div class="stat-card">
+              <p class="stat-label">Total Seats</p>
+              <h3 id="stat-seats">0</h3>
+            </div>
+            <div class="stat-card">
+              <p class="stat-label">Upcoming Departures</p>
+              <h3 id="stat-upcoming">0</h3>
+            </div>
+          </div>
+          <div class="insight-card">
+            <h3>What you can do here</h3>
+            <p>
+              Create new Umrah packages, update pricing tiers, and keep route
+              inventory in sync with your website.
+            </p>
+          </div>
+        </section>
+
+        <section id="umrah-packages" class="page-panel active-panel">
+          <div class="panel-header">
+            <h2>Ummrah Packs</h2>
+            <div style="display: flex; gap: 10px; align-items: center">
+              <button
+                class="btn-admin-action"
+                id="btn-open-admin-actions"
+                type="button"
+                style="
+                  background: #fff;
+                  color: var(--primary-red);
+                  border: 1px solid var(--primary-red);
+                "
+              >
+                <i class="fa-solid fa-ellipsis-h"></i> Admin Actions
+              </button>
+
+              <button
+                class="btn-admin-action"
+                id="btn-open-package-modal-inline"
+                type="button"
+              >
+                <i class="fa-solid fa-plus"></i> Add New Package
+              </button>
+            </div>
+          </div>
+
+          <div class="stats-grid compact-grid">
+            <div class="stat-card">
+              <p class="stat-label">Stored Packages</p>
+              <h3 id="stat-packages-inline">0</h3>
+            </div>
+            <div class="stat-card">
+              <p class="stat-label">Seat Availability</p>
+              <h3 id="stat-seats-inline">0</h3>
+            </div>
+            <div class="stat-card">
+              <p class="stat-label">Ready For Display</p>
+              <h3 id="stat-status">Online</h3>
+            </div>
+          </div>
+
+          <div
+            class="data-table-card loading-placeholder"
+            id="packages-list-card"
+          >
+            <span class="loading-spinner" aria-hidden="true"></span>
+            <p>Loading packages…</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div
+      class="modal-overlay"
+      id="hotel-modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Manage hotels dialog"
+    >
+      <div class="modal-window-box" style="width: min(980px, 92vw)">
+        <div class="modal-header-nav">
+          <h3>Manage Hotels</h3>
+          <button
+            class="btn-close-circle"
+            id="btn-close-hotel-modal"
+            type="button"
+          >
+            &times;
+          </button>
+        </div>
+
+        <div style="padding: 18px 22px; overflow: auto">
+          <div style="display: flex; gap: 12px; margin-bottom: 12px">
+            <div style="flex: 1; display: flex; gap: 8px; align-items: center">
+              <input
+                id="makkah-new-input"
+                placeholder="Add Makkah hotel"
+                style="
+                  flex: 0 0 200px;
+                  width: 200px;
+                  padding: 8px 10px;
+                  border: 1px solid var(--border-light);
+                  border-radius: 8px;
+                  background: #fff;
+                "
+              />
+              <input
+                id="makkah-distance-input"
+                placeholder="Distance from Kaaba (m)"
+                style="
+                  flex: 0 0 200px;
+                  width: 200px;
+                  padding: 8px 10px;
+                  border: 1px solid var(--border-light);
+                  border-radius: 8px;
+                  background: #fff;
+                "
+              />
+              <button
+                id="btn-add-makkah"
+                class="btn-admin-action"
+                style="padding: 8px 10px"
+              >
+                Add
+              </button>
+            </div>
+
+            <div style="flex: 1; display: flex; gap: 8px; align-items: center">
+              <input
+                id="madinah-new-input"
+                placeholder="Add Madinah hotel"
+                style="
+                  flex: 0 0 200px;
+                  width: 200px;
+                  padding: 8px 10px;
+                  border: 1px solid var(--border-light);
+                  border-radius: 8px;
+                  background: #fff;
+                "
+              />
+              <input
+                id="madinah-distance-input"
+                placeholder="Distance from Al-Madina (m)"
+                style="
+                  flex: 0 0 200px;
+                  width: 200px;
+                  padding: 8px 10px;
+                  border: 1px solid var(--border-light);
+                  border-radius: 8px;
+                  background: #fff;
+                "
+              />
+              <button
+                id="btn-add-madinah"
+                class="btn-admin-action"
+                style="padding: 8px 10px"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 18px">
+            <div
+              style="
+                flex: 1;
+                background: #fff;
+                border: 1px solid var(--border-light);
+                border-radius: 10px;
+                padding: 12px;
+              "
+            >
+              <h4 style="margin: 0 0 10px">Makkah Hotels</h4>
+              <ul
+                id="makkah-hotel-list"
+                style="
+                  list-style: none;
+                  padding: 0;
+                  margin: 0;
+                  max-height: 320px;
+                  overflow: auto;
+                "
+              ></ul>
+            </div>
+
+            <div
+              style="
+                flex: 1;
+                background: #fff;
+                border: 1px solid var(--border-light);
+                border-radius: 10px;
+                padding: 12px;
+              "
+            >
+              <h4 style="margin: 0 0 10px">Madinah Hotels</h4>
+              <ul
+                id="madinah-hotel-list"
+                style="
+                  list-style: none;
+                  padding: 0;
+                  margin: 0;
+                  max-height: 320px;
+                  overflow: auto;
+                "
+              ></ul>
+            </div>
+          </div>
+
+          <div style="margin-top: 14px; text-align: right">
+            <button
+              id="btn-close-hotel-modal-bottom"
+              class="btn-dismiss"
+              type="button"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="modal-overlay"
+      id="vendor-modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Manage vendors dialog"
+    >
+      <div class="modal-window-box" style="width: min(760px, 92vw)">
+        <div class="modal-header-nav">
+          <h3>Manage Vendors</h3>
+          <button
+            class="btn-close-circle"
+            id="btn-close-vendor-modal"
+            type="button"
+          >
+            &times;
+          </button>
+        </div>
+
+        <div style="padding: 18px 22px; overflow: auto">
+          <div style="display: flex; gap: 12px; margin-bottom: 12px">
+            <div style="flex: 1; display: flex; gap: 8px; align-items: center">
+              <input
+                id="vendor-new-input"
+                placeholder="Add new vendor"
+                style="
+                  flex: 1;
+                  padding: 8px 10px;
+                  border: 1px solid var(--border-light);
+                  border-radius: 8px;
+                  background: #fff;
+                "
+              />
+              <button
+                id="btn-add-vendor"
+                class="btn-admin-action"
+                style="padding: 8px 10px"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+
+          <div
+            style="
+              background: #fff;
+              border: 1px solid var(--border-light);
+              border-radius: 10px;
+              padding: 12px;
+            "
+          >
+            <h4 style="margin: 0 0 10px">Vendors</h4>
+            <ul
+              id="vendor-list"
+              style="
+                list-style: none;
+                padding: 0;
+                margin: 0;
+                max-height: 380px;
+                overflow: auto;
+              "
+            ></ul>
+          </div>
+
+          <div style="margin-top: 14px; text-align: right">
+            <button
+              id="btn-close-vendor-modal-bottom"
+              class="btn-dismiss"
+              type="button"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="modal-overlay"
+      id="airline-modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Manage airlines dialog"
+    >
+      <div class="modal-window-box" style="width: min(760px, 92vw)">
+        <div class="modal-header-nav">
+          <h3>Manage Airlines</h3>
+          <button
+            class="btn-close-circle"
+            id="btn-close-airline-modal"
+            type="button"
+          >
+            &times;
+          </button>
+        </div>
+
+        <div style="padding: 18px 22px; overflow: auto">
+          <div style="display: flex; gap: 12px; margin-bottom: 12px">
+            <div style="flex: 1; display: flex; gap: 8px; align-items: center">
+              <input
+                id="airline-new-input"
+                placeholder="Add airline name"
+                style="
+                  flex: 1;
+                  padding: 8px 10px;
+                  border: 1px solid var(--border-light);
+                  border-radius: 8px;
+                  background: #fff;
+                "
+              />
+              <button
+                id="btn-add-airline"
+                class="btn-admin-action"
+                style="padding: 8px 10px"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+
+          <div
+            style="
+              background: #fff;
+              border: 1px solid var(--border-light);
+              border-radius: 10px;
+              padding: 12px;
+            "
+          >
+            <h4 style="margin: 0 0 10px">Airlines</h4>
+            <ul
+              id="airline-list"
+              style="
+                list-style: none;
+                padding: 0;
+                margin: 0;
+                max-height: 380px;
+                overflow: auto;
+              "
+            ></ul>
+          </div>
+
+          <div style="margin-top: 14px; text-align: right">
+            <button
+              id="btn-close-airline-modal-bottom"
+              class="btn-dismiss"
+              type="button"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="modal-overlay"
+      id="baggage-modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Manage baggage dialog"
+    >
+      <div class="modal-window-box" style="width: min(620px, 92vw)">
+        <div class="modal-header-nav">
+          <h3>Manage Baggage</h3>
+          <button
+            class="btn-close-circle"
+            id="btn-close-baggage-modal"
+            type="button"
+          >
+            &times;
+          </button>
+        </div>
+
+        <div style="padding: 18px 22px; overflow: auto">
+          <div style="display: flex; gap: 12px; margin-bottom: 12px">
+            <div
+              style="
+                display: grid;
+                grid-template-columns: minmax(160px, 1.5fr) repeat(
+                    3,
+                    minmax(96px, 1fr)
+                  ) auto;
+                gap: 8px;
+                width: 100%;
+                align-items: center;
+              "
+            >
+              <input
+                id="baggage-name-input"
+                placeholder="Baggage label"
+                style="
+                  padding: 8px 10px;
+                  border: 1px solid var(--border-light);
+                  border-radius: 8px;
+                  background: #fff;
+                  width: 100%;
+                "
+              />
+              <input
+                id="baggage-one-side-input"
+                type="number"
+                min="0"
+                placeholder="One side kg"
+                style="
+                  padding: 8px 10px;
+                  border: 1px solid var(--border-light);
+                  border-radius: 8px;
+                  background: #fff;
+                "
+              />
+              <input
+                id="baggage-two-side-input"
+                type="number"
+                min="0"
+                placeholder="Two side kg"
+                style="
+                  padding: 8px 10px;
+                  border: 1px solid var(--border-light);
+                  border-radius: 8px;
+                  background: #fff;
+                "
+              />
+              <input
+                id="btn-add-baggage"
+                class="btn-admin-action"
+                style="padding: 8px 10px"
+                type="button"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+
+          <div
+            style="
+              background: #fff;
+              border: 1px solid var(--border-light);
+              border-radius: 10px;
+              padding: 12px;
+            "
+          >
+            <h4 style="margin: 0 0 10px">Baggage Options</h4>
+            <ul
+              id="baggage-list"
+              style="
+                list-style: none;
+                padding: 0;
+                margin: 0;
+                max-height: 380px;
+                overflow: auto;
+              "
+            ></ul>
+          </div>
+
+          <div style="margin-top: 14px; text-align: right">
+            <button
+              id="btn-close-baggage-modal-bottom"
+              class="btn-dismiss"
+              type="button"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="modal-overlay"
+      id="admin-actions-modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Admin actions dialog"
+    >
+      <div class="modal-window-box" style="width: min(420px, 92vw)">
+        <div class="modal-header-nav">
+          <h3>Admin Actions</h3>
+          <button
+            class="btn-close-circle"
+            id="btn-close-admin-actions-modal"
+            type="button"
+          >
+            &times;
+          </button>
+        </div>
+
+        <div style="padding: 18px 22px; overflow: auto">
+          <div style="display: flex; flex-direction: column; gap: 14px">
+            <button
+              id="btn-open-vendor-from-actions"
+              class="btn-admin-action"
+              type="button"
+              style="width: 100%; justify-content: center"
+            >
+              <i class="fa-solid fa-user-plus"></i> Add Vendor
+            </button>
+            <button
+              id="btn-open-hotel-from-actions"
+              class="btn-admin-action"
+              type="button"
+              style="width: 100%; justify-content: center"
+            >
+              <i class="fa-solid fa-hotel"></i> Add Hotels
+            </button>
+            <button
+              id="btn-open-airline-from-actions"
+              class="btn-admin-action"
+              type="button"
+              style="width: 100%; justify-content: center"
+            >
+              <i class="fa-solid fa-plane"></i> Add Airline
+            </button>
+            <button
+              id="btn-open-baggage-from-actions"
+              class="btn-admin-action"
+              type="button"
+              style="width: 100%; justify-content: center"
+            >
+              <i class="fa-solid fa-suitcase-rolling"></i> Add Baggage
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="modal-overlay"
+      id="package-modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Create package dialog"
+    >
+      <div class="modal-window-box">
+        <div class="modal-header-nav">
+          <h3>Create Live Umrah Package</h3>
+          <button
+            class="btn-close-circle"
+            id="btn-close-modal-top"
+            type="button"
+            aria-label="Close dialog"
+          >
+            ×
+          </button>
+        </div>
+
+        <form id="umrah-package-form">
+          <div class="form-section-card">
+            <div class="form-section-title">Flight Logistics Matrix</div>
+            <div class="form-grid-layout">
+              <div class="input-field-group">
+                <label>Airline Provider Name</label>
+                <select id="pkg-airline" required>
+                  <option value="" disabled selected>Select airline</option>
+                </select>
+              </div>
+              <div class="input-field-group">
+                <label>Airline Number</label>
+                <input id="pkg-airline-number" type="text" placeholder="Airline number" />
+              </div>
+              <div class="input-field-group">
+                <label>Outbound Baggage</label>
+                <select id="pkg-baggage-outbound">
+                  <option value="" disabled selected>Select baggage</option>
+                </select>
+              </div>
+              <div class="input-field-group">
+                <label>Return Baggage</label>
+                <select id="pkg-baggage-inbound">
+                  <option value="" disabled selected>Select baggage</option>
+                </select>
+              </div>
+              <div class="input-field-group">
+                <label>Vendor</label>
+                <select id="pkg-vendor" required>
+                  <option value="" disabled selected>Select vendor</option>
+                </select>
+              </div>
+              <div class="input-field-group">
+                <label>Outbound Route Sector</label>
+                <select id="pkg-sector-outbound" required>
+                  <option value="" disabled selected>
+                    Select outbound route
+                  </option>
+                  <option value="Islamabad - Jeddah">Islamabad - Jeddah</option>
+                  <option value="Muscat - Jeddah">Muscat - Jeddah</option>
+                  <option value="Sialkot - Jeddah">Sialkot - Jeddah</option>
+                  <option value="(Sialkot-Muscat) - Jeddah">
+                    (Sialkot-Muscat) - Jeddah
+                  </option>
+                  <option value="Lahore - Jeddah">Lahore - Jeddah</option>
+                  <option value="Karachi - Jeddah">Karachi - Jeddah</option>
+                  <option value="Karachi - MADINAH">Karachi - MADINAH</option>
+                  <option value="Lahore - MADINAH">Lahore - MADINAH</option>
+                </select>
+              </div>
+              <div class="input-field-group">
+                <label>Return Route Sector</label>
+                <select id="pkg-sector-inbound" required>
+                  <option value="" disabled selected>
+                    Select return route
+                  </option>
+                  <option value="Jeddah - Islamabad">Jeddah - Islamabad</option>
+                  <option value="Jeddah - Muscat">Jeddah - Muscat</option>
+                  <option value="Jeddah - Sialkot">Jeddah - Sialkot</option>
+                  <option value="Jeddah - (Muscat-Sialkot)">
+                    Jeddah - (Muscat-Sialkot)
+                  </option>
+                  <option value="Jeddah - Lahore">Jeddah - Lahore</option>
+                  <option value="Jeddah - Karachi">Jeddah - Karachi</option>
+                  <option value="MADINAH - Karachi">MADINAH - Karachi</option>
+                  <option value="MADINAH - Lahore">MADINAH - Lahore</option>
+                </select>
+              </div>
+              <div class="input-field-group">
+                <label>Departure Schedule Date/Time</label>
+                <input type="datetime-local" id="pkg-dept-time" required />
+              </div>
+              <div class="input-field-group">
+                <label>Return Schedule Date/Time</label>
+                <input type="datetime-local" id="pkg-ret-time" />
+              </div>
+              <div class="input-field-group">
+                <label>Available Seats</label>
+                <input id="pkg-seats" type="text" placeholder="e.g. Max 40" />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section-card">
+            <div class="form-section-title">Hotel Pricing Matrix</div>
+            <div class="table-wrapper">
+              <table class="pricing-matrix-table">
+                <thead>
+                  <tr>
+                    <th>Makkah Hotel</th>
+                    <th>Madinah Hotel</th>
+                    <th>Sharing Price</th>
+                    <th>Double Price</th>
+                    <th>Triple Price</th>
+                    <th>Quad Price</th>
+                    <th>Adjustment</th>
+                  </tr>
+                </thead>
+                <tbody id="hotel-matrix-rows"></tbody>
+              </table>
+            </div>
+            <div
+              style="
+                display: flex;
+                justify-content: flex-end;
+                gap: 12px;
+                margin-top: 14px;
+              "
+            >
+              <button
+                type="button"
+                class="btn-admin-action"
+                id="btn-add-matrix-row"
+              >
+                <i class="fa-solid fa-plus"></i> Add Row
+              </button>
+            </div>
+          </div>
+
+          <div
+            style="
+              display: flex;
+              justify-content: flex-end;
+              gap: 12px;
+              padding: 18px 24px 24px;
+            "
+          >
+            <button
+              type="button"
+              id="btn-close-modal-bottom"
+              class="btn-dismiss"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              id="btn-submit-package"
+              class="btn-admin-action"
+            >
+              <i class="fa-solid fa-floppy-disk"></i> Save Package
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div id="clock">18/04/2026 | 17:01</div>
+      <div class="badge">2.4.3 - Theme: dashboard_blue - 1 user online</div>
+    </footer>
+
+    <script>
+      function logoutUser() {
+        // Redirect to the login page after logout.
+        window.location.href = "ticketing.html";
+      }
+    </script>
+    <!-- Load Firebase SDK first -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <!-- Initialize Firebase config -->
+    <script src="firebase-config.js"></script>
+    <!-- Load main.js after Firebase is ready -->
+    <script src="main.js"></script>
+    <script src="admin-controller.js"></script>
+  </body>
+</html>

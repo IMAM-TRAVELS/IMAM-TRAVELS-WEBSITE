@@ -1,0 +1,843 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Group Bookings - IMAM TRAVELS</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="umrah_hajj.css" />
+    <link rel="stylesheet" href="responsive.css" />
+    <style>
+      .group-booking-search-bar {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+
+      .group-booking-search-bar input {
+        flex: 1;
+        min-width: 200px;
+        padding: 10px 15px;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        font-size: 14px;
+      }
+
+      .group-booking-search-bar button {
+        padding: 10px 20px;
+        background: var(--primary-red, #f43f5e);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+
+      .group-booking-search-bar button:hover {
+        opacity: 0.9;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <button
+          class="menu-toggle"
+          aria-label="Open menu"
+          onclick="openSideMenu()"
+        >
+          <span></span>
+        </button>
+
+        <a href="users.html" class="brand-link">
+          <img
+            src="imam-name-with-logo.png"
+            alt="IMAM TRAVELS"
+            class="brand-logo"
+          />
+        </a>
+
+        <div class="header-actions">
+          <button class="action-btn" aria-label="Messages">
+            <i class="fas fa-envelope"></i>
+          </button>
+          <div class="profile-dropdown">
+            <button
+              class="action-btn profile-toggle"
+              aria-label="Profile"
+              onclick="toggleProfileDropdown(event)"
+              type="button"
+            >
+              <i class="fas fa-user-circle"></i>
+            </button>
+            <div
+              id="profileDropdownMenu"
+              class="profile-dropdown-menu"
+              role="menu"
+              aria-label="Profile menu"
+            >
+              <button
+                type="button"
+                class="dropdown-item"
+                onclick="logoutUser()"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="side-menu-overlay" id="sideMenuOverlay" aria-hidden="true">
+      <aside class="side-menu">
+        <div class="side-menu-header">
+          <span>Menu</span>
+          <button
+            class="close-side-menu"
+            aria-label="Close menu"
+            onclick="closeSideMenu()"
+          >
+            ×
+          </button>
+        </div>
+
+        <nav class="side-menu-nav">
+          <a href="agent_viewgroupbooking.html" class="side-menu-link"
+            >Dashboard</a
+          >
+          <a href="agent_viewholdgroupbooking.html" class="side-menu-link"
+            >Group Bookings</a
+          >
+        </nav>
+      </aside>
+    </div>
+
+    <main class="main-wrapper">
+      <section class="booking-widget-card" style="margin-bottom: 20px">
+        <div class="group-booking-search-bar">
+          <input
+            type="text"
+            id="groupSearchInput"
+            placeholder="Search by group name, airline, or vendor..."
+            onkeyup="filterGroupBookings()"
+          />
+          <button onclick="resetGroupFilters()">Clear</button>
+        </div>
+      </section>
+
+      <div class="layout-split-body">
+        <aside class="filter-sidebar-wrapper" id="filterSidebar">
+          <div class="filter-heading-block">
+            <div>
+              <h3>Filter Bookings</h3>
+              <p class="filter-summary" id="filterSummary">
+                Loading group bookings...
+              </p>
+            </div>
+            <button
+              type="button"
+              class="btn-reset-filters"
+              id="resetFiltersBtn"
+            >
+              Clear
+            </button>
+          </div>
+          <div id="filterContent"></div>
+        </aside>
+
+        <section class="results-output-stream">
+          <div id="searchLoader" class="no-flights-msg">
+            <i class="fas fa-circle-notch fa-spin loader-icon"></i>
+            <p>Connecting to Cloud Servers... Fetching Group Bookings.</p>
+          </div>
+
+          <div id="groupBookingsSection">
+            <div id="resultsGrid" class="results-output-stream"></div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="main-footer">
+      <div class="footer-container">
+        <div class="footer-block footer-brand-block">
+          <a href="#" class="footer-logo-link">
+            <img
+              src="imam-name-with-logo.png"
+              alt="IMAM TRAVELS"
+              class="footer-logo-img"
+            />
+          </a>
+          <p class="footer-description">
+            IMAM TRAVELS delivers premium Umrah and flight booking experiences
+            with live pricing, hotel packages, and fast online support.
+          </p>
+        </div>
+
+        <div class="footer-block footer-links-block">
+          <h3>Quick Links</h3>
+          <ul class="footer-nav-links">
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Contact Us</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-block footer-contact-block">
+          <h3>Contact</h3>
+          <p>imamtravelsjpj@gmail.com</p>
+          <a href="https://wa.me/923331233009?text=ASSALAM+O+ALAIKUM"
+            ><p>+92-333-1233009</p></a
+          >
+          <div class="footer-social-links">
+            <a
+              href="https://www.facebook.com/profile.php?id=61553215993240"
+              target="_blank"
+              aria-label="Facebook"
+              ><i class="fab fa-facebook-f"></i
+            ></a>
+            <a
+              href="https://www.instagram.com/imamtravelsjpj/"
+              target="_blank"
+              aria-label="Instagram"
+              ><i class="fab fa-instagram"></i
+            ></a>
+            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" aria-label="Youtube"><i class="fab fa-youtube"></i></a>
+            <a
+              href="https://whatsapp.com/channel/0029VbB1sTGHQbRw4gZ4pq2T"
+              aria-label="Whatsapp"
+              target="_blank"
+              ><i class="fab fa-whatsapp"></i
+            ></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom-bar">
+        <p class="copyright-text">© 2026 IMAM TRAVELS. All Rights Reserved.</p>
+      </div>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="firebase-config.js"></script>
+    <script>
+      // Store group bookings for access
+      window.groupBookingStore = window.groupBookingStore || {};
+      let allGroupBookings = [];
+      const GROUP_BOOKING_PATHS = ["group_bookings"];
+
+      function getBookingRoute(booking) {
+        const sectorValues = [
+          booking.sector1,
+          booking.sector2,
+          booking.sector3,
+          booking.sector4,
+        ].filter(Boolean);
+        if (sectorValues.length) {
+          return sectorValues
+            .map((sector) => {
+              const match = String(sector).match(/\(([A-Z]{3})\)/);
+              return match ? match[1] : String(sector).trim();
+            })
+            .join("-");
+        }
+
+        return String(
+          booking.route ||
+            booking.sector ||
+            (booking.originAirport && booking.destinationAirport
+              ? `${booking.originAirport}-${booking.destinationAirport}`
+              : booking.originCity && booking.destinationCity
+                ? `${booking.originCity}-${booking.destinationCity}`
+                : "Unknown Route"),
+        )
+          .trim()
+          .replace(/\s*[-/]\s*/g, "-");
+      }
+
+      function loadGroupBookingsFromFirebase(db, callback) {
+        Promise.all(
+          GROUP_BOOKING_PATHS.map((path) => db.ref(path).once("value")),
+        )
+          .then((snapshots) => {
+            const merged = {};
+
+            snapshots.forEach((snapshot) => {
+              const data = snapshot.val() || {};
+              Object.entries(data).forEach(([id, booking]) => {
+                if (!booking || typeof booking !== "object") return;
+                merged[id] = {
+                  ...merged[id],
+                  ...booking,
+                  id,
+                };
+              });
+            });
+
+            callback(merged);
+          })
+          .catch((error) => {
+            console.error(
+              "Failed to load group bookings from Firebase:",
+              error,
+            );
+            callback({});
+          });
+      }
+
+      function loadGroupBookingsPage() {
+        const resultsGrid = document.getElementById("resultsGrid");
+        const searchLoader = document.getElementById("searchLoader");
+        const filterContent = document.getElementById("filterContent");
+        const filterSummary = document.getElementById("filterSummary");
+        const resetFiltersBtn = document.getElementById("resetFiltersBtn");
+
+        if (!resultsGrid) return;
+
+        if (typeof firebase === "undefined" || !firebase.database) {
+          if (searchLoader) searchLoader.style.display = "none";
+          resultsGrid.innerHTML = `
+            <div class="no-flights-msg" style="grid-column: 1/-1; text-align: center; padding: 40px; color: #d32f2f;">
+              <p>Please refresh the page to connect to Firebase.</p>
+            </div>
+          `;
+          return;
+        }
+
+        const db = firebase.database();
+        loadGroupBookingsFromFirebase(db, (data) => {
+          if (searchLoader) searchLoader.style.display = "none";
+
+          if (!data || Object.keys(data).length === 0) {
+            resultsGrid.innerHTML = `
+              <div class="no-flights-msg" style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">
+                <i class="fa-solid fa-folder-open" style="font-size: 48px; color: #cbd5e1; margin-bottom: 15px; display: block;"></i>
+                <p>No Group Bookings Available Currently.</p>
+              </div>
+            `;
+            return;
+          }
+
+          // Store all bookings
+          allGroupBookings = [];
+          const airlineCounts = {};
+          const routeCounts = {};
+
+          Object.entries(data).forEach(([key, booking]) => {
+            window.groupBookingStore[key] = booking;
+            allGroupBookings.push({ id: key, ...booking });
+
+            const airline = booking.airline || "Unknown Airline";
+            airlineCounts[airline] = (airlineCounts[airline] || 0) + 1;
+            const route = getBookingRoute(booking);
+            routeCounts[route] = (routeCounts[route] || 0) + 1;
+          });
+
+          if (filterSummary) {
+            filterSummary.textContent = `${allGroupBookings.length} Bookings available`;
+          }
+
+          // Build filters
+          if (filterContent) {
+            filterContent.innerHTML = `
+              <div class="filter-section-group">
+                <h4>Airlines</h4>
+                <div class="filter-pill-list">
+                  ${Object.entries(airlineCounts)
+                    .map(
+                      ([airline, count]) => `
+                      <label class="filter-pill">
+                        <input type="checkbox" data-airline="${airline}" />
+                        <div>
+                          <strong>${airline}</strong>
+                          <span class="count-badge">${count}</span>
+                        </div>
+                      </label>
+                    `,
+                    )
+                    .join("")}
+                </div>
+              </div>
+              <div class="filter-section-group">
+                <h4>Routes</h4>
+                <div class="filter-pill-list">
+                  ${Object.entries(routeCounts)
+                    .sort(([routeA], [routeB]) => routeA.localeCompare(routeB))
+                    .map(
+                      ([route, count]) => `
+                      <label class="filter-pill">
+                        <input type="checkbox" data-route="${route}" />
+                        <div>
+                          <strong>${route}</strong>
+                          <span class="count-badge">${count}</span>
+                        </div>
+                      </label>
+                    `,
+                    )
+                    .join("")}
+                </div>
+              </div>
+            `;
+
+            // Start unchecked so the full package list is visible by default.
+            filterContent
+              .querySelectorAll("input[data-airline]")
+              .forEach((checkbox) => {
+                checkbox.checked = false;
+                checkbox.addEventListener("change", filterGroupBookings);
+              });
+            filterContent
+              .querySelectorAll("input[data-route]")
+              .forEach((checkbox) => {
+                checkbox.checked = false;
+                checkbox.addEventListener("change", filterGroupBookings);
+              });
+          }
+
+          if (resetFiltersBtn) {
+            resetFiltersBtn.addEventListener("click", resetGroupFilters);
+          }
+
+          // Initial display
+          displayGroupBookings(allGroupBookings);
+        });
+      }
+
+      function displayGroupBookings(bookings) {
+        const resultsGrid = document.getElementById("resultsGrid");
+        if (!resultsGrid) return;
+
+        resultsGrid.innerHTML = "";
+        let visibleCount = 0;
+
+        // Sort by departure date/time ascending, so earliest departures show first
+        bookings.sort((a, b) => {
+          const dateA = a.departureDate || a.departure_date || "";
+          const dateB = b.departureDate || b.departure_date || "";
+          const timeA = a.departureTime || a.departure_time || "";
+          const timeB = b.departureTime || b.departure_time || "";
+          const dateTimeA = new Date(`${dateA}T${timeA || "00:00"}`);
+          const dateTimeB = new Date(`${dateB}T${timeB || "00:00"}`);
+          if (!isNaN(dateTimeA) && !isNaN(dateTimeB)) {
+            return dateTimeA - dateTimeB;
+          }
+          if (!isNaN(dateTimeA)) return -1;
+          if (!isNaN(dateTimeB)) return 1;
+          return dateA.localeCompare(dateB) || timeA.localeCompare(timeB);
+        });
+
+        const airlineLogoMatchers = [
+          { keys: ["air blue", "airblue"], logo: "PA.png" },
+          { keys: ["air sial"], logo: "PF.png" },
+          { keys: ["fly jinnah"], logo: "9P.png" },
+          {
+            keys: ["jazeera", "jazeera air", "jazeera airways", "j9"],
+            logo: "J9.png",
+          },
+          {
+            keys: ["flynas", "fly nas", "fly nas airlines", "xy"],
+            logo: "XY.png",
+          },
+          {
+            keys: ["flyadeal", "fly adeal", "fly adeal airlines"],
+            logo: "XY.png",
+          },
+          { keys: ["air arabia"], logo: "G9.png" },
+          { keys: ["salam airline"], logo: "OV.png" },
+          {
+            keys: [
+              "pia",
+              "pakistan airline",
+              "pakistan airlines",
+              "pakistan international",
+            ],
+            logo: "PK.png",
+          },
+          { keys: ["saudi arabian", "saudi", "saudi airline"], logo: "SV.png" },
+          { keys: ["emirates"], logo: "EK.png" },
+          { keys: ["qatar airways", "qatar"], logo: "QR.png" },
+          { keys: ["fly dubai", "flydubai", "fy", "fz"], logo: "FZ.png" },
+          { keys: ["etihad airways", "etihad"], logo: "EY.png" },
+        ];
+
+        function getAirlineLogo(name) {
+          if (!name) return null;
+          const normalized = name
+            .toLowerCase()
+            .replace(/[-_/]+/g, " ")
+            .trim();
+
+          for (const entry of airlineLogoMatchers) {
+            if (
+              entry.keys.some((key) =>
+                new RegExp(`\\b${key}\\b`, "i").test(normalized),
+              )
+            ) {
+              return `<img class="airline-logo-img" src="${entry.logo}" alt="${entry.logo.replace(/\..+$/, "")} logo" style="width: 40px; height: 40px; object-fit: contain;" />`;
+            }
+          }
+          return null;
+        }
+
+        bookings.forEach((booking) => {
+          visibleCount++;
+
+          const price = booking.pricePerPerson
+            ? Number(booking.pricePerPerson).toLocaleString()
+            : "N/A";
+
+          function extractAirportCode(sector) {
+            if (!sector) return "";
+            const match = sector.match(/\(([A-Z]{3})\)/);
+            return match ? match[1] : sector;
+          }
+
+          let sectorRoute = getBookingRoute(booking);
+          const sectors = [];
+          const sectorCodes = [];
+
+          if (booking.sector1) {
+            sectors.push(booking.sector1);
+            sectorCodes.push(extractAirportCode(booking.sector1));
+          }
+          if (booking.sector2) {
+            sectors.push(booking.sector2);
+            sectorCodes.push(extractAirportCode(booking.sector2));
+          }
+          if (booking.sector3) {
+            sectors.push(booking.sector3);
+            sectorCodes.push(extractAirportCode(booking.sector3));
+          }
+          if (booking.sector4) {
+            sectors.push(booking.sector4);
+            sectorCodes.push(extractAirportCode(booking.sector4));
+          }
+
+          const logoHtml = getAirlineLogo(booking.airline) || "✈️";
+          const departureDate = booking.departureDate || "—";
+          const returnDate = booking.returnDate || "";
+
+          const card = document.createElement("div");
+          card.className = "flight-data-card animate__animated animate__fadeIn";
+          card.style.cssText = `
+            display: flex;
+            align-items: center;
+            padding: 16px 18px;
+            gap: 16px;
+            background: var(--pure-white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 12px;
+          `;
+          card.innerHTML = `
+            <div style="flex: 0 0 auto;">
+              <div style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: transparent; border-radius: 8px;">
+                ${logoHtml}
+              </div>
+            </div>
+            <div style="flex: 1; display: flex; align-items: center; gap: 20px; min-width: 200px;">
+              <div style="flex: 0 0 auto; display: grid; gap: 4px;">
+                <div style="font-weight: 700; color: var(--accent-dark); font-size: 14px; text-transform: uppercase;">
+                  ${booking.airline || "Airline"}
+                </div>
+                ${booking.planeNumber ? `<div style="font-size: 12px; color: var(--text-muted);">${booking.planeNumber}</div>` : ""}
+              </div>
+              <div style="flex: 0 0 auto; border-left: 1px solid #e2e8f0; padding-left: 20px;">
+                <div style="font-weight: 600; color: var(--text-main); font-size: 15px;">
+                  ${sectorRoute}
+                </div>
+              </div>
+              <div style="flex: 0 0 auto; border-left: 1px solid #e2e8f0; padding-left: 20px;">
+                <div style="font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
+                  <span style="font-weight: 700;">${departureDate}</span>
+                  ${returnDate ? `<span style="font-weight: 700;">→</span><span style="font-weight: 700;">${returnDate}</span>` : ""}
+                </div>
+              </div>
+            </div>
+            <div style="flex: 0 0 auto; text-align: right; min-width: 100px;">
+              <div style="font-weight: 800; color: var(--primary-red); font-size: 16px; margin-bottom: 4px;">
+                PKR ${price}
+              </div>
+              <button class="book-now-action-btn" onclick="viewGroupBookingDetails('${booking.id}')" style="font-size: 12px; padding: 6px 12px;">
+                Show Details
+              </button>
+            </div>
+          `;
+          card.setAttribute("data-booking-id", booking.id);
+          resultsGrid.appendChild(card);
+        });
+
+        if (visibleCount === 0) {
+          resultsGrid.innerHTML = `
+            <div class="no-flights-msg" style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">
+              <i class="fa-solid fa-frown" style="font-size: 48px; color: #cbd5e1; margin-bottom: 15px; display: block;"></i>
+              <p>No bookings match the selected filters.</p>
+            </div>
+          `;
+        }
+
+        const filterSummary = document.getElementById("filterSummary");
+        if (filterSummary) {
+          filterSummary.textContent = `${visibleCount} Bookings visible`;
+        }
+      }
+
+      function filterGroupBookings() {
+        const searchInput = document.getElementById("groupSearchInput");
+        const searchTerm = (searchInput?.value || "").toLowerCase();
+
+        const activeAirlines = new Set();
+        const activeRoutes = new Set();
+
+        document
+          .querySelectorAll("input[data-airline]:checked")
+          .forEach((checkbox) => {
+            activeAirlines.add(checkbox.dataset.airline);
+          });
+        document
+          .querySelectorAll("input[data-route]:checked")
+          .forEach((checkbox) => {
+            activeRoutes.add(checkbox.dataset.route);
+          });
+
+        const filtered = allGroupBookings.filter((booking) => {
+          const matchesSearch =
+            !searchTerm ||
+            (booking.groupName || "").toLowerCase().includes(searchTerm) ||
+            (booking.airline || "").toLowerCase().includes(searchTerm) ||
+            (booking.vendorName || "").toLowerCase().includes(searchTerm);
+
+          const matchesAirline =
+            activeAirlines.size === 0 ||
+            activeAirlines.has(booking.airline || "Unknown Airline");
+          const matchesRoute =
+            activeRoutes.size === 0 ||
+            activeRoutes.has(getBookingRoute(booking));
+
+          return matchesSearch && matchesAirline && matchesRoute;
+        });
+
+        displayGroupBookings(filtered);
+      }
+
+      function resetGroupFilters() {
+        const input = document.getElementById("groupSearchInput");
+        if (input) input.value = "";
+        document
+          .querySelectorAll("input[type=checkbox]")
+          .forEach((checkbox) => {
+            checkbox.checked = false;
+          });
+        filterGroupBookings();
+      }
+
+      function viewGroupBookingDetails(bookingId) {
+        const booking = window.groupBookingStore[bookingId];
+        if (!booking) {
+          alert("Booking data not available.");
+          return;
+        }
+
+        function extractAirportCode(sector) {
+          if (!sector) return "";
+          const match = sector.match(/\(([A-Z]{3})\)/);
+          return match ? match[1] : sector;
+        }
+
+        const card = document.querySelector(`[data-booking-id="${bookingId}"]`);
+        if (!card) return;
+
+        // Remove existing details
+        document
+          .querySelectorAll(".booking-details")
+          .forEach((el) => el.remove());
+
+        const details = document.createElement("div");
+        details.className = "booking-details";
+        details.style.cssText =
+          "background:#fff;border:1px dashed #e5e7eb;padding:18px;margin:14px 0;border-radius:10px;";
+
+        const header = `
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <div>
+              <h3 style="margin:0;font-size:16px;color:var(--accent-dark);text-transform:uppercase">${booking.groupName || "Group"} — ${booking.airline || "Airline"}</h3>
+            </div>
+            <div style="text-align:right">
+              <div style="font-weight:800;color:var(--primary-red);font-size:18px">PKR ${booking.pricePerPerson ? Number(booking.pricePerPerson).toLocaleString() : "N/A"}/-</div>
+              <button style="margin-top:8px;padding:8px 12px;border-radius:6px;border:1px solid #f43f5e;background:#fff;color:#f43f5e;cursor:pointer" onclick="this.closest('.booking-details').remove()">Hide</button>
+            </div>
+          </div>
+        `;
+
+        const sectorCodes = [];
+        if (booking.sector1)
+          sectorCodes.push(extractAirportCode(booking.sector1));
+        if (booking.sector2)
+          sectorCodes.push(extractAirportCode(booking.sector2));
+        if (booking.sector3)
+          sectorCodes.push(extractAirportCode(booking.sector3));
+        if (booking.sector4)
+          sectorCodes.push(extractAirportCode(booking.sector4));
+
+        const routeDisplay =
+          sectorCodes.length > 0
+            ? sectorCodes.join("-")
+            : booking.sector || booking.route || "—";
+
+        const detailsInfo = `
+          <div style="overflow:auto">
+            <table style="width:100%;border-collapse:collapse;font-size:13px">
+              <tbody>
+                <tr style="border-bottom:1px solid #e5e7eb">
+                  <td style="padding:10px;font-weight:1100;width:30%;font-size:15px"><b>Airline</b></td>
+                  <td style="padding:10px"><b>${booking.airline || "—"}</b></td>
+                </tr>
+                <tr style="border-bottom:1px solid #e5e7eb">
+                  <td style="padding:10px;font-weight:1100;font-size:15px"><b>Route</b></td>
+                  <td style="padding:10px"><b>${routeDisplay}</b></td>
+                </tr>
+                <tr style="border-bottom:1px solid #e5e7eb">
+                  <td style="padding:10px;font-weight:1100;font-size:15px"><b>Departure</b></td>
+                  <td style="padding:10px"><b>${booking.departureDate || "—"} ${booking.departureTime || ""}</b></td>
+                </tr>
+                <b>${
+                  booking.returnDate || booking.returnTime
+                    ? `
+                <tr style="border-bottom:1px solid #e5e7eb">
+                  <td style="padding:10px;font-weight:1100;font-size:15px"><b>Return</b></td>
+                  <td style="padding:10px"><b>${booking.returnDate || "—"} ${booking.returnTime || ""}</b></td>
+                </tr>
+                `
+                    : ""
+                }
+                <tr style="border-bottom:1px solid #e5e7eb">
+                  <td style="padding:10px;font-weight:1100;font-size:15px"><b>Plane Number</b></td>
+                  <td style="padding:10px"><b>${booking.planeNumber || "—"}</b></td>
+                </tr>
+                <tr style="border-bottom:1px solid #e5e7eb">
+                  <td style="padding:10px;font-weight:1100;font-size:15px"><b>Baggage</b></td>
+                  <td style="padding:10px"><b>${booking.baggage || "—"}</b></td>
+                </tr>
+                ${
+                  booking.sector1
+                    ? `
+                <tr style="border-bottom:1px solid #e5e7eb">
+                  <td style="padding:10px;font-weight:1100;font-size:15px"><b>Sector 1</b></td>
+                  <td style="padding:10px"><b>${booking.sector1}</b></td>
+                </tr>
+                `
+                    : ""
+                }
+                ${
+                  booking.sector2
+                    ? `
+                <tr style="border-bottom:1px solid #e5e7eb">
+                  <td style="padding:10px;font-weight:1100;font-size:15px"><b>Sector 2</b></td>
+                  <td style="padding:10px"><b>${booking.sector2}</b></td>
+                </tr>
+                `
+                    : ""
+                }
+                ${
+                  booking.sector3
+                    ? `
+                <tr style="border-bottom:1px solid #e5e7eb">
+                  <td style="padding:10px;font-weight:1100;font-size:15px"><b>Sector 3</b></td>
+                  <td style="padding:10px"><b>${booking.sector3}</b></td>
+                </tr>
+                `
+                    : ""
+                }
+                ${
+                  booking.sector4
+                    ? `
+                <tr style="border-bottom:1px solid #e5e7eb">
+                  <td style="padding:10px;font-weight:1100;font-size:15px"><b>Sector 4</b></td>
+                  <td style="padding:10px"><b>${booking.sector4}</b></td>
+                </tr>
+                `
+                    : ""
+                }
+              </tbody>
+            </table>
+          </div>
+        `;
+
+        const footer = `
+          <div style="display:flex;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid #e5e7eb;justify-content:flex-end;">
+            <button style="padding:10px 20px;background:var(--primary-red, #f43f5e);color:white;border:none;border-radius:6px;cursor:pointer;font-weight:600;font-size:14px;" onclick="bookGroupBooking('${bookingId}')">Book</button>
+          </div>
+        `;
+
+        details.innerHTML = header + detailsInfo + footer;
+        card.parentNode.insertBefore(details, card.nextSibling);
+        details.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+
+      function bookGroupBooking(bookingId) {
+        const booking = window.groupBookingStore[bookingId];
+        if (!booking) {
+          alert("Booking data not available.");
+          return;
+        }
+
+        // Convert group booking data to the format expected by booking_flightconform.html
+        const packageData = {
+          airline: booking.airline || "Airline",
+          departureTime:
+            booking.departureDate && booking.departureTime
+              ? `${booking.departureDate} ${booking.departureTime}`
+              : booking.departureDate || "",
+          returnTime:
+            booking.returnDate && booking.returnTime
+              ? `${booking.returnDate} ${booking.returnTime}`
+              : booking.returnDate || "",
+          outboundSector: booking.sector1 ? `${booking.sector1}` : "",
+          inboundSector: booking.sector2 ? `${booking.sector2}` : "",
+          sector: booking.sector1
+            ? `${booking.sector1}-${booking.sector2 || booking.sector3 || ""}`.replace(
+                /undefined|-$/,
+                "",
+              )
+            : "",
+          makkahHotel: booking.makkahHotel || "",
+          madinahHotel: booking.madinahHotel || "",
+          selectedPrice: booking.pricePerPerson || 0,
+          selectedRoomType: "sharing",
+          passengerCount: 1,
+          planeNumber: booking.planeNumber || "",
+          baggage: booking.baggage || "",
+          groupName: booking.groupName || "",
+          bookingId: bookingId,
+          sector1: booking.sector1 || "",
+          sector2: booking.sector2 || "",
+          sector3: booking.sector3 || "",
+          sector4: booking.sector4 || "",
+        };
+
+        // Store in sessionStorage
+        sessionStorage.setItem(
+          "selectedPackageData",
+          JSON.stringify(packageData),
+        );
+
+        // Navigate to booking confirmation page
+        window.location.href = "booking_flightconform.html";
+      }
+
+      document.addEventListener("DOMContentLoaded", loadGroupBookingsPage);
+    </script>
+    <script src="main.js"></script>
+  </body>
+</html>

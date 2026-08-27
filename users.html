@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Travel Booking Dashboard</title>
+
+    <link rel="stylesheet" href="users.css" />
+    <link rel="stylesheet" href="responsive.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <style>
+      #searchBoxContainer {
+        position: relative;
+      }
+      #searchBoxContainer .search-box-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 20;
+        pointer-events: all;
+      }
+      #searchBoxContainer .search-box-overlay .overlay-message {
+        color: #ffffff;
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        background: rgba(0, 0, 0, 0.55);
+        padding: 14px 22px;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+      }
+    </style>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <h3>Menu</h3>
+        <button onclick="toggleSidebar()">✕</button>
+      </div>
+      <ul>
+        <li><a href="#">Search Bookings</a></li>
+        <li><a href="agent_viewholdgroupbooking.html">My Group Bookings</a></li>
+        <li><a href="ticketing.html">Logout</a></li>
+      </ul>
+    </div>
+    <header class="top-header">
+      <div class="container header-flex">
+        <div class="left-side">
+          <div class="hamburger" onclick="toggleSidebar()">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div class="logo">
+            <a href="users.html"
+              ><img
+                src="imam travel and tours logo.jpeg"
+                alt="Imam Travel Company logo"
+              />IMAM TRAVEL COMPANY</a
+            >
+          </div>
+        </div>
+
+        <div class="header-right">
+          <div class="credit">
+            Cash Only
+            <span></span>
+          </div>
+
+          <select>
+            <option>20038</option>
+          </select>
+
+          <a href="agent_adminleadger.html">Admin Login</a>
+        </div>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-overlay">
+        <div class="journey-title">
+          <span class="red">YOUR</span> <span class="blue">JOURNEY</span>
+          <span class="blue small">begins</span>
+        </div>
+        <p class="journey-sub">Where would you like to go?</p>
+        <div class="journey-divider">
+          <hr class="line-red" />
+          <i class="fas fa-plane"></i>
+          <hr class="line-blue" />
+        </div>
+
+        <div class="tabs">
+          <button
+            id="btn-oneway"
+            class="tab-btn active"
+            onclick="activateTab('oneway')"
+          >
+            <i class="fas fa-plane"></i>One Way / Round Trip
+          </button>
+          <button
+            id="btn-multicity"
+            class="tab-btn"
+            onclick="activateTab('multicity')"
+          >
+            <i class="fas fa-map-marker-alt"></i>Multi-city
+          </button>
+          <a href="agent_viewgroupbooking.html">
+            <button class="card-button">
+              <i class="fas fa-users"></i>Group Booking
+            </button>
+          </a>
+          <a href="umrah_hajj.html">
+            <button class="card-button">
+              <i class="fas fa-kaaba"></i>Umrah Packages
+            </button>
+          </a>
+        </div>
+
+        <form
+          id="flightSearchForm"
+          onsubmit="triggerLiveFlightSearch(event)"
+          style="
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: contents;
+          "
+        >
+          <div class="search-box card-shape" id="searchBoxContainer">
+            <div class="field" style="position: relative">
+              <label>Flying From</label>
+              <div class="input-wrapper">
+                <i class="fas fa-map-marker-alt"></i>
+                <input
+                  type="text"
+                  id="flyingFrom"
+                  placeholder="From (e.g. LHE)"
+                  autocomplete="off"
+                  required
+                  oninput="filterAirports(this, 'fromDropdown')"
+                />
+              </div>
+              <div id="fromDropdown" class="airport-dropdown"></div>
+            </div>
+
+            <div class="field" style="position: relative">
+              <label>Flying To</label>
+              <div class="input-wrapper">
+                <i class="fas fa-map-marker-alt"></i>
+                <input
+                  type="text"
+                  id="flyingTo"
+                  placeholder="To (e.g. MCT)"
+                  autocomplete="off"
+                  required
+                  oninput="filterAirports(this, 'toDropdown')"
+                />
+              </div>
+              <div id="toDropdown" class="airport-dropdown"></div>
+            </div>
+
+            <div class="field">
+              <label>Depart</label>
+              <div class="input-wrapper">
+                <i class="fas fa-calendar-alt"></i>
+                <input
+                  type="text"
+                  id="departDate"
+                  placeholder="DD-MM-YYYY"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Passengers</label>
+              <div class="input-wrapper">
+                <i class="fas fa-user"></i>
+                <select id="passengerCount">
+                  <option>1 Passenger</option>
+                  <option>2 Passengers</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Class</label>
+              <div class="input-wrapper">
+                <i class="fas fa-person-booth"></i>
+                <select id="flightClass">
+                  <option>Economy</option>
+                  <option>Business</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="search-btn">
+              <i class="fas fa-search"></i>
+              <button type="submit">Search</button>
+            </div>
+            <div class="search-box-overlay">
+              <div class="overlay-message">UNDER WORKING</div>
+            </div>
+          </div>
+        </form>
+
+        <div
+          id="searchLoader"
+          class="search-results-loader"
+          style="
+            display: none;
+            text-align: center;
+            padding: 25px;
+            margin: 20px auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            max-width: 600px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(4px);
+          "
+        >
+          <i
+            class="fas fa-circle-notch fa-spin"
+            style="font-size: 35px; color: #006aff; margin-bottom: 12px"
+          ></i>
+          <p
+            style="
+              font-weight: 500;
+              color: #1e3c72;
+              margin: 0;
+              font-family: &quot;Poppins&quot;, sans-serif;
+            "
+          >
+            Salam Travels Se Live Airfares Fetch Kiye Ja Rahe Hain... Please
+            Wait.
+          </p>
+        </div>
+
+        <section
+          id="flightResultsSection"
+          class="flight-results-container container"
+          style="
+            display: none;
+            margin-top: 30px;
+            margin-bottom: 30px;
+            text-align: left;
+          "
+        >
+          <h3
+            style="
+              margin-bottom: 15px;
+              color: #ffffff;
+              font-size: 18px;
+              font-weight: 500;
+            "
+          >
+            <i class="fas fa-plane-departure"></i> Available Flights Captured
+          </h3>
+          <div
+            id="resultsGrid"
+            style="
+              display: flex;
+              flex-direction: column;
+              gap: 15px;
+              width: 100%;
+            "
+          ></div>
+        </section>
+      </div>
+    </section>
+
+    <section class="stats container">
+      <div class="card" style="border: 5px solid #c5a059">
+        <h4>Total Bookings</h4>
+        <h2>3022</h2>
+      </div>
+
+      <div class="card" style="border: 5px solid #c5a059">
+        <h4>Confirmed</h4>
+        <h2>838</h2>
+      </div>
+
+      <div class="card" style="border: 5px solid #c5a059">
+        <h4>Ticketed</h4>
+        <h2>1251</h2>
+      </div>
+    </section>
+
+    <button id="backToTop"><i class="fas fa-arrow-up"></i></button>
+
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-column">
+          <div class="logo">
+            <a href="users.html"
+              ><img
+                src="imam travel and tours logo.jpeg"
+                alt="Imam Travel Company logo"
+              />IMAM TRAVEL COMPANY</a
+            >
+          </div>
+          <p>
+            Exploring the world one destination at a time. Join us for
+            unforgettable journeys.
+          </p>
+          <div class="socials">
+            <a
+              href="https://www.facebook.com/profile.php?id=61553215993240"
+              target="_blank"
+              aria-label="Facebook"
+              ><i class="fab fa-facebook-f"></i
+            ></a>
+            <a
+              href="https://www.instagram.com/imamtravelsjpj/"
+              target="_blank"
+              aria-label="Instagram"
+              ><i class="fab fa-instagram"></i
+            ></a>
+            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" aria-label="Youtube"><i class="fab fa-youtube"></i></a>
+            <a
+              href="https://whatsapp.com/channel/0029VbB1sTGHQbRw4gZ4pq2T"
+              aria-label="Whatsapp"
+              target="_blank"
+              ><i class="fab fa-whatsapp"></i
+            ></a>
+          </div>
+        </div>
+        <div class="footer-column">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="index.html#home">Home</a></li>
+            <li><a href="index.html#about">About Us</a></li>
+            <li><a href="index.html#destinations">Destinations</a></li>
+            <li><a href="index.html#contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>Newsletter</h3>
+          <p>Subscribe to get the latest travel deals.</p>
+          <form class="footer-newsletter">
+            <input type="email" placeholder="Your Email" />
+            <button type="submit"><i class="fas fa-paper-plane"></i></button>
+          </form>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>
+          &copy; 2026 IMAM TRAVELS COMPANY. Made with
+          <i class="fas fa-heart" style="color: red"></i> for travelers.
+        </p>
+      </div>
+    </footer>
+
+    <script src="main.js"></script>
+  </body>
+</html>

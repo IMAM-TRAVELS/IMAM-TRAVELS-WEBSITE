@@ -1,0 +1,635 @@
+/* ==========================================================================
+   1. GLOBAL STYLES & VARIABLES
+   ========================================================================== */
+:root {
+  --primary-gradient: linear-gradient(to right, #ff0033, #006aff);
+  --reverse-gradient: linear-gradient(to right, #006aff, #ff0033);
+  --text-dark: #333333;
+  --text-light: #f4f6f9;
+  --text-gray: #666666;
+  --border-color: #e5e5e5;
+  --white: #ffffff;
+  --transition-smooth: all 0.3s ease;
+  --border-radius-custom: 6px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background: var(--text-light);
+  color: var(--text-dark);
+  overflow-x: hidden;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* ==========================================================================
+   2. NAVIGATION & SIDEBAR (HAMBURGER MENU)
+   ========================================================================== */
+.left-side {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.hamburger {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.hamburger span {
+  width: 25px;
+  height: 3px;
+  background: var(--text-dark);
+  transition: var(--transition-smooth);
+}
+
+.sidebar {
+  position: fixed;
+  left: -250px;
+  top: 0;
+  width: 250px;
+  height: 100%;
+  background: var(--white);
+  z-index: 1000;
+  padding: 20px;
+  transition: var(--transition-smooth);
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar.active {
+  left: 0;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.sidebar-header button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.sidebar ul {
+  list-style: none;
+}
+
+.sidebar ul li {
+  margin-bottom: 20px;
+}
+
+.sidebar ul li a {
+  text-decoration: none;
+  color: var(--text-dark);
+  font-weight: 500;
+  transition: var(--transition-smooth);
+}
+
+.sidebar ul li a:hover {
+  color: #ff0033;
+}
+
+/* ==========================================================================
+   3. HEADER SECTION
+   ========================================================================== */
+.top-header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border-color);
+  padding: 15px 0;
+}
+
+.header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo a {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #ff0019;
+  font-weight: 700;
+  font-size: 22px;
+}
+
+.logo img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.credit {
+  font-size: 14px;
+  color: #555555;
+}
+
+.credit span {
+  display: block;
+  color: #d72638;
+  font-weight: 700;
+}
+
+.header-right select {
+  padding: 8px 12px;
+  border: 1px solid #dddddd;
+  border-radius: var(--border-radius-custom);
+  background: var(--white);
+  outline: none;
+}
+
+.header-right a {
+  text-decoration: none;
+  color: #444444;
+  font-weight: 500;
+  transition: var(--transition-smooth);
+}
+
+.header-right a:hover {
+  color: #ff0033;
+}
+
+/* ==========================================================================
+   4. HERO & JOURNEY TEXT SECTION
+   ========================================================================== */
+.hero {
+  background: url("potal_ticket_background.jpg") no-repeat center center;
+  background-size: cover;
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.hero-overlay {
+  width: 100%;
+  max-width: 1200px;
+  text-align: center;
+  color: #000000;
+}
+
+.hero h1 {
+  font-size: 55px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.hero p {
+  font-size: 22px;
+  margin-bottom: 30px;
+  color: rgb(80, 80, 80);
+  font-weight: bold;
+}
+
+.journey-text {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.journey-title {
+  font-size: 40px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.journey-title .red {
+  color: #ff0033;
+}
+
+.journey-title .blue {
+  color: #000000;
+}
+
+.journey-title .small {
+  color: #006aff;
+  font-weight: bold;
+}
+
+.journey-sub {
+  font-size: 18px;
+  color: var(--text-gray);
+}
+
+.journey-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.journey-divider hr {
+  width: 150px;
+  border: none;
+  height: 2px;
+}
+
+.line-red {
+  background-color: #ff0033;
+}
+
+.line-blue {
+  background-color: #006aff;
+}
+
+.journey-divider i {
+  color: #ff0033;
+  font-size: 20px;
+}
+
+/* ==========================================================================
+   5. NAVIGATION TABS STYLE
+   ========================================================================== */
+.tabs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.tabs a {
+  text-decoration: none;
+}
+
+.tabs button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border: none;
+  background: var(--white);
+  color: var(--text-dark);
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: var(--transition-smooth);
+  text-decoration: none;
+}
+
+.tabs button i {
+  color: #ff0033;
+  transition: var(--transition-smooth);
+}
+
+.tabs button.active {
+  background: var(--primary-gradient);
+  color: var(--white);
+}
+
+.tabs button.active i {
+  color: var(--white);
+}
+
+.tabs button:hover:not(.active) {
+  background: var(--primary-gradient);
+  color: var(--white);
+}
+
+.tabs button:hover:not(.active) i {
+  color: var(--white);
+}
+
+/* ==========================================================================
+   6. BOOKING SEARCH BOX & INPUTS
+   ========================================================================== */
+.search-box {
+  background: var(--white);
+  border-radius: 10px;
+  padding: 25px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  align-items: end;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.field {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field label {
+  display: block;
+  color: #525252;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.input-wrapper i {
+  position: absolute;
+  left: 15px;
+  color: #ff0000;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.input-wrapper input,
+.input-wrapper select {
+  width: 100%;
+  padding: 12px 12px 12px 42px;
+  border: 1px solid #cccccc;
+  border-radius: var(--border-radius-custom);
+  background: var(--white);
+  outline: none;
+  font-size: 15px;
+  transition: var(--transition-smooth);
+}
+
+.input-wrapper input:focus,
+.input-wrapper select:focus {
+  border-color: #0077cc;
+  box-shadow: 0 0 5px rgba(0, 119, 204, 0.2);
+}
+
+/* Search Button Wrapper Fixed */
+.search-btn {
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-btn button {
+  width: 100%;
+  padding: 13px 20px 13px 45px;
+  border: none;
+  border-radius: var(--border-radius-custom);
+  background: var(--primary-gradient);
+  color: var(--white);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.search-btn i {
+  position: absolute;
+  left: 20px;
+  color: var(--white);
+  pointer-events: none;
+  z-index: 10;
+  font-size: 16px;
+}
+
+.search-btn button:hover {
+  background: var(--reverse-gradient);
+}
+
+/* ==========================================================================
+   7. STATS CARDS SECTION
+   ========================================================================== */
+.stats {
+  margin-top: 60px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.card {
+  background: var(--white);
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+.card h4 {
+  color: var(--text-gray);
+  margin-bottom: 15px;
+}
+
+.card h2 {
+  font-size: 42px;
+  color: #0077cc;
+}
+
+.card-shape {
+  background-color: var(--white);
+  border-radius: 20px;
+  padding: 20px;
+  border: 5px solid #c5a059;
+}
+
+/* ==========================================================================
+   8. FOOTER SECTION
+   ========================================================================== */
+footer {
+  background: blue;
+  color: var(--white);
+  padding: 6rem 0 2rem;
+  margin-top: 6rem;
+}
+
+.footer-grid {
+  width: min(1200px, 100% - 3rem);
+  margin: 0 auto 4rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 4rem;
+}
+
+.footer-column h3 {
+  color: var(--white);
+  margin-bottom: 1.8rem;
+  border-bottom: 2.5px solid #ff0033;
+  padding-bottom: 0.6rem;
+  display: inline-block;
+  font-size: 1.2rem;
+}
+
+.footer-column ul {
+  list-style: none;
+}
+
+.footer-column ul li {
+  margin-bottom: 1rem;
+}
+
+.footer-column ul a {
+  color: #dddddd;
+  text-decoration: none;
+  transition: var(--transition-smooth);
+}
+
+.footer-column ul a:hover {
+  color: var(--white);
+  padding-left: 8px;
+}
+
+.socials {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.socials a {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--white);
+  text-decoration: none;
+  transition: var(--transition-smooth);
+}
+
+.socials a:hover {
+  background: #ff0033;
+  transform: translateY(-3px);
+}
+
+.footer-newsletter {
+  display: flex;
+  margin-top: 1.5rem;
+  height: 45px;
+  gap: 5px;
+}
+
+.footer-newsletter input {
+  flex: 1;
+  border: none;
+  padding: 0 1.5rem;
+  border-radius: 100px;
+  background: var(--white);
+  color: var(--text-dark);
+  outline: none;
+}
+
+.footer-newsletter button {
+  width: 60px;
+  border-radius: 100px;
+  background: var(--primary-gradient);
+  color: var(--white);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-smooth);
+}
+
+.footer-newsletter button:hover {
+  background: var(--reverse-gradient);
+}
+
+.footer-bottom {
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 2.5rem;
+  font-size: 0.9rem;
+  color: #cccccc;
+}
+
+/* ==========================================================================
+   9. BACK TO TOP BUTTON
+   ========================================================================== */
+#backToTop {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  background: var(--primary-gradient);
+  color: var(--white);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-smooth);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+#backToTop.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+#backToTop:hover {
+  background: var(--reverse-gradient);
+  transform: scale(1.1);
+}
+
+/* ==========================================================================
+   10. RESPONSIVE DESIGN (MOBILE MEDIA QUERIES)
+   ========================================================================== */
+@media (max-width: 992px) {
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 34px;
+  }
+
+  .hero p {
+    font-size: 16px;
+  }
+
+  .journey-title {
+    font-size: 28px;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+    margin-top: 30px;
+  }
+
+  .header-flex {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  .header-right {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}

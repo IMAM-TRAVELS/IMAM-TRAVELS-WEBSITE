@@ -1,0 +1,66 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Welcome Back</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="ticketing.css" />
+    <link rel="stylesheet" href="responsive.css" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  </head>
+  <body>
+    <div class="login-container">
+      <div class="login-box">
+        <h2>AGENT LOGIN</h2>
+        <form onsubmit="window.handleAgentLogin(event)">
+          <div class="input-group">
+            <i class="fa fa-user"></i>
+            <input
+              type="text"
+              id="login_user"
+              placeholder="username"
+              autocomplete="username"
+              required
+            />
+          </div>
+          <div class="input-group">
+            <i class="fa fa-key"></i>
+            <input
+              type="password"
+              id="login_pass"
+              placeholder="......"
+              autocomplete="current-password"
+              required
+            />
+          </div>
+
+          <button type="submit" class="login-btn">LOGIN</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay" style="display: none">
+      <div class="spinner-box">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Verifying Credentials...</p>
+      </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <script src="main.js?v=9.9"></script>
+  </body>
+</html>

@@ -1,0 +1,125 @@
+/* Shared responsive helpers for all pages */
+
+/* Ensure media scale */
+img,
+video,
+iframe,
+embed {
+  max-width: 100%;
+  height: auto;
+}
+
+.container,
+.page,
+main {
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Improve touch targets and readability */
+button,
+a,
+.action-btn,
+.icon-btn {
+  touch-action: manipulation;
+}
+
+/* Desktop to tablet */
+@media (max-width: 1024px) {
+  .container {
+    width: 92%;
+  }
+  body {
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Tablet and mobile */
+@media (max-width: 768px) {
+  body {
+    font-size: 15px;
+  }
+
+  /* Stack layout elements */
+  .services-grid,
+  .destination-grid,
+  .gallery-grid,
+  .stats-grid,
+  .features-grid,
+  .about-content {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Compact header */
+  header,
+  .site-header,
+  nav {
+    padding: 0.65rem 0;
+  }
+
+  .menu-toggle,
+  .hamburger {
+    display: block !important;
+  }
+
+  /* Ensure buttons and CTAs are easy to tap */
+  .cta-button,
+  .header-cta,
+  .login-btn {
+    width: 100%;
+    max-width: 320px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .partner-track,
+  .partners-track {
+    overflow: visible;
+  }
+
+  .service-card,
+  .destination,
+  .testimonial-card,
+  .booking-card,
+  .panel {
+    padding: 1rem !important;
+  }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+  h1 {
+    font-size: 1.6rem !important;
+  }
+  h2 {
+    font-size: 1.25rem !important;
+  }
+
+  .brand-logo,
+  .logo img {
+    height: 36px !important;
+    width: auto !important;
+  }
+
+  .action-btn,
+  .icon-btn {
+    width: 42px;
+    height: 42px;
+  }
+
+  .whatsapp-fab,
+  #backToTop {
+    right: 0.75rem;
+    bottom: 0.75rem;
+  }
+}
+
+/* Accessibility helpers */
+button:focus,
+a:focus {
+  outline: 3px solid rgba(52, 152, 219, 0.15);
+  outline-offset: 2px;
+}

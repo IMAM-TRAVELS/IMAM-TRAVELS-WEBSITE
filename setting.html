@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settings | Imam Travel Admin</title>
+    <link rel="stylesheet" href="setting.css" />
+    <link rel="stylesheet" href="responsive.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="settings-page">
+      <header class="settings-header">
+        <div>
+          <h1>Admin Settings</h1>
+          <p>
+            Manage admin and worker accounts, view online status, and edit or
+            delete users.
+          </p>
+        </div>
+        <button class="btn-logout" onclick="logoutUser()">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </button>
+      </header>
+
+      <section class="settings-summary">
+        <div class="summary-card">
+          <span>Total Accounts</span>
+          <strong id="settingsTotalCount">0</strong>
+        </div>
+        <div class="summary-card">
+          <span>Online</span>
+          <strong id="settingsOnlineCount">0</strong>
+        </div>
+        <div class="summary-card">
+          <span>Offline</span>
+          <strong id="settingsOfflineCount">0</strong>
+        </div>
+      </section>
+
+      <section class="settings-table-section">
+        <div class="settings-table-header">
+          <h2>Account Directory</h2>
+          <div class="settings-table-actions-left">
+            <button
+              class="btn-admin-action"
+              onclick="window.openCreateLoginModal()"
+            >
+              <i class="fa-solid fa-user-plus"></i> New Account
+            </button>
+          </div>
+          <button class="btn-admin-action" onclick="location.reload()">
+            Refresh
+          </button>
+        </div>
+
+        <div id="settingsError" class="settings-error"></div>
+        <div id="settingsLoading" class="settings-loading">
+          <div class="loader"></div>
+          <span>Loading user accounts…</span>
+        </div>
+        <div id="settingsUsersCard" class="settings-table-card"></div>
+
+        <div id="editAccountModal" class="settings-modal" aria-hidden="true">
+          <div
+            class="settings-modal-backdrop"
+            onclick="window.closeEditLoginModal()"
+          ></div>
+          <div
+            class="settings-modal-body"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Edit account"
+          >
+            <div class="settings-modal-header">
+              <h3 id="editAccountModalTitle">Edit Account</h3>
+              <button
+                type="button"
+                class="settings-modal-close"
+                onclick="window.closeEditLoginModal()"
+              >
+                ×
+              </button>
+            </div>
+            <div class="settings-modal-content">
+              <div class="modal-row">
+                <label for="editAccountUsername">Username</label>
+                <input
+                  id="editAccountUsername"
+                  type="text"
+                  placeholder="Username"
+                />
+              </div>
+              <div class="modal-row">
+                <label for="editAccountEmail">Email</label>
+                <input id="editAccountEmail" type="email" placeholder="Email" />
+              </div>
+              <div class="modal-row">
+                <label for="editAccountRole">System Role</label>
+                <select id="editAccountRole">
+                  <option value="Admin">Admin</option>
+                  <option value="Worker">Worker</option>
+                </select>
+              </div>
+              <div class="modal-row">
+                <label for="editAccountPassword">Password</label>
+                <input
+                  id="editAccountPassword"
+                  type="password"
+                  placeholder="Leave blank to keep current"
+                />
+              </div>
+              <div id="editAccountError" class="settings-modal-error"></div>
+              <div class="settings-modal-actions">
+                <button
+                  type="button"
+                  id="saveAccountButton"
+                  class="btn-admin-action"
+                  onclick="window.saveEditLoginUser()"
+                >
+                  Save Changes
+                </button>
+                <button
+                  type="button"
+                  class="btn-delete"
+                  onclick="window.closeEditLoginModal()"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,1520 @@
+/* ====================================================
+   IMAM TRAVEL COMPANY - PREMIUM REALTIME SYSTEM ARCHITECTURE
+   ==================================================== */
+
+:root {
+  --primary-red: #d32f2f;
+  --accent-dark: #0f172a;
+  --body-bg: #f4f6f9;
+  --pure-white: #ffffff;
+  --border-light: #e2e8f0;
+  --text-main: #334155;
+  --text-muted: #64748b;
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* 1. Global Optimization Sets */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
+}
+
+body {
+  background-color: var(--body-bg);
+  color: var(--text-main);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ====================================================
+   HEADER STYLING FOR UMAHRAH_HAJJ PAGE
+   ==================================================== */
+.site-header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 1px solid #e8edf4;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  z-index: 1000;
+}
+
+.header-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.menu-toggle,
+.action-btn {
+  border: none;
+  background: transparent;
+  color: #0f172a;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+
+.menu-toggle span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: #0f172a;
+  position: relative;
+}
+
+.menu-toggle span::before,
+.menu-toggle span::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 24px;
+  height: 2px;
+  background: #0f172a;
+}
+
+.menu-toggle span::before {
+  top: -7px;
+}
+
+.menu-toggle span::after {
+  top: 7px;
+}
+
+.brand-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: auto;
+}
+
+.brand-logo {
+  max-height: 70px;
+  width: auto;
+  max-width: 240px;
+  display: block;
+  margin: 0 auto;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-dropdown {
+  position: relative;
+}
+
+.profile-dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 140px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+  overflow: hidden;
+  z-index: 1100;
+  display: none;
+}
+
+.profile-dropdown-menu.show {
+  display: block;
+}
+
+.profile-dropdown-menu .dropdown-item {
+  width: 100%;
+  text-align: left;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  color: #0f172a;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.profile-dropdown-menu .dropdown-item:hover {
+  background: #f8fafc;
+}
+
+.action-btn i {
+  font-size: 18px;
+}
+
+.side-menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.25s ease,
+    visibility 0.25s ease;
+  z-index: 1200;
+}
+
+.side-menu-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.side-menu {
+  width: min(320px, 90vw);
+  height: 100%;
+  background: #ffffff;
+  transform: translateX(-100%);
+  transition: transform 0.25s ease;
+  box-shadow: 12px 0 40px rgba(15, 23, 42, 0.14);
+  overflow-y: auto;
+}
+
+.side-menu-overlay.open .side-menu {
+  transform: translateX(0);
+}
+
+.side-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.side-menu-header span {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.close-side-menu {
+  border: none;
+  background: transparent;
+  color: #0f172a;
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.side-menu-nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.side-menu-link {
+  display: block;
+  padding: 16px 20px;
+  color: #0f172a;
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.side-menu-link:hover {
+  background: #f8fafc;
+}
+
+@media (max-width: 900px) {
+  .header-inner {
+    justify-content: space-between;
+    padding: 0 16px;
+  }
+
+  .brand-logo {
+    max-height: 56px;
+  }
+}
+
+.pdf-preview-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.25s ease,
+    visibility 0.25s ease;
+  z-index: 1300;
+}
+
+.pdf-preview-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.pdf-preview-modal {
+  width: min(900px, 95vw);
+  max-height: min(90vh, 700px);
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.25);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.pdf-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 22px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.pdf-preview-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #0f172a;
+}
+
+.pdf-preview-close {
+  border: none;
+  background: transparent;
+  font-size: 26px;
+  cursor: pointer;
+  color: #0f172a;
+}
+
+.pdf-preview-body {
+  position: relative;
+  padding: 18px 22px;
+  overflow-y: auto;
+  background: url("potal_ticket_background.jpg") center/cover no-repeat;
+  flex: 1;
+}
+
+.pdf-preview-body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.75);
+  pointer-events: none;
+}
+
+.pdf-preview-body > * {
+  position: relative;
+  z-index: 1;
+}
+
+.pdf-preview-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 22px 20px;
+  background: #fff;
+  border-top: 1px solid #e2e8f0;
+}
+
+.pdf-preview-download,
+.pdf-preview-cancel {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pdf-preview-download {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+.pdf-preview-cancel {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+/* ====================================================
+   FOOTER STYLING FOR UMAHRAH_HAJJ PAGE
+   ==================================================== */
+.main-footer {
+  background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+  padding: 56px 24px 24px;
+  margin-top: 60px;
+  width: 100%;
+  border-top: 2px solid var(--primary-red);
+  color: #f8fafc;
+}
+
+.footer-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
+  gap: 32px;
+  align-items: start;
+}
+
+.footer-block {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.footer-brand-block {
+  max-width: 400px;
+}
+
+.footer-logo-link {
+  display: inline-flex;
+  align-items: center;
+}
+
+.footer-logo-img {
+  max-height: 80px;
+  width: auto;
+  display: block;
+}
+
+.footer-description {
+  color: rgba(248, 250, 252, 0.82);
+  font-size: 14px;
+  line-height: 1.8;
+  max-width: 420px;
+}
+
+.footer-links-block h3,
+.footer-contact-block h3 {
+  color: #ffffff;
+  font-size: 16px;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.footer-nav-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-nav-links a {
+  color: rgba(248, 250, 252, 0.85);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.footer-nav-links a:hover {
+  color: var(--primary-red);
+}
+
+.footer-contact-block p {
+  margin: 0;
+  color: rgba(248, 250, 252, 0.82);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.footer-contact-block a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.footer-contact-block a:hover {
+  text-decoration: none;
+}
+
+.footer-social-links {
+  display: flex;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.footer-social-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 16px;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.footer-social-links a:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.18);
+  color: var(--primary-red);
+}
+
+.footer-bottom-bar {
+  margin-top: 32px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 20px;
+  text-align: center;
+}
+
+.copyright-text {
+  font-size: 13px;
+  color: rgba(248, 250, 252, 0.7);
+  margin: 0;
+}
+
+@media (max-width: 991px) {
+  .footer-container {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-container,
+  .footer-bottom-bar {
+    text-align: center;
+  }
+
+  .footer-links-block,
+  .footer-contact-block {
+    align-items: center;
+  }
+
+  .footer-nav-links {
+    align-items: center;
+  }
+
+  .footer-social-links {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 991px) {
+  .header-container {
+    padding: 18px;
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+
+  .brand-identity .logo-img {
+    height: 70px;
+    max-width: 100%;
+  }
+
+  .footer-container {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .footer-right-block,
+  .footer-left-block {
+    align-items: center;
+  }
+
+  .footer-contact {
+    text-align: center;
+  }
+
+  .footer-social-links {
+    justify-content: center;
+  }
+}
+
+/* ====================================================
+   MAIN CORE HUB & WIDGET LAYOUTS
+   ==================================================== */
+.main-wrapper {
+  max-width: 1280px;
+  margin: 32px auto 0;
+  padding: 0 24px 30px;
+}
+
+.booking-widget-card {
+  background: #ffffff;
+  border-radius: 26px;
+  padding: 28px;
+  box-shadow: 0 26px 80px rgba(15, 23, 42, 0.16);
+  border: 1px solid rgba(203, 213, 225, 0.65);
+  margin-bottom: 24px;
+}
+
+/* Grid Optimization Engine */
+.search-box-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr) 140px;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+
+.field-group label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrapper i {
+  position: absolute;
+  left: 14px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.input-wrapper input,
+.input-wrapper select {
+  width: 100%;
+  padding: 12px 12px 12px 38px;
+  border: 1px solid #cbd5e1;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  color: var(--accent-dark);
+  background-color: var(--pure-white);
+  outline: none;
+  transition: all 0.2s;
+}
+
+.input-wrapper input:focus,
+.input-wrapper select:focus {
+  border-color: var(--primary-red);
+  box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+}
+
+.airport-dropdown-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: auto;
+  width: 100%;
+  max-width: 760px;
+  margin-top: 6px;
+  background: var(--pure-white);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.12);
+  z-index: 9999;
+  max-height: 360px;
+  overflow-y: auto;
+  display: none;
+  padding: 6px 0;
+}
+
+.airport-dropdown-panel.show {
+  display: block;
+  animation: fadeInDropdown 180ms ease;
+}
+
+@keyframes fadeInDropdown {
+  from {
+    transform: translateY(-6px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.dropdown-item-row {
+  padding: 10px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  border-bottom: 1px solid #f1f5f9;
+  color: var(--text-main);
+}
+
+.dropdown-item-row:hover {
+  background-color: #fef2f2;
+  color: var(--primary-red);
+}
+
+.btn-core-search {
+  background: var(--primary-red);
+  color: var(--pure-white);
+  border: none;
+  padding: 0 20px;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 45px;
+  transition: background 0.2s;
+  width: 100%;
+}
+
+.btn-core-search:hover {
+  background: #b71c1c;
+}
+
+/* ====================================================
+   TWO-COLUMN SERVER SPLIT SYSTEM ENGINE
+   ==================================================== */
+.layout-split-body {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* Dynamic Filter Sidebar Content Structure styles */
+.filter-sidebar-wrapper {
+  background: var(--pure-white);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  align-self: start;
+}
+
+.filter-heading-block {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 12px;
+}
+
+.filter-heading-block h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent-dark);
+}
+
+.btn-reset-filters {
+  background: transparent;
+  border: none;
+  color: var(--primary-red);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.filter-section-group {
+  margin-bottom: 20px;
+}
+
+.filter-section-group h4 {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.filter-control-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  color: var(--text-main);
+}
+
+.filter-control-label input[type="checkbox"] {
+  accent-color: var(--primary-red);
+  width: 15px;
+  height: 15px;
+}
+
+.filter-summary {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+.filter-pill-list {
+  display: grid;
+  gap: 10px;
+}
+
+.filter-pill {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-items: start;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid #e8eff8;
+  background: #f9fbfe;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-pill div {
+  width: 100%;
+  text-align: left;
+}
+
+.filter-pill:hover {
+  background: #ffffff;
+  border-color: rgba(211, 47, 47, 0.18);
+}
+
+.filter-pill input {
+  accent-color: var(--primary-red);
+}
+
+.filter-pill strong {
+  font-size: 13px;
+  color: var(--accent-dark);
+  font-weight: 600;
+}
+
+.filter-pill .count-badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.filter-time-group {
+  display: grid;
+  gap: 10px;
+}
+
+.filter-time-labels {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.price-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 90px;
+  padding: 8px 12px;
+  border: 1px solid rgba(244, 63, 94, 0.2);
+  border-radius: 8px;
+  background: #ffffff;
+  color: #d1274a;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.price-button:hover,
+.price-button:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+  background: #fff4f6;
+}
+
+.price-button:active {
+  transform: translateY(0);
+}
+
+.filter-time-labels span {
+  min-width: 64px;
+}
+
+.filter-range-input {
+  width: 100%;
+}
+
+.filter-section-group .filter-help {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+/* Flight Stream Result Cards Grid Wrapper */
+.results-output-stream {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Live Injection Card Node Style Architecture */
+.flight-data-card {
+  background: var(--pure-white);
+  border-radius: var(--radius-lg);
+  padding: 20px 22px;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  align-items: center;
+  gap: 18px;
+}
+
+.carne-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.carne-meta i,
+.airline-logo-badge {
+  font-size: 18px;
+  color: var(--primary-red);
+  background: transparent;
+  padding: 10px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  text-align: center;
+}
+
+.airline-logo-badge {
+  background: transparent;
+  padding: 8px;
+  width: 56px;
+  height: 56px;
+}
+
+.airline-logo-badge img.airline-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.carne-meta div {
+  display: grid;
+  gap: 6px;
+}
+
+.carne-meta h4 {
+  text-transform: uppercase;
+  margin: 0;
+  color: var(--accent-dark);
+  font-size: 16px;
+}
+
+.carne-meta small {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.route-timeline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.point {
+  min-width: 0;
+}
+
+.point strong {
+  display: block;
+  font-size: 15px;
+  color: var(--accent-dark);
+  margin-bottom: 6px;
+}
+
+.point .time {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-top: 8px;
+  letter-spacing: 0.01em;
+}
+
+.connector {
+  flex: 1;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin: 0 14px;
+}
+
+.connector::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  border-top: 1px dashed #cbd5e1;
+}
+
+.connector i {
+  position: relative;
+  background: var(--pure-white);
+  padding: 0 9px;
+  color: var(--primary-red);
+  font-size: 14px;
+}
+
+.card-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  border-left: 1px dashed var(--border-light);
+  padding-left: 22px;
+}
+
+.price-tag {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--primary-red);
+}
+
+.card-right div:nth-child(2) {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.book-now-action-btn {
+  background: var(--accent-dark);
+  color: var(--pure-white);
+  border: none;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 10px;
+  cursor: pointer;
+  width: 100%;
+  max-width: 140px;
+}
+
+.book-now-action-btn:hover {
+  background: #0b1324;
+}
+
+/* Global Realtime Server Preloaders style */
+.no-flights-msg {
+  background: var(--pure-white);
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  text-align: center;
+  color: var(--text-muted);
+  border: 1px dashed #cbd5e1;
+}
+
+.loader-icon {
+  font-size: 26px;
+  color: var(--primary-red);
+  margin-bottom: 12px;
+}
+
+/* ====================================================
+   CUSTOM PASSENGER CLASS MODAL DROP-DOWN STYLING
+   ==================================================== */
+.passenger-box-input {
+  position: relative;
+}
+
+.chevron-right-icon {
+  position: absolute !important;
+  left: auto !important;
+  right: 14px !important;
+  font-size: 12px !important;
+  color: var(--text-muted) !important;
+  pointer-events: none;
+}
+
+.passenger-dropdown-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  left: auto;
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  background: var(--pure-white);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+  z-index: 1001;
+  padding: 12px;
+  margin-top: 6px;
+  display: none; /* Controlled via JS toggles */
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.passenger-dropdown-panel.show {
+  display: block;
+  animation: fadeInDropdown 180ms ease;
+}
+
+/* Counters Styling */
+.counter-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.counter-label {
+  display: flex;
+  flex-direction: column;
+}
+
+.counter-label strong {
+  font-size: 14px;
+  color: var(--accent-dark);
+}
+
+.counter-label span {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.counter-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.counter-controls button {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid #cbd5e1;
+  background: var(--pure-white);
+  color: var(--accent-dark);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.counter-controls button:hover {
+  border-color: var(--primary-red);
+  color: var(--primary-red);
+  background: #fff5f5;
+}
+
+.counter-controls span {
+  font-size: 14px;
+  font-weight: 700;
+  min-width: 16px;
+  text-align: center;
+  color: var(--accent-dark);
+}
+
+.dropdown-divider {
+  border: 0;
+  border-top: 1px solid #f1f5f9;
+  margin: 12px 0;
+}
+
+/* Cabin Radios Styling */
+.class-selection-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.class-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+.class-radio-label input[type="radio"] {
+  accent-color: var(--primary-red);
+  width: 16px;
+  height: 16px;
+}
+
+/* Done Button Action */
+.btn-done-passengers {
+  width: 100%;
+  background: var(--accent-dark);
+  color: var(--pure-white);
+  border: none;
+  padding: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-done-passengers:hover {
+  background: var(--primary-red);
+}
+
+/* ====================================================
+   CUSTOM 2-MONTH DYNAMIC CALENDAR STYLING
+   ==================================================== */
+.calendar-box-input {
+  position: relative;
+}
+
+.calendar-dropdown-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(760px, 96%);
+  max-width: calc(100vw - 32px);
+  background: var(--pure-white);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.14);
+  z-index: 1002;
+  padding: 18px;
+  margin-top: 6px;
+  display: none;
+  max-height: calc(100vh - 180px);
+  overflow: auto;
+}
+
+.calendar-dropdown-panel.show {
+  display: block;
+  animation: fadeInDropdown 180ms ease;
+}
+
+/* Float absolute navigation header arrows */
+.calendar-header-controls {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.cal-nav-btn {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--border-light);
+  background: var(--pure-white);
+  border-radius: 50%;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  transition: all 0.2s;
+}
+
+.cal-nav-btn:hover {
+  color: var(--primary-red);
+  border-color: var(--primary-red);
+  background: #fff5f5;
+}
+
+/* Two-column month structure split container mapping */
+.months-split-container {
+  display: flex;
+  gap: 24px;
+}
+
+.month-view-box {
+  flex: 1;
+}
+
+.month-title {
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent-dark);
+  margin-bottom: 16px;
+}
+
+.weekday-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.weekday-row span {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.days-grid-matrix {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  row-gap: 4px;
+}
+
+.cal-day-cell {
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-main);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.cal-day-cell:hover:not(.empty-cell):not(.disabled-cell) {
+  background-color: #f1f5f9;
+}
+
+/* Day states modifiers variables code inject */
+.cal-day-cell.empty-cell {
+  cursor: default;
+}
+
+.cal-day-cell.disabled-cell {
+  color: #cbd5e1;
+  pointer-events: none;
+}
+
+.cal-day-cell.active-selected-day {
+  border: 1px solid var(--primary-red) !important;
+  font-weight: 700;
+  color: var(--primary-red);
+}
+
+/* Responsive breakpoint scaling overrides logic */
+@media (max-width: 768px) {
+  .calendar-dropdown-panel {
+    width: calc(100vw - 24px);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px;
+  }
+  .airport-dropdown-panel,
+  .passenger-dropdown-panel {
+    left: 8px;
+    right: 8px;
+    width: calc(100% - 16px);
+    max-width: calc(100vw - 16px);
+  }
+  .months-split-container {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+/* ====================================================
+   PIXEL-PERFECT FOOTER DESIGN SYSTEM (2X MASSIVE LOGO)
+   ==================================================== */
+.main-footer {
+  background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+  padding: 48px 0;
+  margin-top: 60px;
+  width: 100%;
+  border-top: 2px solid var(--primary-red);
+}
+
+.footer-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.footer-split-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.footer-left-block {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-nav-links a {
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.footer-nav-links a:hover {
+  color: var(--pure-white);
+}
+
+.copyright-text {
+  font-size: 14px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* Footer Right Block 2x Large Logo */
+.footer-right-block {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.footer-logo-img {
+  height: 110px;
+  width: auto;
+  max-width: 360px;
+  display: block;
+  object-fit: contain;
+}
+
+/* Mobile Devices Settings Optimization */
+@media (max-width: 991px) {
+  .header-container {
+    min-height: auto;
+    padding: 24px;
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+
+  .brand-identity .logo-img {
+    height: 84px;
+    max-width: 100%;
+  }
+
+  .footer-split-row {
+    flex-direction: column-reverse;
+    text-align: center;
+    gap: 24px;
+  }
+
+  .footer-left-block {
+    align-items: center;
+  }
+
+  .footer-nav-links {
+    justify-content: center;
+  }
+
+  .footer-right-block {
+    justify-content: center;
+  }
+}
+
+/* Breakpoint rules */
+@media (max-width: 1024px) {
+  .search-box-row {
+    grid-template-columns: 1fr 1fr;
+  }
+  .search-action {
+    grid-column: span 2;
+  }
+  .layout-split-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Additional responsive refinements */
+@media (max-width: 900px) {
+  .search-box-row {
+    grid-template-columns: 1fr 1fr;
+  }
+  .search-action {
+    grid-column: span 2;
+  }
+  .brand-logo {
+    max-height: 56px;
+  }
+}
+
+@media (max-width: 768px) {
+  .search-box-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .search-action {
+    grid-column: auto;
+  }
+
+  .flight-data-card {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .card-right {
+    border-left: none;
+    padding-left: 0;
+    align-items: stretch;
+    text-align: left;
+    order: 3;
+  }
+
+  .carne-meta {
+    order: 1;
+  }
+  .route-timeline {
+    order: 2;
+  }
+
+  .book-now-action-btn {
+    max-width: 100%;
+  }
+
+  .calendar-dropdown-panel {
+    width: 100%;
+    left: 0;
+    right: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  .months-split-container {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
