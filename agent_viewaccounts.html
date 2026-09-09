@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bank Accounts</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="agent_viewaccounts.css" />
+    <link rel="stylesheet" href="umrah_hajj.css" />
+
+    <link rel="stylesheet" href="users.css" />
+    <link rel="stylesheet" href="responsive.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <style>
+      #searchBoxContainer {
+        position: relative;
+      }
+      #searchBoxContainer .search-box-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 20;
+        pointer-events: all;
+      }
+      #searchBoxContainer .search-box-overlay .overlay-message {
+        color: #ffffff;
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        background: rgba(0, 0, 0, 0.55);
+        padding: 14px 22px;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+      }
+    </style>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f8fafc;
+        color: #1f2937;
+      }
+      .account-page {
+        max-width: 1100px;
+        margin: 40px auto;
+        padding: 24px;
+      }
+      .account-header {
+        margin-bottom: 24px;
+      }
+      .account-header h1 {
+        margin: 0 0 8px;
+        font-size: 36px;
+      }
+      .account-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 18px;
+      }
+      .account-card {
+        background: #fff;
+        border: 1px solid #dfe7f1;
+        border-left: 5px solid #22c55e;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+      }
+      .account-card h3 {
+        margin: 0 0 10px;
+        font-size: 22px;
+      }
+      .account-card p {
+        margin: 6px 0;
+      }
+      .account-empty {
+        padding: 18px;
+        background: white;
+        border: 1px dashed #cbd5e1;
+        border-radius: 12px;
+        color: #64748b;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <button
+          class="menu-toggle"
+          aria-label="Open menu"
+          onclick="openSideMenu()"
+        >
+          <span></span>
+        </button>
+
+        <a href="users.html" class="brand-link">
+          <img
+            src="imam-name-with-logo.png"
+            alt="IMAM TRAVELS"
+            class="brand-logo"
+          />
+        </a>
+
+        <div class="header-actions">
+          <button class="action-btn" aria-label="Messages">
+            <i class="fas fa-envelope"></i>
+          </button>
+          <div class="profile-dropdown">
+            <button
+              class="action-btn profile-toggle"
+              aria-label="Profile"
+              onclick="toggleProfileDropdown(event)"
+              type="button"
+            >
+              <i class="fas fa-user-circle"></i>
+            </button>
+            <div
+              id="profileDropdownMenu"
+              class="profile-dropdown-menu"
+              role="menu"
+              aria-label="Profile menu"
+            >
+              <button
+                type="button"
+                class="dropdown-item"
+                onclick="logoutUser()"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="side-menu-overlay" id="sideMenuOverlay" aria-hidden="true">
+      <aside class="side-menu" onclick="event.stopPropagation()">
+        <div class="side-menu-header">
+          <span>Menu</span>
+          <button
+            class="close-side-menu"
+            aria-label="Close menu"
+            onclick="closeSideMenu()"
+            type="button"
+          >
+            ×
+          </button>
+        </div>
+        <nav class="side-menu-nav">
+          <a href="users.html" class="side-menu-link">Home</a>
+          <a href="agent_viewgroupbooking.html" class="side-menu-link">Dashboard</a>
+          <a href="agent_viewholdgroupbooking.html" class="side-menu-link">Group Bookings</a>
+          <a href="ummrah-booking.html" class="side-menu-link">Ummrah Bookings</a>
+          <a href="agent_viewaccounts.html" class="side-menu-link">Bank Accounts</a>
+          <a href="ticketing.html" class="side-menu-link">Logout</a>
+        </nav>
+      </aside>
+    </div>
+
+    <div class="account-page">
+      <div class="account-header">
+        <h1>Bank Accounts</h1>
+      </div>
+      <div id="accountList" class="account-grid">
+        <div class="account-empty">Loading bank accounts...</div>
+      </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="firebase-config.js"></script>
+    <script>
+      const BANK_ACCOUNTS_PATH = "bankAccounts";
+
+      function renderAgentBankAccounts(accounts) {
+        const container = document.getElementById("accountList");
+        if (!container) return;
+
+        if (!accounts || accounts.length === 0) {
+          container.innerHTML =
+            '<div class="account-empty">No bank account is available right now.</div>';
+          return;
+        }
+
+        container.innerHTML = accounts
+          .map(
+            (account) => `
+            <div class="account-card">
+              <h3>${account.bankName || "Bank Account"}</h3>
+              <p><strong>Account Title:</strong> ${account.accountTitle || "—"}</p>
+              <p><strong>Account Number:</strong> ${account.accountNumber || "—"}</p>
+              <p><strong>IBAN:</strong> ${account.iban || "—"}</p>
+              <p><strong>Raast ID:</strong> ${account.raastId || "—"}</p>
+              <p><strong>Branch:</strong> ${account.branch || "—"}</p>
+              <p><strong>Swift Code:</strong> ${account.swiftCode || "—"}</p>
+              ${account.notes ? `<p><strong>Notes:</strong> ${account.notes}</p>` : ""}
+            </div>
+          `,
+          )
+          .join("");
+      }
+
+      function fetchBankAccounts() {
+        if (!window.firebase || !firebase.database) {
+          document.getElementById("accountList").innerHTML =
+            '<div class="account-empty">Firebase is not available.</div>';
+          return;
+        }
+
+        firebase
+          .database()
+          .ref(BANK_ACCOUNTS_PATH)
+          .once("value")
+          .then((snapshot) => {
+            const data = snapshot.val() || {};
+            const accounts = Object.keys(data)
+              .map((key) => ({ id: key, ...data[key] }))
+              .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            renderAgentBankAccounts(accounts);
+          })
+          .catch(() => {
+            document.getElementById("accountList").innerHTML =
+              '<div class="account-empty">Could not load bank account data.</div>';
+          });
+      }
+
+      document.addEventListener("DOMContentLoaded", fetchBankAccounts);
+    </script>
+    <script src="main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bank Accounts - Imam Travel Admin</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="admin_viewgroupbooking.css" />
+    <link rel="stylesheet" href="responsive.css" />
+    <style>
+      .bank-panel {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+      }
+      .bank-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+      }
+      .bank-form {
+        display: grid;
+        gap: 14px;
+      }
+      .bank-form input,
+      .bank-form textarea {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        font-size: 14px;
+      }
+      .bank-form textarea {
+        min-height: 90px;
+        resize: vertical;
+      }
+      .bank-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+      }
+      .bank-list {
+        margin-top: 28px;
+        display: grid;
+        gap: 16px;
+      }
+      .bank-card {
+        border: 1px solid #dbeafe;
+        border-left: 5px solid #16a34a;
+        background: linear-gradient(180deg, #f8fffb 0%, #ffffff 100%);
+        border-radius: 16px;
+        padding: 18px 20px;
+      }
+      .bank-card h3 {
+        margin: 0 0 10px;
+        color: #0f172a;
+      }
+      .bank-card p {
+        margin: 6px 0;
+        color: #334155;
+      }
+      .bank-card strong {
+        color: #0f172a;
+      }
+      .bank-card-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 14px;
+      }
+      .bank-card-actions button,
+      .cancel-edit {
+        border: 0;
+        border-radius: 8px;
+        padding: 8px 14px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      .edit-account-btn {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+      .delete-account-btn {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+      .cancel-edit {
+        display: none;
+        background: #e2e8f0;
+        color: #334155;
+      }
+      .cancel-edit.show {
+        display: inline-block;
+      }
+      .bank-empty {
+        color: #64748b;
+        font-style: italic;
+      }
+      .success-msg {
+        display: none;
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        background: #dcfce7;
+        color: #166534;
+        border: 1px solid #86efac;
+      }
+      .success-msg.show {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="company-header">
+      <a href="admins.html" class="header-link">
+        <img
+          src="imam travel and tours logo.jpeg"
+          alt="Logo"
+          class="company-logo"
+        />
+        <span class="company-name">Imam Travel and Tours</span>
+      </a>
+    </header>
+
+    <nav class="top-nav">
+      <div class="nav-left"></div>
+      <div class="nav-right">
+        <span>Quick links <i class="fas fa-caret-down"></i></span>
+        <span>Configuration</span>
+        <span>Change password</span>
+        <span class="logout" onclick="logoutUser()" style="cursor: pointer">
+          <i class="fas fa-key"></i> Logout
+        </span>
+      </div>
+    </nav>
+
+    <div class="main-container">
+      <aside class="sidebar">
+        <div id="ticketSidebar">
+          <div class="menu-group">
+            <button class="menu-head active" onclick="toggleMenu('trans')">
+              Transactions <i class="fas fa-caret-down"></i>
+            </button>
+
+            <div id="trans" class="menu-content show">
+              <a href="umrah-pack.html"
+                ><button class="sub-link">Ummrah booking hold</button></a
+              >
+              <a href="admin_viewgroupbooking.html"
+                ><button class="sub-link">Group Bookings</button></a
+              >
+              <a href="admin_viewholdgroupbooking.html"
+                ><button class="sub-link">Group Bookings Hold</button></a
+              >
+              <a href="admin_viewaccounts.html"
+                ><button class="sub-link">Bank Accounts</button></a
+              >
+              <a href="#"><button class="sub-link">Under working</button></a>
+              <a href="#"><button class="sub-link">Under working</button></a>
+              <a href="setting.html"
+                ><button class="sub-link">Setting</button></a
+              >
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <section class="page-panel active-panel">
+          <div class="panel-header">
+            <h2>Bank Accounts</h2>
+          </div>
+
+          <div class="bank-panel">
+            <form class="bank-form" id="bankAccountForm">
+              <div class="bank-grid">
+                <input type="text" id="bankName" placeholder="Bank Name" />
+                <input
+                  type="text"
+                  id="accountTitle"
+                  placeholder="Account Title"
+                />
+                <input
+                  type="text"
+                  id="accountNumber"
+                  placeholder="Account Number"
+                />
+                <input type="text" id="iban" placeholder="IBAN / Sort Code" />
+                <input type="text" id="raastId" placeholder="Raast ID" />
+                <input type="text" id="branch" placeholder="Branch" />
+                <input type="text" id="swiftCode" placeholder="Swift Code" />
+              </div>
+              <textarea
+                id="notes"
+                placeholder="Extra notes / instructions"
+              ></textarea>
+              <div class="bank-actions">
+                <button type="submit" class="btn-admin-action">
+                  Save Bank Details
+                </button>
+                <button
+                  type="button"
+                  id="cancelEditButton"
+                  class="cancel-edit"
+                  onclick="cancelBankAccountEdit()"
+                >
+                  Cancel Edit
+                </button>
+              </div>
+            </form>
+            <div id="bankSaveMessage" class="success-msg">
+              Bank details saved successfully.
+            </div>
+          </div>
+
+          <div class="bank-list" id="bankListContainer">
+            <div class="bank-empty">Loading bank accounts...</div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="firebase-config.js"></script>
+    <script>
+      const BANK_ACCOUNTS_PATH = "bankAccounts";
+
+      function renderBankAccounts(accounts) {
+        const container = document.getElementById("bankListContainer");
+        if (!container) return;
+
+        if (!accounts || accounts.length === 0) {
+          container.innerHTML =
+            '<div class="bank-empty">No bank account saved yet.</div>';
+          return;
+        }
+
+        container.innerHTML = accounts
+          .map(
+            (account) => `
+            <div class="bank-card">
+              <h3>${account.bankName || "Bank Account"}</h3>
+              <p><strong>Account Title:</strong> ${account.accountTitle || "—"}</p>
+              <p><strong>Account Number:</strong> ${account.accountNumber || "—"}</p>
+              <p><strong>IBAN:</strong> ${account.iban || "—"}</p>
+              <p><strong>Raast ID:</strong> ${account.raastId || "—"}</p>
+              <p><strong>Branch:</strong> ${account.branch || "—"}</p>
+              <p><strong>Swift Code:</strong> ${account.swiftCode || "—"}</p>
+              ${account.notes ? `<p><strong>Notes:</strong> ${account.notes}</p>` : ""}
+              <div class="bank-card-actions">
+                <button type="button" class="edit-account-btn" onclick="editBankAccount('${account.id}')">Edit</button>
+                <button type="button" class="delete-account-btn" onclick="deleteBankAccount('${account.id}')">Delete</button>
+              </div>
+            </div>
+          `,
+          )
+          .join("");
+      }
+
+      function loadBankAccounts() {
+        if (!window.firebase || !firebase.database) {
+          document.getElementById("bankListContainer").innerHTML =
+            '<div class="bank-empty">Firebase is not available.</div>';
+          return;
+        }
+
+        firebase
+          .database()
+          .ref(BANK_ACCOUNTS_PATH)
+          .once("value")
+          .then((snapshot) => {
+            const value = snapshot.val() || {};
+            const accounts = Object.keys(value)
+              .map((key) => ({ id: key, ...value[key] }))
+              .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            renderBankAccounts(accounts);
+          })
+          .catch(() => {
+            document.getElementById("bankListContainer").innerHTML =
+              '<div class="bank-empty">Could not load bank accounts.</div>';
+          });
+      }
+
+      function saveBankAccount(event) {
+        event.preventDefault();
+        const form = document.getElementById("bankAccountForm");
+        const message = document.getElementById("bankSaveMessage");
+        const editingId = form.dataset.editingId;
+
+        const payload = {
+          bankName: document.getElementById("bankName").value.trim(),
+          accountTitle: document.getElementById("accountTitle").value.trim(),
+          accountNumber: document.getElementById("accountNumber").value.trim(),
+          iban: document.getElementById("iban").value.trim(),
+          raastId: document.getElementById("raastId").value.trim(),
+          branch: document.getElementById("branch").value.trim(),
+          swiftCode: document.getElementById("swiftCode").value.trim(),
+          notes: document.getElementById("notes").value.trim(),
+          createdAt: editingId
+            ? Number(form.dataset.createdAt) || Date.now()
+            : Date.now(),
+        };
+
+        const db = firebase.database();
+        const key = editingId || Date.now().toString();
+        db.ref(`${BANK_ACCOUNTS_PATH}/${key}`)
+          .set(payload)
+          .then(() => {
+            form.reset();
+            delete form.dataset.editingId;
+            delete form.dataset.createdAt;
+            document
+              .getElementById("cancelEditButton")
+              .classList.remove("show");
+            message.textContent = editingId
+              ? "Bank details updated successfully."
+              : "Bank details saved successfully.";
+            message.classList.add("show");
+            setTimeout(() => message.classList.remove("show"), 2500);
+            loadBankAccounts();
+          })
+          .catch((error) => {
+            console.error("Bank account save failed:", error);
+            message.textContent =
+              "Failed to save bank details. Please try again.";
+            message.classList.add("show");
+          });
+      }
+
+      function editBankAccount(accountId) {
+        firebase
+          .database()
+          .ref(`${BANK_ACCOUNTS_PATH}/${accountId}`)
+          .once("value")
+          .then((snapshot) => {
+            const account = snapshot.val();
+            if (!account) return;
+
+            document.getElementById("bankName").value = account.bankName || "";
+            document.getElementById("accountTitle").value =
+              account.accountTitle || "";
+            document.getElementById("accountNumber").value =
+              account.accountNumber || "";
+            document.getElementById("iban").value = account.iban || "";
+            document.getElementById("raastId").value = account.raastId || "";
+            document.getElementById("branch").value = account.branch || "";
+            document.getElementById("swiftCode").value =
+              account.swiftCode || "";
+            document.getElementById("notes").value = account.notes || "";
+
+            const form = document.getElementById("bankAccountForm");
+            form.dataset.editingId = accountId;
+            form.dataset.createdAt = account.createdAt || Date.now();
+            document.getElementById("cancelEditButton").classList.add("show");
+            document.getElementById("bankName").focus();
+          })
+          .catch((error) =>
+            console.error("Bank account load for edit failed:", error),
+          );
+      }
+
+      function cancelBankAccountEdit() {
+        const form = document.getElementById("bankAccountForm");
+        form.reset();
+        delete form.dataset.editingId;
+        delete form.dataset.createdAt;
+        document.getElementById("cancelEditButton").classList.remove("show");
+      }
+
+      function deleteBankAccount(accountId) {
+        if (!window.confirm("Delete this bank account?")) return;
+
+        firebase
+          .database()
+          .ref(`${BANK_ACCOUNTS_PATH}/${accountId}`)
+          .remove()
+          .then(() => {
+            const form = document.getElementById("bankAccountForm");
+            if (form.dataset.editingId === accountId) cancelBankAccountEdit();
+            loadBankAccounts();
+          })
+          .catch((error) =>
+            console.error("Bank account delete failed:", error),
+          );
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("bankAccountForm");
+        if (form) {
+          form.addEventListener("submit", saveBankAccount);
+        }
+        loadBankAccounts();
+      });
+    </script>
+
+    <script src="main.js"></script>
+    <a
+      href="https://wa.me/923331233009"
+      class="whatsapp-fab"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Chat with Imam Travel Company"
+    >
+      <span class="wa-icon"><i class="fab fa-whatsapp"></i></span>
+      <span>Chat with Imam Travel Company</span>
+    </a>
+  </body>
+</html>
